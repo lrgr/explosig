@@ -1,4 +1,6 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var path = require('path');
 
 module.exports = {
   entry: ['./src/js/index.js', './src/scss/main.scss'],
@@ -27,5 +29,12 @@ module.exports = {
       filename: './dist/[name].bundle.css',
       allChunks: true,
     }),
+    new HtmlWebpackPlugin({
+      filename: './dist/index.html',
+      template: './src/index.html'
+    }),
   ],
+  devServer: {
+    contentBase: 'dist'
+  }
 };
