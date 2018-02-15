@@ -4,6 +4,7 @@ For develpment:
 ```
 npm install -g yarn
 yarn install --production=false
+npm run prod
 npm run dev
 ```
 Open brower to `http://localhost:8080`
