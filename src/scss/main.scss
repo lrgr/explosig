@@ -1,7 +1,11 @@
-@import './materialize.scss';
+@import '~materialize-css/sass/materialize.scss';
 
-body {
-  a {
-    color: magenta;
+nav {
+  @extend .cyan, .darken-3;
+  .nav-wrapper {
+    .brand-logo {
+      font-size: 1.6rem;
+      padding-left: 20px;
+    }
   }
 }
