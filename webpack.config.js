@@ -12,7 +12,14 @@ module.exports = {
         use: ExtractTextPlugin.extract({
           use: ['css-loader', 'sass-loader'],
         })
-      }
+      },
+      { // es2015 for d3 v4
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader'
+        }
+      },
     ]
   },
   plugins: [
