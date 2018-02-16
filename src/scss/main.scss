@@ -4,8 +4,18 @@ nav {
   @extend .cyan, .darken-3;
   .nav-wrapper {
     .brand-logo {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       padding-left: 20px;
     }
   }
 }
+
+#main {
+  svg {
+    border: 1px solid black;
+    width: 100%;
+    height: 500px;
+
+  }
+}
+
