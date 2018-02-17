@@ -27,7 +27,8 @@ class App {
       nr: 2,
       tsb: true,
       independence: false,
-      showExposures: false
+      showExposures: false,
+      sigExpanded: false
     };
 
     this.container = d3.select('#main');
@@ -74,12 +75,14 @@ class App {
     return mutationTypes;
   }
   render() {
-    var g = this.container.append("svg")
+    var outerG = this.container.append("svg")
       .attr("width", this.width + this.margin.left + this.margin.right)
       .attr("height", this.height + this.margin.top + this.margin.bottom)
     .append("g")
       .attr("transform",
             "translate(" + this.margin.left + "," + this.margin.top + ")");
+
+    var g = outerG.append("g");
 
     var currentSig = this.getCurrentSigData(); 
     delete currentSig[""];
@@ -113,6 +116,36 @@ class App {
       .attr("text-anchor", "middle")
       .attr("x", (d, i) => { return i * (d[1] * x.bandwidth()) + (d[1] * x.bandwidth()/2); })
       .attr("y", this.height/2)
+      .on("click", (click_d, click_i) => {
+        
+        var factor = 12;
+        if(this.state.sigExpanded) {
+          factor = 1;
+          g.transition()
+            .attr("transform", "");
+        } else {
+          g.transition()
+            .attr("transform",
+              "translate(-" + (click_i * click_d[1] * x.bandwidth() * 12) + ",0)");
+
+        }
+
+        g.selectAll(".bar")
+          .transition()
+          .attr("width", x.bandwidth() * factor)
+          .attr("x", (d) => x(d[0]) * factor);
+        
+        g.selectAll(".mtype")
+          .transition()
+          .attr("width", (d) => d[1] * x.bandwidth() * factor)
+          .attr("x", (d, i) => i * d[1] * x.bandwidth() * factor);
+        g.selectAll(".mtype-text")
+          .transition()
+          .attr("x", (d, i) => i * (d[1] * x.bandwidth() * factor) + (d[1] * x.bandwidth() * factor / 2));
+
+        this.state.sigExpanded = !this.state.sigExpanded;
+
+      });
 
     g.selectAll(".bar")
       .data(currentSigData)
@@ -123,10 +156,9 @@ class App {
       .attr("y", (d) => { return y(d[1]); })
       .attr("height", (d) => { return this.height - y(d[1]); });
 
-    g.selectAll(".mutation-type");
     
     // append y axis
-    g.append("g")
+    outerG.append("g")
       .call(d3.axisLeft(y));
 
     console.log(currentSig);
@@ -140,9 +172,9 @@ class App {
   changeSig(next) {
     this.clearMain();
     if(next) {
-      this.state.currentSig = mod(++this.state.currentSig, this.state.nSigs);
+      this.state.currentSig = mod(this.state.currentSig+1, this.state.nSigs);
     } else {
-      this.state.currentSig = mod(--this.state.currentSig, this.state.nSigs);
+      this.state.currentSig = mod(this.state.currentSig-1, this.state.nSigs);
     }
     this.loadDataset();
     this.updateSigNum();
