@@ -21,9 +21,34 @@
     <div id="main"></div>
 
     <div id="controls-bottom" class="controls">
-      <button onClick="app.prevSig()">Previous</button> 
-      <span>Signature <span id="currentSigNum">1</span> of 30</span>
-      <button onClick="app.nextSig()">Next</button>
+      <div id="controls-changesig">
+        <button onClick="app.prevSig()">Previous</button> 
+        <span>Signature <span id="currentSigNum">1</span> of 30</span>
+        <button onClick="app.nextSig()">Next</button>
+      </div>
+
+      <div id="controls-flanking">
+        Mutation Contexts
+        <p>
+          <label>
+            <input name="l2" type="radio" checked />
+            <span>2</span>
+          </label>
+          <label>
+            <input name="l1" type="radio" />
+            <span>1</span>
+          </label>
+
+          <label>
+            <input name="r1" type="radio" />
+            <span>1</span>
+          </label>
+          <label>
+            <input name="r2" type="radio" checked />
+            <span>2</span>
+          </label>
+        </p>
+      </div>
     </div>
 
     <!-- injected js -->
