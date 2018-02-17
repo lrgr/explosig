@@ -2,6 +2,10 @@ import * as d3 from 'd3';
 
 const DATA_DIR = 'data';
 
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
+
 class App {
   constructor(props) {
     this.data = null;
@@ -104,11 +108,11 @@ class App {
       .attr("height", this.height);
 
     mutationTypeGroups.append("text")
-        .text((d) => { return d[0]; })
-        .attr("class", "mtype-text")
-        .attr("text-anchor", "middle")
-        .attr("x", (d, i) => { return i * (d[1] * x.bandwidth()) + (d[1] * x.bandwidth()/2); })
-        .attr("y", this.height/2)
+      .text((d) => { return d[0]; })
+      .attr("class", "mtype-text")
+      .attr("text-anchor", "middle")
+      .attr("x", (d, i) => { return i * (d[1] * x.bandwidth()) + (d[1] * x.bandwidth()/2); })
+      .attr("y", this.height/2)
 
     g.selectAll(".bar")
       .data(currentSigData)
@@ -127,9 +131,32 @@ class App {
 
     console.log(currentSig);
   }
+  nextSig() {
+    this.changeSig(true);
+  }
+  prevSig() {
+    this.changeSig(false);
+  }
+  changeSig(next) {
+    this.clearMain();
+    if(next) {
+      this.state.currentSig = mod(++this.state.currentSig, this.state.nSigs);
+    } else {
+      this.state.currentSig = mod(--this.state.currentSig, this.state.nSigs);
+    }
+    this.loadDataset();
+    this.updateSigNum();
+  }
+  updateSigNum() {
+    var textEl = document.getElementById("currentSigNum");
+    textEl.innerHTML = (this.state.currentSig + 1)
+  }
+  clearMain() {
+    this.container.select("svg").remove();
+  }
 }
 
 var app = new App();
 
-
+window.app = app;
 
