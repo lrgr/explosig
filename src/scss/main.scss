@@ -15,6 +15,14 @@ nav {
     .bar {
       fill: steelblue;
     }
+    .mtype {
+      fill: #FFFFFF;
+
+      &.mtype-odd {
+        fill: #F5F5F5;
+      }
+    }
+
   }
 }
 

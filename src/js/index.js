@@ -53,13 +53,21 @@ class App {
   }
   getMutationTypes(currentSig) {
     var contextNames = Object.keys(currentSig);
-    var mutationTypes = new Set();
-    console.log(contextNames);
+    var mutationTypes = [];
     for(var contextName of contextNames) {
       var mutationType = contextName.substring(this.state.nl + 1, this.state.nl + 4);
-      mutationTypes.add(mutationType);
+      if(mutationTypes.length == 0) {
+        mutationTypes.push([mutationType, 1]);
+      } else {
+        var previousType = mutationTypes[mutationTypes.length - 1][0];
+        if(previousType == mutationType) {
+          mutationTypes[mutationTypes.length - 1][1]++;
+        } else {
+          mutationTypes.push([mutationType, 1]);
+        }
+      }
     }
-    return [...mutationTypes];
+    return mutationTypes;
   }
   render() {
     var g = this.container.append("svg")
@@ -72,17 +80,35 @@ class App {
     var currentSig = this.getCurrentSigData(); 
     delete currentSig[""];
     var mutationTypes = this.getMutationTypes(currentSig);
+    console.log(mutationTypes);
     var currentSigData = Object.entries(currentSig);
     
     var x = d3.scaleBand()
-      .range([0, this.width])
-      .padding(0.1);
+      .range([0, this.width]);
 
     var y = d3.scaleLinear()
       .range([this.height, 0]);
 
     x.domain(currentSigData.map((d) => { return d[0]; }));
     y.domain([0, d3.max(currentSigData, (d) => { return d[1]; }) ]);
+
+    var mutationTypeGroups = g.selectAll(".mtype")
+      .data(mutationTypes)
+    .enter().append("g");
+    
+    mutationTypeGroups.append("rect")
+      .attr("class", (_, i) => { return (i % 2 == 0 ? "mtype mtype-odd" : "mtype mtype-even"); })
+      .attr("x", (d, i) => { return i * (d[1] * x.bandwidth()); })
+      .attr("width", (d) => { return d[1] * x.bandwidth(); })
+      .attr("y", 0)
+      .attr("height", this.height);
+
+    mutationTypeGroups.append("text")
+        .text((d) => { return d[0]; })
+        .attr("class", "mtype-text")
+        .attr("text-anchor", "middle")
+        .attr("x", (d, i) => { return i * (d[1] * x.bandwidth()) + (d[1] * x.bandwidth()/2); })
+        .attr("y", this.height/2)
 
     g.selectAll(".bar")
       .data(currentSigData)
