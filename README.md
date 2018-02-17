@@ -1,6 +1,10 @@
 # Interactive Mutation Signature Visualization
 
-For develpment:
+#### Setup
+Download data from [https://github.com/keller-mark/signature-computation/releases](https://github.com/keller-mark/signature-computation/releases) and move into `dist/data` directory.
+
+
+#### Develpment
 ```
 npm install -g yarn
 yarn install --production=false
@@ -9,10 +13,6 @@ npm run dev
 ```
 Open brower to `http://localhost:8080`
 
-For production:
-```
-npm install -g yarn
-yarn install
-npm run prod
-```
-Serve from `dist` directory
+
+#### Production
+Serve from `dist` directory after `npm run prod`
