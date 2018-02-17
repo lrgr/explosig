@@ -51,6 +51,16 @@ class App {
   getCurrentSigData() {
     return this.data[this.state.currentSig];
   }
+  getMutationTypes(currentSig) {
+    var contextNames = Object.keys(currentSig);
+    var mutationTypes = new Set();
+    console.log(contextNames);
+    for(var contextName of contextNames) {
+      var mutationType = contextName.substring(this.state.nl + 1, this.state.nl + 4);
+      mutationTypes.add(mutationType);
+    }
+    return [...mutationTypes];
+  }
   render() {
     var g = this.container.append("svg")
       .attr("width", this.width + this.margin.left + this.margin.right)
@@ -60,6 +70,8 @@ class App {
             "translate(" + this.margin.left + "," + this.margin.top + ")");
 
     var currentSig = this.getCurrentSigData(); 
+    delete currentSig[""];
+    var mutationTypes = this.getMutationTypes(currentSig);
     var currentSigData = Object.entries(currentSig);
     
     var x = d3.scaleBand()
@@ -80,7 +92,12 @@ class App {
       .attr("width", x.bandwidth())
       .attr("y", (d) => { return y(d[1]); })
       .attr("height", (d) => { return this.height - y(d[1]); });
+
+    g.selectAll(".mutation-type");
     
+    // append y axis
+    g.append("g")
+      .call(d3.axisLeft(y));
 
     console.log(currentSig);
   }
