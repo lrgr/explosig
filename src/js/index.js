@@ -28,7 +28,8 @@ class App {
       tsb: true,
       independence: false,
       showExposures: false,
-      sigExpanded: false
+      sigExpanded: false,
+      showTooltip: true
     };
 
     this.container = d3.select('#main');
@@ -75,6 +76,10 @@ class App {
     return mutationTypes;
   }
   render() {
+
+    var tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip");
+
     var outerG = this.container.append("svg")
       .attr("width", this.width + this.margin.left + this.margin.right)
       .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -154,7 +159,25 @@ class App {
       .attr("x", (d) => { return x(d[0]); })
       .attr("width", x.bandwidth())
       .attr("y", (d) => { return y(d[1]); })
-      .attr("height", (d) => { return this.height - y(d[1]); });
+      .attr("height", (d) => { return this.height - y(d[1]); })
+      .on("mouseover", (d) => {
+        if(this.state.sigExpanded) {
+          tooltip.html(d[0])
+            .style("opacity", 0.9)
+            .style("left", (d3.event.pageX + 11) + "px")
+            .style("top", (d3.event.pageY) + "px");
+        
+          this.state.showTooltip = true;
+        }
+      })
+      .on("mouseout", (d) => {
+        this.state.showTooltip = false;
+        setTimeout(() => {
+          if(!this.state.showTooltip) {
+            tooltip.style("opacity", 0); 
+          }
+        }, 400);
+      });
 
     
     // append y axis
