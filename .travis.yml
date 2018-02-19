@@ -7,9 +7,11 @@ cache:
     - node_modules
 script:
   - npm run prod
+before_deploy:
+  - rm dist/.gitignore  
 deploy:
   provider: pages
-  skip_cleanup: true
-  github_token: $github_token
-  local_dir: dist
-  keep_history: true
+  skip-cleanup: true
+  github-token: $github_token
+  local-dir: dist
+  keep-history: true
