@@ -1,7 +1,7 @@
 FROM node:8-alpine
 
 # Install nginx
-RUN apk add --no-cache nginx
+RUN apk add --no-cache nginx curl tar
 RUN chown -R nginx:www-data /var/lib/nginx
 #RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
@@ -29,10 +29,9 @@ RUN cp -a /app_tmp/dist/. /www
 RUN mkdir -p /www/data
 
 # Download /data from signature-computation releases
+RUN cd /app_tmp && curl -OL https://github.com/keller-mark/signature-computation/releases/download/latest-sigs/sigs.zip
 # Move to /www/data
-#TEMP:
-RUN mkdir -p /www/data/sigs
-COPY sigs /www/data/sigs
+RUN tar -xf /app_tmp/sigs.zip -C /www/data
 
 # Clean up build tools
 RUN rm -rf /app_tmp
