@@ -36,7 +36,7 @@ class App {
     this.loadDataset();
   }
   getSignatureDataset() {
-    return '/' + DATA_DIR + '/sigs/' + this.state.sigMethod + '/nmf.csv'; 
+    return './' + DATA_DIR + '/sigs/' + this.state.sigMethod + '/nmf.csv'; 
   }
   loadDataset() {
     var outer = this;
