@@ -7,4 +7,9 @@ cache:
     - node_modules
 script:
   - npm run prod
-  
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $github_token
+  local_dir: dist
+  keep_history: true
