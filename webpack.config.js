@@ -5,7 +5,9 @@ var path = require('path');
 module.exports = {
   entry: ['./src/js/index.js', './src/scss/main.scss'],
   output: {
-    filename: './dist/bundle.js'
+    path: path.join(__dirname, "dist/"),
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   module: {
     rules: [
@@ -26,11 +28,11 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin({ // where to save the file
-      filename: './dist/[name].bundle.css',
+      filename: '[name].bundle.css',
       allChunks: true,
     }),
     new HtmlWebpackPlugin({
-      filename: './dist/index.html',
+      filename: 'index.html',
       template: './src/index.html'
     }),
   ],
