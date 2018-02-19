@@ -12,6 +12,7 @@ before_deploy:
   - mkdir -p dist/data
   - curl -OL https://github.com/keller-mark/signature-computation/releases/download/latest-sigs/sigs.zip
   - tar -xf sigs.zip -C dist/data
+  - rm dist/data/sigs/.gitignore
 deploy:
   provider: pages
   skip-cleanup: true
