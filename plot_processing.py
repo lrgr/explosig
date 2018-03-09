@@ -22,21 +22,26 @@ class PlotProcessing():
        
   @staticmethod
   def muts_by_sig_points(region_width, selected_sigs, selected_projects):
+    if region_width < 50000:
+      return None
     region_starts = np.array([])
     for chr_name, chr_len in CHROMOSOMES.items():
       chr_regions = np.core.defchararray.mod((chr_name + "_%d"), np.arange(0, chr_len, region_width))
       region_starts = np.concatenate([region_starts, chr_regions])
 
-    region_dtypes = [(i, np.int16) for i in list(region_starts)]
 
-    regions_matrix = np.zeros((len(ALL_SIGNATURES), region_starts.size), dtype=region_dtypes)
-    
+    #region_dtypes = [(i, np.int16) for i in list(region_starts)]
+
+    #regions_matrix = np.recarray(np.zeros((len(ALL_SIGNATURES), region_starts.size)), dtype=region_dtypes)
+    #regions_matrix = np.zeros((30, 5), dtype=region_dtypes[1:6])
+    regions_matrix = np.zeros((len(ALL_SIGNATURES), region_starts.size), dtype=np.int16)
+
     return PlotProcessing.as_file(regions_matrix)
 
   @staticmethod
   def as_file(matrix):
     output = io.BytesIO()
-    np.savetxt(output, matrix, delimiter='\t')
+    np.savetxt(output, matrix, delimiter='\t', fmt='%i')
     return output
 
 
