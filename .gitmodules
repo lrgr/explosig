@@ -1,0 +1,6 @@
+[submodule "signature-visualization-frontend"]
+	path = signature-visualization-frontend
+	url = git@github.com:keller-mark/signature-visualization-frontend.git
+[submodule "signature-visualization-backend"]
+	path = signature-visualization-backend
+	url = git@github.com:keller-mark/signature-visualization-backend.git
