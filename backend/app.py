@@ -1,24 +1,33 @@
+import re
 from sanic import Sanic, response
 from constants import *
 from plot_processing import PlotProcessing
 
 app = Sanic()
 
-def json_or(req, varname, default):
+def json_or(req, varname, default, validate=None):
   try:
-    return req.json[varname]
-  except KeyError:
+    val = req.json[varname]
+    if not validate:
+      return val
+    else:
+      regex = re.compile(validate)
+      if isinstance(val, list):
+        return list(filter(lambda x: regex.match(x).astype(bool), val))
+      else:
+        return val if regex.match(val) else default
+  except:
     return default
 
 @app.post('/signature-genome-bins')
 async def route_signature_genome_bins(req):
-  region_width = json_or(req, 'region_width', 1000000)
-  chromosome = json_or(req, 'chromosome', "1")
-  sig_source = json_or(req, 'sig_source', list( map(str, range(1, 31) )))
-  signatures = json_or(req, 'signatures', list( map(str, range(1, 31) )))
-  projects = json_or(req, 'projects', ["BRCA-EU", "LIHC-US"])
+  region_width = int(json_or(req, 'region_width', 1000000, r'^\d+$'))
+  chromosome = str(json_or(req, 'chromosome', "1", CHROMOSOME_RE))
+  sig_source = json_or(req, 'sig_source', "cosmic", r'^[a-zA-Z0-9]+$')
+  sig_restriction = json_or(req, 'sig_restriction', "all", r'^(all|active)$')
+  projects = json_or(req, 'projects', ["PCAWG-BRCA-EU", "PCAWG-LIHC-US"], PROJ_RE)
 
-  output = PlotProcessing.muts_by_sig_points(region_width, chromosome, sig_source, signatures, projects)
+  output = PlotProcessing.muts_by_sig_points(region_width, chromosome, sig_source, sig_restriction, projects)
 
   return response.raw(output)
 
