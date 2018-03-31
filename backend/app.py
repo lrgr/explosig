@@ -15,7 +15,7 @@ async def route_signature_genome_bins(req):
 
   output = PlotProcessing.muts_by_sig_points(region_width, chromosome, sig_source, sig_restriction, projects)
 
-  return response.raw(output)
+  return response.text(output)
 
 @app.post('/signatures')
 async def route_signatures(req):
