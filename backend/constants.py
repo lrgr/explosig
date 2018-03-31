@@ -4,9 +4,7 @@ import re
 DATA_DIR = 'data'
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed')
 SSM_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'ssm_w_sigs')
-
-ALL_ICGC_PROJECTS = ['ALL-US', 'BRCA-US']
-ALL_SIGNATURES = [("COSMIC_%d" % i) for i in list(range(1, 31))]
+SIGS_DIR = os.path.join(PROCESSED_DIR, 'sigs')
 
 CHROMOSOMES = {
   '1': 249250621,
