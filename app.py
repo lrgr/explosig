@@ -4,6 +4,8 @@ from plot_processing import PlotProcessing
 
 app = Sanic()
 
+PlotProcessing.load()
+
 @app.post('/signature-genome-bins')
 async def signature_genome_bins(req):
   try:
