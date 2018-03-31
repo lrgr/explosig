@@ -8,8 +8,8 @@ def json_or(req, varname, default, validate=None):
     else:
       regex = re.compile(validate)
       if isinstance(val, list):
-        return list(filter(lambda x: regex.match(str(x)).astype(bool), val))
+        return list(filter(lambda x: regex.match(str(x)) != None, val))
       else:
         return val if regex.match(str(val)) else default
-  except:
+  except KeyError:
     return default

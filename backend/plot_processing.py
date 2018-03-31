@@ -20,39 +20,36 @@ class PlotProcessing():
       return None
     
     sig_names = list(pd.read_csv(sig_source_filepath, sep='\t')["name"].unique())
-    regions_master_df = None
+    region_names = list(range(0, CHROMOSOMES[chromosome], region_width))
+    # regions_master_df: sigs x regions
+    regions_master_df = pd.DataFrame(index=sig_names, columns=region_names)
 
     for proj_id in projects:
       ssm_filepath = os.path.join(SSM_W_SIGS_DIR, sig_source, sig_restriction, ("ssm.%s.tsv" % proj_id))
       if os.path.isfile(ssm_filepath):
         ssm_df = pd.read_csv(ssm_filepath, sep='\t')
-        ssm_df['region'] = ssm_df.apply(lambda row: row['chromosome_start'] // region_width, axis=1) 
+        # restrict to current chromosome
+        ssm_df = ssm_df[ssm_df["chromosome"] == chromosome]
+        # set region values
+        ssm_df['region'] = ssm_df.apply(lambda row: row['chromosome_start'] // region_width * region_width, axis=1) 
 
         # aggregate
         groups = ssm_df.groupby(['region', 'signature'])
-        counts = groups.size().reset_index(name='counts')
-
-        region_categories = pd.Categorical(counts['region'], categories=list(range(0, CHROMOSOMES[chromosome], region_width)))
-        sig_categories = pd.Categorical(counts['signature'], categories=sig_names)
-        regions_df = pd.crosstab(region_categories, sig_categories)
-
-        if regions_master_df is None:
-          regions_master_df = regions_df
-        else:
-          regions_master_df = regions_master_df.add(regions_df, fill_value=0)
+        counts = groups.size().reset_index(name='counts')   
+        regions_df = counts.pivot(index='signature', columns='region', values='counts')
+        # sum
+        regions_master_df = regions_master_df.add(regions_df, fill_value=0)
+    
+    # finalize
+    regions_master_df.fillna(value=0, inplace=True)
+    regions_master_df[list(regions_master_df.columns.values)] = regions_master_df[list(regions_master_df.columns.values)].astype(int)
 
     return PlotProcessing.pd_as_file(regions_master_df)
 
   @staticmethod
-  def np_as_file(matrix):
-    output = io.BytesIO()
-    np.savetxt(output, matrix, delimiter='\t', fmt='%i')
-    return output.getvalue()
-
-  @staticmethod
-  def pd_as_file(df):
+  def pd_as_file(df, index_val=True):
     output = io.StringIO()
-    df.to_csv(output, sep='\t')
+    df.to_csv(output, sep='\t', index=index_val)
     return output.getvalue()
 
   @staticmethod
@@ -62,7 +59,7 @@ class PlotProcessing():
       return None
     
     sig_df = pd.read_csv(sig_source_filepath, sep='\t')
-    return PlotProcessing.pd_as_file(sig_df)
+    return PlotProcessing.pd_as_file(sig_df, index_val=False)
 
 
 
