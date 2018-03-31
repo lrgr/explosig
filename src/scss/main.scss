@@ -1,0 +1,59 @@
+@import '~materialize-css/sass/materialize.scss';
+
+nav {
+  @extend .cyan, .darken-3;
+  .nav-wrapper {
+    .brand-logo {
+      font-size: 1.5rem;
+      padding-left: 20px;
+    }
+  }
+}
+
+#main {
+  svg {
+    .bar {
+      fill: steelblue;
+    }
+    .mtype {
+      fill: #FFFFFF;
+
+      &.mtype-odd {
+        fill: #F5F5F5;
+      }
+    }
+    .mtype-text {
+      cursor: pointer;
+    }
+
+  }
+}
+
+#controls-flanking {
+  [type="radio"]:not(:checked) + span, [type="radio"]:checked + span {
+    padding-left: 9px;
+    padding-top: 15px;
+    font-size: 12px;
+  }
+  p {
+    margin-top: 0;
+  }
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  background: lightsteelblue;
+  width: 86px;
+  height: 22px;
+  opacity: 0; 
+
+  &:before {
+    content: '';
+    border-style: solid;
+    border-width: 11px 11px 11px;
+    border-color: transparent lightsteelblue transparent transparent;
+    position: absolute;
+    left: -22px;
+  }
+}
