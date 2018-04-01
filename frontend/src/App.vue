@@ -9,14 +9,15 @@
 import HelloWorld from './components/HelloWorld.vue'
 import NavBar from './components/NavBar.vue'
 import SelectData from './components/SelectData.vue'
-
+import Spinner from './components/Spinner.vue'
 
 export default {
   name: 'app',
   components: {
     HelloWorld,
     NavBar,
-    SelectData
+    SelectData,
+    Spinner
   }
 }
 </script>
