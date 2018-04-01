@@ -63,13 +63,12 @@ class PlotProcessing():
 
   @staticmethod
   def sigs_per_cancer(sig_source):
-    sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "signatures.tsv")
-    active_sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "active.tsv")
-    if not os.path.isfile(sig_source_filepath):
+    active_sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "active_binary.tsv")
+    if not os.path.isfile(active_sig_source_filepath):
       return None
     
-    sig_df = pd.read_csv(sig_source_filepath, sep='\t')
-    return PlotProcessing.pd_as_file(sig_df, index_val=False)
+    active_sig_df = pd.read_csv(active_sig_source_filepath, sep='\t')
+    return PlotProcessing.pd_as_file(active_sig_df, index_val=False)
 
 
 
