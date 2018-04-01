@@ -24,6 +24,13 @@ module.exports = {
           loader: 'babel-loader'
         }
       },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          loaders: {}
+        }
+      },
     ]
   },
   plugins: [
@@ -38,5 +45,10 @@ module.exports = {
   ],
   devServer: {
     contentBase: 'dist'
+  },
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    }
   }
 };
