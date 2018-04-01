@@ -1,0 +1,10 @@
+filenames: 
+	- signatures: signatures\.tsv # signature_source_name.tsv
+		- rowname: .* # signature name
+		- colname: [ACTG]+\[[ACTG]>[ACTG]\][ACTG]+ # mutation type
+	- active: active\.tsv
+		- rowname: .* # cancer type name
+		- colname: (abbreviation|signatures)
+	- active_binary: active_binary\.tsv
+		- rowname: .* # cancer type name
+		- colname: (abbreviation|.*)

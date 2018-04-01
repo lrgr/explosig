@@ -19,13 +19,14 @@ async def route_signature_genome_bins(req):
 
 @app.post('/signatures')
 async def route_signatures(req):
-  try:
-    sig_source = req.json['sig_source']
-  except:
-    sig_source = "cosmic"
-  
+  sig_source = json_or(req, 'sig_source', "cosmic", r'^[a-zA-Z0-9]+$')
   output = PlotProcessing.sigs(sig_source)
+  return response.text(output)
 
+@app.post('/signatures-per-cancer')
+async def route_signatures_per_cancer(req):
+  sig_source = json_or(req, 'sig_source', "cosmic", r'^[a-zA-Z0-9]+$')
+  output = PlotProcessing.sigs_per_cancer(sig_source)
   return response.text(output)
 
 if __name__ == '__main__':

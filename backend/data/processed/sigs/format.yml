@@ -1,3 +1,1 @@
-filename: .*\.tsv # signature_source_name.tsv
-	- rowname: .* # signature name
-	- colname: [ACTG]+\[[ACTG]>[ACTG]\][ACTG]+ # mutation type
+dirname: [A-Za-z0-9] # signature_source_name
