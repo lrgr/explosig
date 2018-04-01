@@ -29,5 +29,10 @@ async def route_signatures_per_cancer(req):
   output = PlotProcessing.sigs_per_cancer(sig_source)
   return response.text(output)
 
+@app.post('/data-listing')
+async def route_data_listing(req):
+  output = PlotProcessing.data_listing_json()
+  return response.json(output)
+
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=8000)

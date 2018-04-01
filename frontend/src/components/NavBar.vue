@@ -1,0 +1,101 @@
+<template>
+    <div>
+        <div class="navbar">
+            <span class="title">MutteVis</span>
+            <div class="right-button-group">
+                <span class="button button-inverse" v-on:click="openOptions = 'data'">Data</span>
+                <span class="button">Signatures</span>
+                <span class="button">Samples</span>
+                <span class="button">Clinical</span>
+            </div>
+        </div>
+        <div class="modal" v-show="openOptions !== null">
+            <div class="modal-inner">
+                <span class="modal-close" v-on:click="openOptions = null">Close</span>
+                <SelectData v-show="openOptions === 'data'"></SelectData>
+            </div>
+        </div>
+
+        <div class="modal-background" v-show="openOptions !== null" v-on:click="openOptions = null"></div>
+  </div>
+</template>
+
+<script>
+import SelectData from './SelectData.vue'
+
+export default {
+  name: 'NavBar',
+  data: function() { 
+        return {
+            openOptions: null
+        };
+  },
+  components: {
+      SelectData
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+
+@import './../variables.scss';
+
+.navbar {
+    width: 100%;
+    background-color: $color-gray;
+    padding: 0.5rem 0rem;
+}
+
+span.title {
+    text-decoration: none;
+    color: $color-white;
+    font-size: 1.5rem;
+    margin: 0 1rem;
+}
+.right-button-group {
+    float: right;
+    margin: 0.3rem 0.5rem;
+}
+span.button {
+    color: $color-white;
+    background-color: $color-darkgray;
+    margin: 0rem 0.5rem;
+    padding: 0.3rem;
+    border-radius: 0.2rem;
+    cursor: pointer;
+
+    &.button-inverse {
+        background-color: $color-lgreen;
+        color: $color-darkgray;
+    }
+}
+.modal-background {
+    z-index: 1;
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    background-color: black;
+    opacity: 0.4;
+}
+.modal {
+    z-index: 2;
+    top: 10vh;
+    left: 10%;
+    height: 80vh;
+    width: 80%;
+    position: absolute;
+    background-color: $color-white;
+
+    .modal-inner {
+        margin: 1rem;
+
+        .modal-close {
+            float: right;
+            cursor: pointer;
+        }
+    }
+}
+</style>

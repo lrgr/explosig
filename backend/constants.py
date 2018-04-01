@@ -5,6 +5,8 @@ DATA_DIR = 'data'
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed')
 SSM_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'ssm_w_sigs')
 SIGS_DIR = os.path.join(PROCESSED_DIR, 'sigs')
+DONOR_DIR = os.path.join(PROCESSED_DIR, 'donor_w_sigs')
+
 
 CHROMOSOMES = {
   '1': 249250621,

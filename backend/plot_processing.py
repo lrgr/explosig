@@ -1,13 +1,16 @@
-import numpy as np
 import pandas as pd
 import os
 import glob
-import re
-import operator
 import io
 from constants import *
 
 class PlotProcessing():
+
+  @staticmethod
+  def pd_as_file(df, index_val=True):
+    output = io.StringIO()
+    df.to_csv(output, sep='\t', index=index_val)
+    return output.getvalue()
 
   @staticmethod
   def muts_by_sig_points(region_width, chromosome, sig_source, sig_restriction, projects):
@@ -47,12 +50,6 @@ class PlotProcessing():
     return PlotProcessing.pd_as_file(regions_master_df)
 
   @staticmethod
-  def pd_as_file(df, index_val=True):
-    output = io.StringIO()
-    df.to_csv(output, sep='\t', index=index_val)
-    return output.getvalue()
-
-  @staticmethod
   def sigs(sig_source):
     sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "signatures.tsv")
     if not os.path.isfile(sig_source_filepath):
@@ -69,6 +66,34 @@ class PlotProcessing():
     
     active_sig_df = pd.read_csv(active_sig_source_filepath, sep='\t')
     return PlotProcessing.pd_as_file(active_sig_df, index_val=False)
+
+  @staticmethod
+  def data_listing_json():
+    tsv_tree = {}
+    curr_dir = None
+    for path, dirs, files in os.walk(PROCESSED_DIR):
+      # split_path = os.path.split(path)
+      # curr_dir = split_path[-1]
+      # for a_dir in dirs:
+      #   tsv_tree.append(a_dir)
+      print(path)
+      print(dirs)
+      print(files)
+      print("end iteration")
+    tsv_files = glob.glob(os.path.join(PROCESSED_DIR, "**", "*.tsv"), recursive=True)
+    common_path = os.path.commonpath(tsv_files)
+    tsv_files = list(map(lambda x: x[len(common_path):], tsv_files))
+    return tsv_files
+
+  @staticmethod
+  def data_listing_tree(str_list):
+    listing = {}
+    for el in str_list:
+      el_components = os.path.split(el)
+      first_component = el_components[0]
+
+    listing[first_component] = data_listing_tree()
+
 
 
 
