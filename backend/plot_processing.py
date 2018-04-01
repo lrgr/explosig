@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-import glob
 import io
 from constants import *
 
@@ -68,32 +67,20 @@ class PlotProcessing():
     return PlotProcessing.pd_as_file(active_sig_df, index_val=False)
 
   @staticmethod
-  def data_listing_json():
-    tsv_tree = {}
-    curr_dir = None
-    for path, dirs, files in os.walk(PROCESSED_DIR):
-      # split_path = os.path.split(path)
-      # curr_dir = split_path[-1]
-      # for a_dir in dirs:
-      #   tsv_tree.append(a_dir)
-      print(path)
-      print(dirs)
-      print(files)
-      print("end iteration")
-    tsv_files = glob.glob(os.path.join(PROCESSED_DIR, "**", "*.tsv"), recursive=True)
-    common_path = os.path.commonpath(tsv_files)
-    tsv_files = list(map(lambda x: x[len(common_path):], tsv_files))
-    return tsv_files
-
-  @staticmethod
-  def data_listing_tree(str_list):
+  def data_listing_json(curr_path = PROCESSED_DIR):
     listing = {}
-    for el in str_list:
-      el_components = os.path.split(el)
-      first_component = el_components[0]
+    files = []
+    for name in os.listdir(curr_path):
+      newpath = os.path.join(curr_path, name)
+      if os.path.isdir(newpath):
+        listing[name] = PlotProcessing.data_listing_json(newpath)
+      if os.path.isfile(newpath) and name.endswith(".tsv"):
+        files.append(name)
 
-    listing[first_component] = data_listing_tree()
-
+    if len(list(listing.keys())) == 0:
+      return files
+    else:
+      return listing
 
 
 
