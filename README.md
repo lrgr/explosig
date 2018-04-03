@@ -7,7 +7,7 @@
 - frontend
   - node/python
   - yarn (`npm install -g yarn`)
-  - `yarn install --production=false`
+  - `yarn install`
 
 ### Run
 - backend: [http://localhost:8000](http://localhost:8000)
@@ -16,6 +16,5 @@
   ```
 - frontend: [http://localhost:8080](http://localhost:8080)
   ```
-  npm run prod
-  npm run dev
+  yarn serve
   ```
