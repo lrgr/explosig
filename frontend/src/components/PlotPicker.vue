@@ -2,11 +2,14 @@
     <div class="plot-picker">
         <h2>+ Plot</h2>
         <ul>
+            <li>Signatures</li>
+            <li>Signatures per Cancer Type</li>
             <li>Manhattan Plot with Signatures</li>
             <li>Manhattan Plot with Mutation Contexts</li>
             <li>Manhattan Plot with Mutation Types</li>
             <li>Kataegis</li>
             <li>Signature Exposures with Clinical Data</li>
+            <li>Signature Exposure Box Plots per Cancer Type</li>
         </ul>
         <Spinner v-if="loading"></Spinner>
     </div>

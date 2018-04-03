@@ -46,3 +46,4 @@ CHROMOSOMES = {
 
 CHROMOSOME_RE = r'^(X|Y|M|[1-9]|1[0-9]|2[0-2])$'
 PROJ_RE = r'^[A-Z0-9]+-[A-Z0-9]+-[A-Z]+$'
+EXTRACT_PROJ_RE = r'^(?:ssm|donor)\.([A-Z0-9]+-[A-Z0-9]+-[A-Z]+)\.tsv$'

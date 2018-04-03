@@ -20,7 +20,7 @@ export default {
   data: function() {
       return {
           plots: [{}],
-          loading: true
+          loading: false
       };
   }
 }

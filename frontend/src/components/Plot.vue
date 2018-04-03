@@ -6,12 +6,13 @@
                 <span class="button" v-on:click="toggleTab('signatures')">Signatures</span>
                 <span class="button" v-on:click="toggleTab('samples')">Samples</span>
                 <span class="button" v-on:click="toggleTab('clinical')">Clinical</span>
+                <span class="button button-inverse" v-if="plotOptions.unsaved">Save</span>
             </div>
         </div>
 
         <div class="plot">
             <div class="plot-options" v-show="plotOptions.show">
-                <PlotOptions v-bind:currentTab="plotOptions.currentTab" />
+                <PlotOptions :currentTab="plotOptions.currentTab" v-on:unsaved="plotOptions.unsaved = true" />
             </div>
             <p>Hello</p>
         </div>
@@ -32,6 +33,7 @@ export default {
             plotTitle: "test",
             plotOptions: {
                 show: false,
+                unsaved: false,
                 currentTab: null
             }
         };

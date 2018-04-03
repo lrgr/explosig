@@ -11,7 +11,6 @@ POST: `/signature-genome-bins`
 }
 ```
 
-
 POST: `/signatures`
 ```
 {
@@ -24,4 +23,9 @@ POST: `/signatures-per-cancer`
 {
 	"sig_source": "cosmic"
 }
+```
+
+POST: `/data-listing`
+```
+{ }
 ```

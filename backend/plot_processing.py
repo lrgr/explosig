@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import io
+import re
 from constants import *
 
 class PlotProcessing():
@@ -12,7 +13,7 @@ class PlotProcessing():
     return output.getvalue()
 
   @staticmethod
-  def muts_by_sig_points(region_width, chromosome, sig_source, sig_restriction, projects):
+  def muts_by_sig_points(region_width, chromosome, sig_source, activity, projects):
     # validation
     if region_width < 10000: # will be too slow, stop processing
       return None
@@ -27,9 +28,12 @@ class PlotProcessing():
     regions_master_df = pd.DataFrame(index=sig_names, columns=region_names)
 
     for proj_id in projects:
-      ssm_filepath = os.path.join(SSM_W_SIGS_DIR, sig_source, sig_restriction, ("ssm.%s.tsv" % proj_id))
-      if os.path.isfile(ssm_filepath):
-        ssm_df = pd.read_csv(ssm_filepath, sep='\t')
+      ssm_filepath = os.path.join(SSM_W_SIGS_DIR, sig_source, activity, ("ssm.%s.tsv" % proj_id))
+      ssm_base_filepath = os.path.join(SSM_DIR, ("ssm.%s.tsv" % proj_id))
+      if os.path.isfile(ssm_filepath) and os.path.isfile(ssm_base_filepath):
+        ssm_base_df = pd.read_csv(ssm_base_filepath, sep='\t', index_col=0)
+        ssm_df = pd.read_csv(ssm_filepath, sep='\t', index_col=0)
+        ssm_df = ssm_base_df.join(ssm_df)
         # restrict to current chromosome
         ssm_df = ssm_df[ssm_df["chromosome"] == chromosome]
         # set region values
@@ -75,7 +79,11 @@ class PlotProcessing():
       if os.path.isdir(newpath) and not name.endswith('w_sigs'):
         listing[name] = PlotProcessing.data_listing_json(newpath)
       if os.path.isfile(newpath) and name.endswith(".tsv"):
-        files.append(name)
+        matches = re.match(EXTRACT_PROJ_RE, name)
+        if matches != None:
+          files.append(matches.group(1))
+        else:
+          files.append(name)
 
     if len(list(listing.keys())) == 0:
       return files
