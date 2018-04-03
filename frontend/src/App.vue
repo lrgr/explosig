@@ -1,23 +1,19 @@
 <template>
   <div id="app">
-    <NavBar></NavBar>
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <NavBar/>
+    <PlotGrid/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import PlotGrid from './components/PlotGrid.vue'
 import NavBar from './components/NavBar.vue'
-import SelectData from './components/SelectData.vue'
-import Spinner from './components/Spinner.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld,
     NavBar,
-    SelectData,
-    Spinner
+    PlotGrid
   }
 }
 </script>

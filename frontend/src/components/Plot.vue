@@ -1,38 +1,27 @@
 <template>
     <div>
         <div class="navbar">
-            <span class="title">Mutation Visualizations</span>
+            <span class="title">{{ plot_title }}</span>
             <div class="right-button-group">
-                <span class="button button-inverse" v-on:click="openOptions = 'data'">Data</span>
-                <span class="button button-inverse" v-on:click="openOptions = 'new-plot'">+ Plot</span>
+                <span class="button">Signatures</span>
+                <span class="button">Samples</span>
+                <span class="button">Clinical</span>
             </div>
         </div>
-        
-        <div class="modal" v-show="openOptions !== null">
-            <div class="modal-inner">
-                <span class="modal-close" v-on:click="openOptions = null">Close</span>
-                <Data v-show="openOptions === 'data'"></Data>
-                <PlotPicker v-show="openOptions === 'new-plot'"></PlotPicker>
-            </div>
-        </div>
-        <div class="modal-background" v-show="openOptions !== null" v-on:click="openOptions = null"></div>
   </div>
 </template>
 
 <script>
-import Data from './Data.vue'
-import PlotPicker from './PlotPicker.vue'
 
 export default {
-  name: 'NavBar',
+  name: 'Plot',
   data: function() { 
         return {
             openOptions: null
         };
   },
   components: {
-      Data,
-      PlotPicker
+      
   }
 }
 </script>
@@ -44,7 +33,7 @@ export default {
 
 .navbar {
     width: 100%;
-    background-color: $color-gray;
+    background-color: $color-lgray;
     padding: 0.5rem 0rem;
 }
 
@@ -89,15 +78,12 @@ span.button {
     width: 80%;
     position: absolute;
     background-color: $color-white;
-    
+
     .modal-inner {
-        padding: 1rem;
-        box-sizing: border-box;
-        height: 100%;
+        margin: 1rem;
 
         .modal-close {
-            position: absolute;
-            right: 1rem;
+            float: right;
             cursor: pointer;
         }
     }

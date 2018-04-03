@@ -1,0 +1,28 @@
+filenames: 
+	- ssm_base: ssm_base\..*\.tsv
+		- rowname: [0-9]+ # numeric id
+		- colnames: 
+      - donor_id
+      - chromosome
+      - chromosome_start
+      - assembly_version
+      - mutation_type
+      - reference_genome_allele
+      - mutated_to_allele
+      - sequencing_strategy
+	- ssm: ssm\..*\.tsv
+		- rowname: [0-9]+ # numeric id
+		- colnames: 
+      - donor_id
+      - chromosome
+      - chromosome_start
+      - assembly_version
+      - mutation_type
+      - reference_genome_allele
+      - mutated_to_allele
+      - sequencing_strategy
+      - context
+      - mutation_count
+      - num_reads
+      - distance_to_prev
+      - kataegis

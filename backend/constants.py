@@ -3,10 +3,18 @@ import re
 
 DATA_DIR = 'data'
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed')
-SSM_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'ssm_w_sigs')
-SIGS_DIR = os.path.join(PROCESSED_DIR, 'sigs')
-DONOR_DIR = os.path.join(PROCESSED_DIR, 'donor_w_sigs')
 
+SIGS_DIR = os.path.join(PROCESSED_DIR, 'sigs')
+
+SSM_DIR = os.path.join(PROCESSED_DIR, 'ssm')
+SSM_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'ssm_w_sigs')
+DONOR_DIR = os.path.join(PROCESSED_DIR, 'donor')
+DONOR_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'donor_w_sigs')
+
+SIGS_FILENAME = 'signatures.tsv'
+SIGS_ACTIVE_FILENAME = 'active_binary.tsv'
+SSM_FILE_PREFIX = 'ssm'
+DONOR_FILE_PREFIX = 'donor'
 
 CHROMOSOMES = {
   '1': 249250621,
@@ -37,5 +45,4 @@ CHROMOSOMES = {
 }
 
 CHROMOSOME_RE = r'^(X|Y|M|[1-9]|1[0-9]|2[0-2])$'
-
 PROJ_RE = r'^[A-Z0-9]+-[A-Z0-9]+-[A-Z]+$'

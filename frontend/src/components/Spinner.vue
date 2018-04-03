@@ -23,6 +23,7 @@ export default {
 }
 
 .hollow-dots-spinner {
+    margin: 30px 0px;
     height: 15px;
     width: calc(30px * 3);
 }

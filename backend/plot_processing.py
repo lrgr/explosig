@@ -72,7 +72,7 @@ class PlotProcessing():
     files = []
     for name in os.listdir(curr_path):
       newpath = os.path.join(curr_path, name)
-      if os.path.isdir(newpath):
+      if os.path.isdir(newpath) and not name.endswith('w_sigs'):
         listing[name] = PlotProcessing.data_listing_json(newpath)
       if os.path.isfile(newpath) and name.endswith(".tsv"):
         files.append(name)
