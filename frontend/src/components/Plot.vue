@@ -1,12 +1,15 @@
 <template>
     <div>
-        <div class="navbar">
-            <span class="title">{{ plot_title }}</span>
+        <div class="optionsbar">
+            <span class="title">Plot Title</span>
             <div class="right-button-group">
                 <span class="button">Signatures</span>
                 <span class="button">Samples</span>
                 <span class="button">Clinical</span>
             </div>
+        </div>
+        <div class="plot">
+
         </div>
   </div>
 </template>
@@ -17,6 +20,7 @@ export default {
   name: 'Plot',
   data: function() { 
         return {
+            plot_title: "test",
             openOptions: null
         };
   },
@@ -31,27 +35,29 @@ export default {
 
 @import './../variables.scss';
 
-.navbar {
+.optionsbar {
     width: 100%;
     background-color: $color-lgray;
     padding: 0.5rem 0rem;
+
+    span.title {
+        text-decoration: none;
+        color: $color-white;
+        font-size: 1.2rem;
+        margin: 0 1rem;
+    }
+    .right-button-group {
+        float: right;
+        margin: 0.2rem 0.5rem;
+    }
 }
 
-span.title {
-    text-decoration: none;
-    color: $color-white;
-    font-size: 1.5rem;
-    margin: 0 1rem;
-}
-.right-button-group {
-    float: right;
-    margin: 0.3rem 0.5rem;
-}
 span.button {
     color: $color-white;
     background-color: $color-darkgray;
-    margin: 0rem 0.5rem;
-    padding: 0.3rem;
+    margin: 0rem 0.4rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
     border-radius: 0.2rem;
     cursor: pointer;
 
@@ -60,32 +66,8 @@ span.button {
         color: $color-darkgray;
     }
 }
-.modal-background {
-    z-index: 1;
-    top: 0;
-    left: 0;
-    position: absolute;
-    width: 100%;
-    height: 100vh;
-    background-color: black;
-    opacity: 0.4;
-}
-.modal {
-    z-index: 2;
-    top: 10vh;
-    left: 10%;
-    height: 80vh;
-    width: 80%;
-    position: absolute;
-    background-color: $color-white;
-
-    .modal-inner {
-        margin: 1rem;
-
-        .modal-close {
-            float: right;
-            cursor: pointer;
-        }
-    }
+.plot {
+    border: 1px solid $color-lgray;;
+    height: 25rem;
 }
 </style>
