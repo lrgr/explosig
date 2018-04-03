@@ -1,31 +1,54 @@
 <template>
     <div>
-        <div class="optionsbar">
+        <div class="options-bar">
             <span class="title">Plot Title</span>
             <div class="right-button-group">
-                <span class="button">Signatures</span>
-                <span class="button">Samples</span>
-                <span class="button">Clinical</span>
+                <span class="button" v-on:click="toggleTab('signatures')">Signatures</span>
+                <span class="button" v-on:click="toggleTab('samples')">Samples</span>
+                <span class="button" v-on:click="toggleTab('clinical')">Clinical</span>
             </div>
         </div>
-        <div class="plot">
 
+        <div class="plot">
+            <div class="plot-options" v-show="plotOptions.show">
+                <PlotOptions v-bind:currentTab="plotOptions.currentTab" />
+            </div>
+            <p>Hello</p>
         </div>
+
+
+        
   </div>
 </template>
 
 <script>
 
+import PlotOptions from './PlotOptions.vue'
+
 export default {
   name: 'Plot',
   data: function() { 
         return {
-            plot_title: "test",
-            openOptions: null
+            plotTitle: "test",
+            plotOptions: {
+                show: false,
+                currentTab: null
+            }
         };
   },
+  methods: {
+        toggleTab: function(tabname) {
+            if(this.plotOptions.currentTab == tabname && this.plotOptions.show) {
+                this.plotOptions.show = false;
+            } else {
+                this.plotOptions.currentTab = tabname;
+                this.plotOptions.show = true;
+            }
+        },
+
+  },
   components: {
-      
+      PlotOptions
   }
 }
 </script>
@@ -35,7 +58,7 @@ export default {
 
 @import './../variables.scss';
 
-.optionsbar {
+.options-bar {
     width: 100%;
     background-color: $color-lgray;
     padding: 0.5rem 0rem;
@@ -69,5 +92,15 @@ span.button {
 .plot {
     border: 1px solid $color-lgray;;
     height: 25rem;
+    position:relative;
+
+    .plot-options {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.7);
+    }
 }
 </style>
