@@ -44,6 +44,8 @@ export default {
     flex-direction: column;
     h2 {
         flex-shrink: 0;
+        margin: 0.3rem;
+        display: inline-block;
     }
     ul {
         box-sizing: border-box;

@@ -6,19 +6,15 @@
                 <span class="button" v-on:click="toggleTab('signatures')">Signatures</span>
                 <span class="button" v-on:click="toggleTab('samples')">Samples</span>
                 <span class="button" v-on:click="toggleTab('clinical')">Clinical</span>
-                <span class="button button-inverse" v-if="plotOptions.unsaved">Save</span>
+                <span class="button button-inverse" v-if="plotOptions.unsaved" v-on:click="updatePlot()">Update</span>
             </div>
         </div>
 
         <div class="plot">
             <div class="plot-options" v-show="plotOptions.show">
-                <PlotOptions :currentTab="plotOptions.currentTab" v-on:unsaved="plotOptions.unsaved = true" />
+                <PlotOptions :currentTab="plotOptions.currentTab" v-on:unsaved="dataOptions = $event"/>
             </div>
-            <p>Hello</p>
         </div>
-
-
-        
   </div>
 </template>
 
@@ -35,7 +31,8 @@ export default {
                 show: false,
                 unsaved: false,
                 currentTab: null
-            }
+            },
+            dataOptions: null
         };
   },
   methods: {
@@ -47,7 +44,19 @@ export default {
                 this.plotOptions.show = true;
             }
         },
+        updatePlot() {
+            this.plotOptions.unsaved = false;
+            this.plotOptions.show = false;
 
+        }
+  },
+  watch: {
+      dataOptions: {
+        handler: function(val) {
+          this.plotOptions.unsaved = true;
+        },
+        deep: true
+      }
   },
   components: {
       PlotOptions
@@ -102,7 +111,7 @@ span.button {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(255, 255, 255, 0.7);
+        background-color: rgba(255, 255, 255, 0.6);
     }
 }
 </style>

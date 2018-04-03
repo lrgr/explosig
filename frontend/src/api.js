@@ -8,4 +8,7 @@ export default class API {
             return response.json();
         });
     }
+    static fetchGenomeSignatureBins(dataOptions) {
+
+    }
 }

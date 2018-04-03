@@ -94,10 +94,11 @@ span.button {
         padding: 1rem;
         box-sizing: border-box;
         height: 100%;
+        overflow-y: scroll;
 
         .modal-close {
             position: absolute;
-            right: 1rem;
+            right: 2rem;
             cursor: pointer;
         }
     }
