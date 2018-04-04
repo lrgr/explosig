@@ -1,5 +1,5 @@
 from sanic import Sanic, response
-from constants import *
+from web_constants import *
 from validation_utils import *
 from plot_processing import PlotProcessing
 
@@ -9,11 +9,10 @@ app = Sanic()
 async def route_signature_genome_bins(req):
   region_width = int(json_or(req, 'regionWidth', 1000000, r'^\d+$'))
   chromosome = str(json_or(req, 'chromosome', "1", CHROMOSOME_RE))
-  sig_source = json_or(req, 'sigSource', "cosmic", r'^[a-zA-Z0-9]+$')
-  activity = json_or(req, 'activityLevel', "all", r'^(all|active)$')
-  projects = json_or(req, 'ssmSources', ["PCAWG-BRCA-EU", "PCAWG-LIHC-US"], PROJ_RE)
+  signatures = json_or(req, 'signatures', ["COSMIC 1"], r'.*')
+  projects = json_or(req, 'sources', ["PCAWG-BRCA-EU", "PCAWG-LIHC-US"], PROJ_RE)
 
-  output = PlotProcessing.muts_by_sig_points(region_width, chromosome, sig_source, activity, projects)
+  output = PlotProcessing.muts_by_sig_points(region_width, chromosome, signatures, projects)
   length = str.encode(output)
   header = HEADERS
   header['Content-Length'] = length

@@ -2,10 +2,12 @@ import pandas as pd
 import os
 import io
 import re
-from constants import *
+import sys
+import json
+from web_constants import *
 
 parent_dir_name = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(parent_dir_name + "/signature-computation")
+sys.path.append(parent_dir_name + "/../signature-computation")
 from signatures import Signatures
 from constants import *
 
@@ -43,11 +45,12 @@ class PlotProcessing():
         # set signature values
         # compute exposures
         counts_df = donor_df.drop(columns=[TOBACCO_BINARY, TOBACCO_INTENSITY, ALCOHOL_BINARY])
+        counts_df = counts_df.dropna(axis=0, how='any')
         exps_df = signatures.get_exposures(counts_df)
         # compute assignments
         assignments_df = signatures.get_assignments(exps_df)
         # add signature column
-        # TODO
+        ssm_df['signature'] = ssm_df.apply(lambda row: assignments_df.loc[row[DONOR_ID], row[CONTEXT]] if pd.notnull(row[CONTEXT]) else None, axis=1)
         
         # aggregate
         groups = ssm_df.groupby(['region', 'signature'])
@@ -59,26 +62,21 @@ class PlotProcessing():
     # finalize
     regions_master_df.fillna(value=0, inplace=True)
     regions_master_df[list(regions_master_df.columns.values)] = regions_master_df[list(regions_master_df.columns.values)].astype(int)
-    print(regions_master_df.shape)
     return PlotProcessing.pd_as_file(regions_master_df.transpose())
 
   @staticmethod
-  def sigs(sig_source):
-    sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "signatures.tsv")
-    if not os.path.isfile(sig_source_filepath):
-      return None
-    
-    sig_df = pd.read_csv(sig_source_filepath, sep='\t')
+  def sigs():
+    sig_df = pd.read_csv(SIGS_FILE, sep='\t', index_col=0)
     return PlotProcessing.pd_as_file(sig_df, index_val=False)
 
   @staticmethod
   def sigs_per_cancer(sig_source):
-    active_sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "active_binary.tsv")
+    active_sig_source_filepath = os.path.join(SIG_PRESETS_DIR, sig_source + ".json")
     if not os.path.isfile(active_sig_source_filepath):
       return None
-    
-    active_sig_df = pd.read_csv(active_sig_source_filepath, sep='\t')
-    return PlotProcessing.pd_as_file(active_sig_df, index_val=False)
+    with open(active_sig_source_filepath) as data_file:    
+      active_sigs = json.load(data_file)
+    return active_sigs
 
   @staticmethod
   def data_listing_json_aux(curr_path = PROCESSED_DIR):
@@ -93,10 +91,10 @@ class PlotProcessing():
           matches = re.match(EXTRACT_PROJ_RE, name)
           if matches != None:
             files.append(matches.group(1))
-          else:
-            files.append(name)
         elif name.endswith(".json"):
-          files.append(name[:-5])
+          sig_source = name[:-5]
+          source_preset = PlotProcessing.sigs_per_cancer(sig_source)
+          files.append({ 'name': sig_source, 'preset': source_preset })
 
     if len(list(listing.keys())) == 0:
       return files
@@ -105,10 +103,10 @@ class PlotProcessing():
 
   @staticmethod
   def data_listing_json():
+    signatures = Signatures(SIGS_FILE)
     return {
-      "ssm": PlotProcessing.data_listing_json_aux(SSM_DIR),
-      "donor": PlotProcessing.data_listing_json_aux(DONOR_DIR),
+      "sources": PlotProcessing.data_listing_json_aux(SSM_DIR),
       "sig_presets": PlotProcessing.data_listing_json_aux(SIG_PRESETS_DIR),
-      "sigs": 
+      "sigs": signatures.get_all_names()
     }
 
