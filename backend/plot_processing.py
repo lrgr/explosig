@@ -22,7 +22,7 @@ class PlotProcessing():
     if not os.path.isfile(sig_source_filepath):
       return None
     
-    sig_names = list(pd.read_csv(sig_source_filepath, sep='\t')["name"].unique())
+    sig_names = list(pd.read_csv(sig_source_filepath, sep='\t', index_col=0).index.values)
     region_names = list(range(0, CHROMOSOMES[chromosome], region_width))
     # regions_master_df: sigs x regions
     regions_master_df = pd.DataFrame(index=sig_names, columns=region_names)

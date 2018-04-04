@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="options-bar">
-            <span class="title">Plot Title</span>
+            <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
                 <span class="button" v-on:click="toggleTab('signatures')">Signatures</span>
                 <span class="button" v-on:click="toggleTab('samples')">Samples</span>
@@ -14,6 +14,7 @@
             <div class="plot-options" v-show="plotOptions.show">
                 <PlotOptions :currentTab="plotOptions.currentTab" v-on:unsaved="dataOptions = $event"/>
             </div>
+            <component v-bind:is="this.plotType" v-bind:dataOptions="this.dataOptions" ref="innerPlot"></component>
         </div>
   </div>
 </template>
@@ -22,11 +23,13 @@
 
 import PlotOptions from './PlotOptions.vue'
 
+import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
+
 export default {
   name: 'Plot',
+  props: ['plotType', 'plotTitle'],
   data: function() { 
         return {
-            plotTitle: "test",
             plotOptions: {
                 show: false,
                 unsaved: false,
@@ -47,7 +50,7 @@ export default {
         updatePlot() {
             this.plotOptions.unsaved = false;
             this.plotOptions.show = false;
-
+            this.$refs.innerPlot.updatePlot()
         }
   },
   watch: {
@@ -59,7 +62,8 @@ export default {
       }
   },
   components: {
-      PlotOptions
+      PlotOptions,
+      SignatureGenomeBinsPlot
   }
 }
 </script>

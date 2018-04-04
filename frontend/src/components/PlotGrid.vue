@@ -1,6 +1,11 @@
 <template>
     <div class="plot-grid">
-        <Plot v-for="plot in plots" :item="plot" :key="plot.id" class="item"></Plot>
+        <Plot v-for="plot in plots" 
+            :key="plot.id" 
+            :plotType="'SignatureGenomeBinsPlot'" 
+            :plotTitle="'Manhattan Plot with Signatures'"
+            class="item"
+        ></Plot>
         <div class="spinner-wrapper">
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
