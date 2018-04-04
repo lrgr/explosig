@@ -9,7 +9,7 @@ class PlotProcessing():
   @staticmethod
   def pd_as_file(df, index_val=True):
     output = io.StringIO()
-    df.to_csv(output, sep='\t', index=index_val)
+    df.to_csv(output, index=index_val)
     return output.getvalue()
 
   @staticmethod
@@ -49,7 +49,7 @@ class PlotProcessing():
     # finalize
     regions_master_df.fillna(value=0, inplace=True)
     regions_master_df[list(regions_master_df.columns.values)] = regions_master_df[list(regions_master_df.columns.values)].astype(int)
-
+    print(regions_master_df.shape)
     return PlotProcessing.pd_as_file(regions_master_df)
 
   @staticmethod

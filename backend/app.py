@@ -5,11 +5,8 @@ from plot_processing import PlotProcessing
 
 app = Sanic()
 
-HEADERS = { 'Access-Control-Allow-Origin': '*' }
-
 @app.post('/signature-genome-bins')
 async def route_signature_genome_bins(req):
-  print(req.body)
   region_width = int(json_or(req, 'regionWidth', 1000000, r'^\d+$'))
   chromosome = str(json_or(req, 'chromosome', "1", CHROMOSOME_RE))
   sig_source = json_or(req, 'sigSource', "cosmic", r'^[a-zA-Z0-9]+$')
@@ -17,8 +14,10 @@ async def route_signature_genome_bins(req):
   projects = json_or(req, 'ssmSources', ["PCAWG-BRCA-EU", "PCAWG-LIHC-US"], PROJ_RE)
 
   output = PlotProcessing.muts_by_sig_points(region_width, chromosome, sig_source, activity, projects)
-
-  return response.text(output, headers=HEADERS)
+  length = str.encode(output)
+  header = HEADERS
+  header['Content-Length'] = length
+  return response.text(output, headers=header, content_type='text/csv')
 
 @app.post('/signatures')
 async def route_signatures(req):
