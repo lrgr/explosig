@@ -36,7 +36,7 @@ export default {
       drawPlot: function() {
           console.log("drawing");
           var vm = this;
-
+          
           var x = d3.scaleLinear().range([0, this.width]);
           var y = d3.scaleLinear().range([this.height, 0]);
           var c20 = d3.scaleOrdinal(d3.schemeDark2);
@@ -45,6 +45,8 @@ export default {
           var yMax = d3.max(this.plotData.map(row => d3.max(Object.values(row.vals).map(val => parseInt(val)))));
           x.domain([0, xMax]);
           y.domain([0, yMax]);
+
+          d3.select("#plot").select("svg").remove();
 
           d3.select("#plot")
             .append("svg")

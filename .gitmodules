@@ -1,0 +1,4 @@
+
+[submodule "signature-computation"]
+	path = signature-computation
+	url = http://github.com/keller-mark/signature-computation

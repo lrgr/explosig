@@ -1,6 +1,0 @@
-filenames: 
-      - donor: donor\..*\.tsv
-		- rowname: [0-9]+ # numeric id
-		- colnames: 
-                  - tobacco
-                  - alcohol

@@ -5,11 +5,11 @@ DATA_DIR = 'data'
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed')
 
 SIGS_DIR = os.path.join(PROCESSED_DIR, 'sigs')
+SIGS_FILE = os.path.join(SIGS_DIR, 'signatures.tsv')
+SIG_PRESETS_DIR = os.path.join(SIGS_DIR, 'presets')
 
 SSM_DIR = os.path.join(PROCESSED_DIR, 'ssm')
-SSM_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'ssm_w_sigs')
 DONOR_DIR = os.path.join(PROCESSED_DIR, 'donor')
-DONOR_W_SIGS_DIR = os.path.join(PROCESSED_DIR, 'donor_w_sigs')
 
 SIGS_FILENAME = 'signatures.tsv'
 SIGS_ACTIVE_FILENAME = 'active_binary.tsv'

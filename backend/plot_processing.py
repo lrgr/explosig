@@ -13,7 +13,7 @@ class PlotProcessing():
     return output.getvalue()
 
   @staticmethod
-  def muts_by_sig_points(region_width, chromosome, sig_source, activity, projects):
+  def muts_by_sig_points(region_width, chromosome, sigs, projects):
     # validation
     if region_width < 10000: # will be too slow, stop processing
       return None
@@ -71,24 +71,34 @@ class PlotProcessing():
     return PlotProcessing.pd_as_file(active_sig_df, index_val=False)
 
   @staticmethod
-  def data_listing_json(curr_path = PROCESSED_DIR):
+  def data_listing_json_aux(curr_path = PROCESSED_DIR):
     listing = {}
     files = []
     for name in os.listdir(curr_path):
       newpath = os.path.join(curr_path, name)
-      if os.path.isdir(newpath) and not name.endswith('w_sigs'):
-        listing[name] = PlotProcessing.data_listing_json(newpath)
-      if os.path.isfile(newpath) and name.endswith(".tsv"):
-        matches = re.match(EXTRACT_PROJ_RE, name)
-        if matches != None:
-          files.append(matches.group(1))
-        else:
-          files.append(name)
+      if os.path.isdir(newpath):
+        listing[name] = PlotProcessing.data_listing_json_aux(newpath)
+      if os.path.isfile(newpath):
+        if name.endswith(".tsv"):
+          matches = re.match(EXTRACT_PROJ_RE, name)
+          if matches != None:
+            files.append(matches.group(1))
+          else:
+            files.append(name)
+        elif name.endswith(".json"):
+          files.append(name[:-5])
 
     if len(list(listing.keys())) == 0:
       return files
     else:
       return listing
 
-
+  @staticmethod
+  def data_listing_json():
+    return {
+      "ssm": PlotProcessing.data_listing_json_aux(SSM_DIR),
+      "donor": PlotProcessing.data_listing_json_aux(DONOR_DIR),
+      "sig_presets": PlotProcessing.data_listing_json_aux(SIG_PRESETS_DIR),
+      "sigs": 
+    }
 
