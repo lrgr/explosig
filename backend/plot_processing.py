@@ -4,6 +4,11 @@ import io
 import re
 from constants import *
 
+parent_dir_name = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(parent_dir_name + "/signature-computation")
+from signatures import Signatures
+from constants import *
+
 class PlotProcessing():
 
   @staticmethod
@@ -14,31 +19,36 @@ class PlotProcessing():
 
   @staticmethod
   def muts_by_sig_points(region_width, chromosome, sigs, projects):
+    signatures = Signatures(SIGS_FILE, chosen_sigs=sigs)
     # validation
     if region_width < 10000: # will be too slow, stop processing
       return None
-    # more validation
-    sig_source_filepath = os.path.join(SIGS_DIR, sig_source, "signatures.tsv")
-    if not os.path.isfile(sig_source_filepath):
-      return None
     
-    sig_names = list(pd.read_csv(sig_source_filepath, sep='\t', index_col=0).index.values)
+    sig_names = signatures.get_chosen_names()
     region_names = list(range(0, CHROMOSOMES[chromosome], region_width))
     # regions_master_df: sigs x regions
     regions_master_df = pd.DataFrame(index=sig_names, columns=region_names)
 
     for proj_id in projects:
-      ssm_filepath = os.path.join(SSM_W_SIGS_DIR, sig_source, activity, ("ssm.%s.tsv" % proj_id))
-      ssm_base_filepath = os.path.join(SSM_DIR, ("ssm.%s.tsv" % proj_id))
-      if os.path.isfile(ssm_filepath) and os.path.isfile(ssm_base_filepath):
-        ssm_base_df = pd.read_csv(ssm_base_filepath, sep='\t', index_col=0)
+      ssm_filepath = os.path.join(SSM_DIR, ("ssm.%s.tsv" % proj_id))
+      donor_filepath = os.path.join(DONOR_DIR, ("donor.%s.tsv" % proj_id))
+      if os.path.isfile(ssm_filepath) and os.path.isfile(donor_filepath):
         ssm_df = pd.read_csv(ssm_filepath, sep='\t', index_col=0)
-        ssm_df = ssm_base_df.join(ssm_df)
+        donor_df = pd.read_csv(donor_filepath, sep='\t', index_col=0)
         # restrict to current chromosome
-        ssm_df = ssm_df[ssm_df["chromosome"] == chromosome]
+        ssm_df = ssm_df[ssm_df[CHR] == chromosome]
         # set region values
-        ssm_df['region'] = ssm_df.apply(lambda row: row['chromosome_start'] // region_width * region_width, axis=1) 
+        ssm_df['region'] = ssm_df.apply(lambda row: row[POS] // region_width * region_width, axis=1) 
 
+        # set signature values
+        # compute exposures
+        counts_df = donor_df.drop(columns=[TOBACCO_BINARY, TOBACCO_INTENSITY, ALCOHOL_BINARY])
+        exps_df = signatures.get_exposures(counts_df)
+        # compute assignments
+        assignments_df = signatures.get_assignments(exps_df)
+        # add signature column
+        # TODO
+        
         # aggregate
         groups = ssm_df.groupby(['region', 'signature'])
         counts = groups.size().reset_index(name='counts')   

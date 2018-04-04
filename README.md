@@ -1,5 +1,10 @@
 # Interactive Mutation Visualizations with Mutation Signatures
 
+### Setup
+```
+git submodule update --init --recursive
+```
+
 ### Dependencies
 - backend
   - python

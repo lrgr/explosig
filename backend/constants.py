@@ -12,7 +12,6 @@ SSM_DIR = os.path.join(PROCESSED_DIR, 'ssm')
 DONOR_DIR = os.path.join(PROCESSED_DIR, 'donor')
 
 SIGS_FILENAME = 'signatures.tsv'
-SIGS_ACTIVE_FILENAME = 'active_binary.tsv'
 SSM_FILE_PREFIX = 'ssm'
 DONOR_FILE_PREFIX = 'donor'
 
