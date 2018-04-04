@@ -1,6 +1,6 @@
 <template>
     <div>
-        <svg id="plot"></svg>
+        <div id="plot"></div>
     </div>
 </template>
 
@@ -29,7 +29,6 @@ export default {
       updatePlot: function() {
           var vm = this;
           API.fetchGenomeSignatureBins(this.dataOptions).then(function(data) {
-              console.log(data[0]);
               vm.plotData = data;
               vm.drawPlot();
           });
@@ -40,33 +39,33 @@ export default {
 
           var x = d3.scaleLinear().range([0, this.width]);
           var y = d3.scaleLinear().range([this.height, 0]);
+          var c20 = d3.scaleOrdinal(d3.schemeDark2);
 
-          var xMax = d3.max(Object.keys(this.plotData[0]).map(key => +key));
-          var yMax = this.plotData.reduce(
-              function(a, curr) { 
-                  d3.max( [a, d3.max(
-                      Object.keys(curr).map(key => +curr[key])
-                    )] ) 
-              }, 
-              0
-            );
+          var xMax = d3.max(this.plotData.map(row => parseInt(row.name)));
+          var yMax = d3.max(this.plotData.map(row => d3.max(Object.values(row.vals).map(val => parseInt(val)))));
           x.domain([0, xMax]);
           y.domain([0, yMax]);
 
           d3.select("#plot")
+            .append("svg")
+                .attr("width", this.width)
+                .attr("height", this.height)
             .selectAll("g")
             .data(this.plotData)
             .enter().append("g")
+                .attr("transform", function(d) { return "translate(" + x(parseInt(d.name)) + ",0)"; })
                 .selectAll(".bar")
                 .data(function(d, i, j) { 
-                    return Object.keys(d).map(key => [key, d[key]]);
+                    return Object.values(d.vals);
                 })
                 .enter().append("rect")
                     .attr("class", "bar")
-                    .attr("x", function(d) { return x(+d[0]); })
-                    .attr("y", function(d) { return y(+d[1]); })
+                    .attr("x", 0)
+                    .attr("y", function(d) { return y(+d); })
                     .attr("width", function(d) { return 20; })
-                    .attr("height", function(d) { return vm.height - y(+d[1]); });
+                    .attr("height", function(d) { return vm.height - y(+d); })
+                    .attr("opacity", 0.5)
+                    .attr("fill", c20);
       }
   }
 }
@@ -80,7 +79,7 @@ export default {
 #plot {
     width: 100%;
     height: 25rem;
-    border: 1px solid red;
+    border: 0px solid red;
 }
 
 </style>
