@@ -106,7 +106,7 @@ class PlotProcessing():
     signatures = Signatures(SIGS_FILE)
     return {
       "sources": PlotProcessing.data_listing_json_aux(SSM_DIR),
-      "sig_presets": PlotProcessing.data_listing_json_aux(SIG_PRESETS_DIR),
-      "sigs": signatures.get_all_names()
+      "sigs": signatures.get_all_names(),
+      "sig_presets": PlotProcessing.data_listing_json_aux(SIG_PRESETS_DIR)
     }
 

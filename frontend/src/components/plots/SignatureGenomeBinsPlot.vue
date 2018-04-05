@@ -45,6 +45,11 @@ export default {
           var yMax = d3.max(this.plotData.map(row => d3.max(Object.values(row.vals).map(val => parseInt(val)))));
           x.domain([0, xMax]);
           y.domain([0, yMax]);
+          var barWidth = 0;
+          if(this.plotData.length >= 1) {
+            barWidth = vm.width / Object.values(this.plotData[0].vals).length;
+          }
+          console.log(barWidth);
 
           d3.select("#plot").select("svg").remove();
 
@@ -64,7 +69,7 @@ export default {
                     .attr("class", "bar")
                     .attr("x", 0)
                     .attr("y", function(d) { return y(+d); })
-                    .attr("width", function(d) { return 20; })
+                    .attr("width", barWidth)
                     .attr("height", function(d) { return vm.height - y(+d); })
                     .attr("opacity", 0.5)
                     .attr("fill", c20);

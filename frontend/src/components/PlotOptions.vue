@@ -1,19 +1,23 @@
 <template>
     <div class="plot-options">
         <div class="tab" v-if="currentTab === 'signatures'">
-            <h3>Signature Sources</h3>
+            <h3>Presets</h3>
             <div class="option-group">
-                <div v-for="source in sigSources" :key="source">
-                    <input type="radio" :value="source" :id="source" name="sigSources" v-model="options.sigSource">
-                    <label :for="source">{{ source }}</label>
+                <div v-for="preset in sigPresets" :key="preset.name" class="preset-buttons">
+                    <button v-on:click="showPreset = preset.name">{{ preset.name }}</button>
+                    <div v-if="preset.name === showPreset" class="preset-sub-buttons">
+                        <div v-for="cancerType in Object.keys(preset.preset)" :key="cancerType">
+                            <button v-on:click="options.signatures = preset.preset[cancerType]">{{ cancerType }}</button>
+                        </div>
+                    </div>
                 </div>
                 <Spinner v-if="loading" class="spinner"></Spinner>
             </div>
-            <h3>Activity</h3>
+            <h3>Signatures</h3>
             <div class="option-group">
-                <div v-for="level in activityLevels" :key="level">
-                    <input type="radio" :value="level" :id="level" name="activityLevels" v-model="options.activityLevel">
-                    <label :for="level">{{ level }}</label>
+                <div v-for="signature in signatures" :key="signature">
+                    <input type="checkbox" :value="signature" :id="signature" name="signatures" v-model="options.signatures">
+                    <label :for="signature">{{ signature }}</label>
                 </div>
                 <Spinner v-if="loading" class="spinner"></Spinner>
             </div>
@@ -22,19 +26,8 @@
             <h3>Samples</h3>
             <button class="inline" v-on:click="toggleSamples()">Toggle All</button>
             <div class="option-group">
-                <div v-for="source in ssmSources" :key="source">
-                    <input type="checkbox" :value="source" :id="source" name="ssmSources" v-model="options.ssmSources">
-                    <label :for="source">{{ source }}</label>
-                </div>
-                <Spinner v-if="loading" class="spinner"></Spinner>
-            </div>
-        </div>
-        <div class="tab" v-if="currentTab === 'clinical'">
-            <h3>Clinical</h3>
-            <button class="inline" v-on:click="toggleClinical()">Toggle All</button>
-            <div class="option-group">
-                <div v-for="source in donorSources" :key="source">
-                    <input type="checkbox" :value="source" :id="source" name="donorSources" v-model="options.donorSources">
+                <div v-for="source in sources" :key="source">
+                    <input type="checkbox" :value="source" :id="source" name="sources" v-model="options.sources">
                     <label :for="source">{{ source }}</label>
                 </div>
                 <Spinner v-if="loading" class="spinner"></Spinner>
@@ -57,16 +50,13 @@ export default {
       return {
           loading: true,
           options: {
-              sigSource: null,
-              ssmSources: [],
-              donorSources: [],
-              activityLevel: null
+              signatures: null,
+              sources: []
           },
-          sigSources: [],
-          ssmSources: [],
-          donorSources: [],
-          activityLevels: [],
-          activity: 'active'
+          signatures: [],
+          sources: [],
+          sigPresets: [],
+          showPreset: null
       };
   },
   mounted: function() {
@@ -76,25 +66,24 @@ export default {
       dataListing: function() {
           var vm = this;
           API.fetchDataListing().then(function(listing) {
-              vm.sigSources = Object.keys(listing.sigs);
-              vm.ssmSources = listing.ssm;
-              vm.donorSources = listing.donor;
-              vm.activityLevels = ["all", "active"];
+              vm.sources = listing.sources;
+              vm.signatures = listing.sigs;
+              vm.sigPresets = listing.sig_presets;
               vm.loading = false;
           });
       },
-      toggleSamples: function() {
-          if(this.options.ssmSources.length == this.ssmSources.length) {
-              this.options.ssmSources = [];
+      toggleSources: function() {
+          if(this.options.sources.length == this.sources.length) {
+              this.options.sources = [];
           } else {
-              this.options.ssmSources = this.ssmSources;
+              this.options.sources = this.sources;
           }
       },
-      toggleClinical: function() {
-          if(this.options.donorSources.length == this.donorSources.length) {
-              this.options.donorSources = [];
+      toggleSignatures: function() {
+          if(this.options.signatures.length == this.signatures.length) {
+              this.options.signatures = [];
           } else {
-              this.options.donorSources = this.donorSources;
+              this.options.signatures = this.signatures;
           }
       }
   },
@@ -133,6 +122,16 @@ export default {
                 margin-bottom: 0.2rem;
                 label {
                     margin-left: 0.5rem;
+                }
+            }
+            .preset-buttons {
+                > button {
+                    display: inline-block;
+                }
+                .preset-sub-buttons {
+                    > div {
+                        display: inline-block;
+                    }
                 }
             }
             .spinner {
