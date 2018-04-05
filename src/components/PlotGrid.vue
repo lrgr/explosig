@@ -1,9 +1,10 @@
 <template>
     <div class="plot-grid">
-        <Plot v-for="plot in plots" 
+        <Plot v-for="(plot, index) in plots" 
             :key="plot.id" 
             :plotType="plot.type" 
             :plotTitle="plot.title"
+            :plotIndex="index"
             class="item"
         ></Plot>
     </div>

@@ -13,7 +13,7 @@
             <div class="plot-options" v-show="plotOptions.show">
                 <PlotOptions :currentTab="plotOptions.currentTab" v-on:unsaved="dataOptions = $event"/>
             </div>
-            <component v-bind:is="this.plotType" v-bind:dataOptions="this.dataOptions" ref="innerPlot"></component>
+            <component v-bind:is="this.plotType" v-bind:dataOptions="this.dataOptions" ref="innerPlot" :plotIndex="this.plotIndex"></component>
         </div>
   </div>
 </template>
@@ -27,7 +27,7 @@ import KataegisPlot from './plots/KataegisPlot.vue'
 
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotTitle'],
+  props: ['plotType', 'plotTitle', 'plotIndex'],
   data: function() { 
         return {
             plotOptions: {
@@ -55,7 +55,7 @@ export default {
   },
   watch: {
       dataOptions: {
-        handler: function(val) {
+        handler: function() {
           this.plotOptions.unsaved = true;
         },
         deep: true

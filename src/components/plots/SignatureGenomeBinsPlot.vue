@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="plot"></div>
+        <div :id="this.plotID" class="plot-component"></div>
          <div class="spinner-wrapper">
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
@@ -14,7 +14,7 @@ import * as d3 from 'd3';
 
 export default {
   name: 'SignatureGenomeBinsPlot',
-  props: ['dataOptions'],
+  props: ['dataOptions', 'plotIndex'],
   components: {
       Spinner
   },
@@ -31,6 +31,9 @@ export default {
   computed: {
       height: function() {
           return 400 - this.margin.top - this.margin.bottom;
+      },
+      plotID: function() {
+          return 'plot_' + this.plotIndex;
       }
   },
   watch: {
@@ -41,7 +44,7 @@ export default {
   mounted: function() {
     let vm = this;
     vm.windowWidth = window.innerWidth;
-    window.addEventListener('resize', function(e) {
+    window.addEventListener('resize', function() {
         vm.windowWidth = window.innerWidth;
         if(vm.plotData != null) {
             vm.drawPlot();
@@ -76,9 +79,9 @@ export default {
             barWidth = (vm.width) / numBars;
           }
 
-          d3.select("#plot").select("svg").remove();
+          d3.select("#" + this.plotID).select("svg").remove();
 
-          vm.svg = d3.select("#plot")
+          vm.svg = d3.select("#" + this.plotID)
             .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -91,7 +94,7 @@ export default {
             .enter().append("g")
                 .attr("transform", function(d, i) { return "translate(" + i*barWidth + ",0)"; })
                 .selectAll(".bar-wrap")
-                .data(function(d, i, j) { 
+                .data(function(d) { 
                     return Object.values(d.vals);
                 })
                 .enter().append("rect")
