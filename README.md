@@ -1,20 +1,26 @@
-# Interactive Mutation Signature Visualization
-View here: [https://keller-mark.github.io/signature-visualization/](https://keller-mark.github.io/signature-visualization/)
+# Interactive Mutation Visualizations with Mutation Signatures
 
-#### Develpment
-Download data from [https://github.com/keller-mark/signature-computation/releases](https://github.com/keller-mark/signature-computation/releases) and move into `dist/data` directory.
+### Setup
 ```
-npm install -g yarn
-yarn install --production=false
-npm run prod
-npm run dev
+git submodule update --init --recursive
+git submodule foreach git pull origin master
 ```
-Open browser to [http://localhost:8080](http://localhost:8080)
 
+### Dependencies
+- backend
+  - python
+  - `pip install -r requirements.txt`
+- frontend
+  - node/python
+  - yarn (`npm install -g yarn`)
+  - `yarn install`
 
-#### Production
-```
-docker build . -t sigvis
-docker run -p 8080:80 sigvis
-```
-Open browser to [http://localhost:8080](http://localhost:8080)
+### Run
+- backend: [http://localhost:8000](http://localhost:8000)
+  ```
+  python app.py
+  ```
+- frontend: [http://localhost:8080](http://localhost:8080)
+  ```
+  yarn serve
+  ```
