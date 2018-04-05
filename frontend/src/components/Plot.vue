@@ -105,7 +105,6 @@ span.button {
 }
 .plot {
     border: 1px solid $color-lgray;;
-    height: 25rem;
     position:relative;
 
     .plot-options {

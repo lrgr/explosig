@@ -6,20 +6,15 @@
             :plotTitle="'Manhattan Plot with Signatures'"
             class="item"
         ></Plot>
-        <div class="spinner-wrapper">
-            <Spinner v-if="loading" class="spinner"></Spinner>
-        </div>
     </div>
 </template>
 
 <script>
-import Spinner from './Spinner.vue'
 import Plot from './Plot.vue'
 
 export default {
   name: 'PlotGrid',
   components: {
-    Spinner,
     Plot
   },
   data: function() {
@@ -39,14 +34,7 @@ export default {
 .plot-grid {
     border: 0px solid red;
     .item {
-        margin: 1rem;
-    }
-    .spinner-wrapper {
-        width: 100%;
-        margin: 40px 0px;
-        .spinner {
-            margin: 0 auto;
-        }
+        margin: 20px;
     }
 }
 
