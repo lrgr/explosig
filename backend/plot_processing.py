@@ -119,6 +119,7 @@ class PlotProcessing():
       ssm_filepath = os.path.join(SSM_DIR, ("ssm.%s.tsv" % proj_id))
       if os.path.isfile(ssm_filepath):
         ssm_df = pd.read_csv(ssm_filepath, sep='\t', index_col=0)
+        ssm_df = ssm_df.loc[ssm_df[CHR] == chromosome]
         katagis_df = ssm_df.loc[ssm_df[MUT_DIST_ROLLING_6] <= width][df_cols]
         df = df.append(katagis_df, ignore_index=True)
     return PlotProcessing.pd_as_file(df, index_val=False)

@@ -34,7 +34,7 @@ export default {
             margin: { top: 20, right: 20, bottom: 30, left: 40 },
             chromosomes: {},
             options: {
-                chromosome: "1"
+                chromosome: ""
             }
         };
   },
@@ -46,6 +46,12 @@ export default {
   watch: {
       windowWidth: function(val) {
           this.width = val - 40 - this.margin.left - this.margin.right;
+      },
+      options: {
+        handler: function() {
+          this.updatePlot();
+        },
+        deep: true
       }
   },
   mounted: function() {
@@ -65,6 +71,11 @@ export default {
       updatePlot: function() {
           var vm = this;
           vm.loading = true;
+          if(vm.options.chromosome == "") {
+              vm.options.chromosome = "1";
+          }
+          vm.dataOptions['chromosome'] = vm.options.chromosome;
+          
           API.fetchKataegis(this.dataOptions).then(function(data) {
             vm.plotData = data;
             vm.drawPlot();
@@ -85,7 +96,6 @@ export default {
               }
           }
           vm.plotData = data;
-          console.log(vm.plotData);
 
           var numSamples = Object.keys(vm.plotData).length;
           var x = d3.scaleLinear().range([0, this.width]);
@@ -120,7 +130,7 @@ export default {
                     .attr("y", 0)
                     .attr("width", 3)
                     .attr("height", barHeight)
-                    .attr("opacity", 1)
+                    .attr("opacity", 0.5)
                     .attr("fill", "blue");
       }
   }
