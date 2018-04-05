@@ -2,8 +2,8 @@
     <div class="plot-grid">
         <Plot v-for="plot in plots" 
             :key="plot.id" 
-            :plotType="'SignatureGenomeBinsPlot'" 
-            :plotTitle="'Manhattan Plot with Signatures'"
+            :plotType="plot.type" 
+            :plotTitle="plot.title"
             class="item"
         ></Plot>
     </div>
@@ -19,7 +19,13 @@ export default {
   },
   data: function() {
       return {
-          plots: [{}],
+          plots: [{
+              type: 'KataegisPlot',
+              title: 'Kataegis'
+          }, {
+              type: 'SignatureGenomeBinsPlot',
+              title: 'Manhattan Plot with Signatures'
+          }],
           loading: false
       };
   }

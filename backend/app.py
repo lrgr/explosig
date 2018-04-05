@@ -2,6 +2,7 @@ from sanic import Sanic, response
 from web_constants import *
 from validation_utils import *
 from plot_processing import PlotProcessing
+import json
 
 app = Sanic()
 
@@ -13,6 +14,17 @@ async def route_signature_genome_bins(req):
   projects = json_or(req, 'sources', ["PCAWG-BRCA-EU", "PCAWG-LIHC-US"], PROJ_RE)
 
   output = PlotProcessing.muts_by_sig_points(region_width, chromosome, signatures, projects)
+  length = str.encode(output)
+  header = HEADERS
+  header['Content-Length'] = length
+  return response.text(output, headers=header, content_type='text/csv')
+
+@app.post('/kataegis')
+async def route_kataegis(req):
+  chromosome = str(json_or(req, 'chromosome', "1", CHROMOSOME_RE))
+  projects = json_or(req, 'sources', ["PCAWG-BRCA-EU", "PCAWG-LIHC-US"], PROJ_RE)
+
+  output = PlotProcessing.kataegis(chromosome, projects)
   length = str.encode(output)
   header = HEADERS
   header['Content-Length'] = length
@@ -34,6 +46,14 @@ async def route_signatures_per_cancer(req):
 async def route_data_listing(req):
   output = PlotProcessing.data_listing_json()
   return response.json(output, headers=HEADERS)
+
+@app.post('/chromosomes')
+async def route_chromosome(req):
+  output = json.dumps(CHROMOSOMES)
+  length = str.encode(output)
+  header = HEADERS
+  header['Content-Length'] = length
+  return response.text(output, headers=HEADERS, content_type='application/json')
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=8000)

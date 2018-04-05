@@ -110,3 +110,19 @@ class PlotProcessing():
       "sig_presets": PlotProcessing.data_listing_json_aux(SIG_PRESETS_DIR)
     }
 
+  @staticmethod
+  def kataegis(chromosome, projects):
+    width = 1000
+    df_cols = [DONOR_ID, POS]
+    df = pd.DataFrame([], columns=df_cols)
+    for proj_id in projects:
+      ssm_filepath = os.path.join(SSM_DIR, ("ssm.%s.tsv" % proj_id))
+      if os.path.isfile(ssm_filepath):
+        ssm_df = pd.read_csv(ssm_filepath, sep='\t', index_col=0)
+        katagis_df = ssm_df.loc[ssm_df[MUT_DIST_ROLLING_6] <= width][df_cols]
+        df = df.append(katagis_df, ignore_index=True)
+    return PlotProcessing.pd_as_file(df, index_val=False)
+  
+  @staticmethod
+  def kataegis_rainfall(project, donor_id, chromosome):
+    pass

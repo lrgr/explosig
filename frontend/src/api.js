@@ -20,4 +20,18 @@ export default class API {
             return row;
         });
     }
+    static fetchKataegis(dataOptions) {
+        var url = API.api_base + "kataegis";
+        dataOptions['chromosome'] = '1';
+        console.log(JSON.stringify(dataOptions));
+        return d3.csv(url, { method: "POST", body: JSON.stringify(dataOptions) });
+    }
+
+    static fetchChromosomes() {
+        var url = API.api_base + "chromosomes";
+        return fetch(url, { method: "POST" })
+        .then(function(response) {
+            return response.json();
+        });
+    }
 }

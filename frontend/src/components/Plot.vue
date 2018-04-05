@@ -23,6 +23,7 @@
 import PlotOptions from './PlotOptions.vue'
 
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
+import KataegisPlot from './plots/KataegisPlot.vue'
 
 export default {
   name: 'Plot',
@@ -62,7 +63,8 @@ export default {
   },
   components: {
       PlotOptions,
-      SignatureGenomeBinsPlot
+      SignatureGenomeBinsPlot,
+      KataegisPlot
   }
 }
 </script>

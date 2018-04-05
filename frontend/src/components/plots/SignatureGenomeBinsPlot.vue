@@ -59,7 +59,6 @@ export default {
           });
       },
       drawPlot: function() {
-          console.log("drawing");
           var vm = this;
           
           var x = d3.scaleLinear().range([0, this.width]);
@@ -104,11 +103,14 @@ export default {
                     .attr("opacity", 0.5)
                     .attr("fill", c20);
             
-            
-          d3.select("#plot").select("svg")
-            .append("g")
-            .attr("transform", "translate(" + vm.margin.left + "," + (vm.height + vm.margin.top) + ")")
+          // x Axis
+          vm.svg.append("g")
+            .attr("transform", "translate(0," + vm.height + ")")
             .call(d3.axisBottom(x));
+
+          // y Axis
+          vm.svg.append("g")
+            .call(d3.axisLeft(y));
       }
   }
 }
@@ -118,24 +120,6 @@ export default {
 <style scoped lang="scss">
 
 @import './../../variables.scss';
-
-#plot {
-    width: 100%;
-    height: 400px;
-    border: 0px solid red;
-    svg {
-        border: 1px solid blue;
-    }
-}
-
-.spinner-wrapper {
-    width: 100%;
-    margin: 40px 0px;
-    position: absolute;
-    top: 0;
-    .spinner {
-        margin: 0 auto;
-    }
-}
+@import './plot_style.scss';
 
 </style>

@@ -14,6 +14,7 @@
                 <Spinner v-if="loading" class="spinner"></Spinner>
             </div>
             <h3>Signatures</h3>
+            <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
             <div class="option-group">
                 <div v-for="signature in signatures" :key="signature">
                     <input type="checkbox" :value="signature" :id="signature" name="signatures" v-model="options.signatures">
@@ -24,7 +25,7 @@
         </div>
         <div class="tab" v-if="currentTab === 'samples'">
             <h3>Samples</h3>
-            <button class="inline" v-on:click="toggleSamples()">Toggle All</button>
+            <button class="inline" v-on:click="toggleSources()">Toggle All</button>
             <div class="option-group">
                 <div v-for="source in sources" :key="source">
                     <input type="checkbox" :value="source" :id="source" name="sources" v-model="options.sources">
@@ -50,7 +51,7 @@ export default {
       return {
           loading: true,
           options: {
-              signatures: null,
+              signatures: [],
               sources: []
           },
           signatures: [],
