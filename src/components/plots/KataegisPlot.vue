@@ -5,10 +5,7 @@
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            <select v-model="options.chromosome">
-                <option disabled value="">Chromosome</option>
-                <option v-for="chr in Object.keys(chromosomes)" :key="chr" v-bind:value="chr">chr{{ chr }}</option>
-            </select>
+            <ChromosomeSelect v-on:chromosome-select="setChromosome($event)" ref="chrSelect"/>
         </div>
     </div>
 </template>
@@ -16,13 +13,16 @@
 <script>
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
+import ChromosomeSelect from './../ChromosomeSelect.vue'
+
 import * as d3 from 'd3';
 
 export default {
   name: 'KataegisPlot',
   props: ['dataOptions', 'plotIndex'],
   components: {
-      Spinner
+      Spinner,
+      ChromosomeSelect
   },
   data: function() { 
         return {
@@ -32,7 +32,6 @@ export default {
             width: 0,
             svg: null,
             margin: { top: 20, right: 20, bottom: 30, left: 40 },
-            chromosomes: {},
             options: {
                 chromosome: ""
             }
@@ -51,7 +50,7 @@ export default {
           this.width = val - 40 - this.margin.left - this.margin.right;
       },
       options: {
-        handler: function() {
+        handler: function(val) {
           this.updatePlot();
         },
         deep: true
@@ -66,11 +65,18 @@ export default {
             vm.drawPlot();
         }
     });
-    API.fetchChromosomes().then(function(chromosomes) {
-        vm.chromosomes = chromosomes;
-    });
   },
   methods: {
+      getPlotElem: function() {
+          return "#" + this.plotID;
+      },
+      setChromosome: function(chr) {
+          console.log(chr);
+          this.options.chromosome = chr;
+      },
+      getChromosome: function(name) {
+          return this.$refs.chrSelect.getChromosome(name);
+      },
       updatePlot: function() {
           var vm = this;
           vm.loading = true;
@@ -89,6 +95,7 @@ export default {
       drawPlot: function() {
           var vm = this;
           var data = {};
+          console.log(vm.plotData);
           for(var i = 0; i < vm.plotData.length; i++) {
               var donor_id = vm.plotData[i]["Donor ID"];
               var pos = vm.plotData[i]["Chromosome Start"];
@@ -104,14 +111,19 @@ export default {
           var x = d3.scaleLinear().range([0, this.width]);
           var y = d3.scaleBand().range([this.height, 0]).padding(0.1);
         
-          x.domain([0, vm.chromosomes[vm.options.chromosome]]);
+          x.domain([0, vm.getChromosome(vm.options.chromosome)]);
           y.domain([0, numSamples]);
 
           var barHeight = vm.height / numSamples;
 
-          d3.select("#" + this.plotID).select("svg").remove();
+          var plotElemID = this.getPlotElem();
+          console.log(plotElemID);
+          
+          console.log(data);
 
-          vm.svg = d3.select("#" + this.plotID)
+          d3.select(plotElemID).select("svg").remove();
+
+          vm.svg = d3.select(plotElemID)
             .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)

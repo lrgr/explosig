@@ -35,7 +35,7 @@ export default {
                 unsaved: false,
                 currentTab: null
             },
-            dataOptions: null
+            dataOptions: {}
         };
   },
   methods: {
