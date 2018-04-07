@@ -14,7 +14,6 @@ export default class API {
     static fetchGenomeSignatureBins(dataOptions) {
         var url = API.api_base + "signature-genome-bins";
         dataOptions['regionWidth'] = 1000000;
-        dataOptions['chromosome'] = '1';
         console.log(JSON.stringify(dataOptions));
 
         return d3.csv(url, { method: "POST", body: JSON.stringify(dataOptions) }, function(d) {

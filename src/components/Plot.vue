@@ -3,7 +3,7 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
-                <span class="button" v-on:click="toggleTab('signatures')">Signatures</span>
+                <span class="button" v-on:click="toggleTab('signatures')" v-if="this.plotType != 'KataegisPlot'">Signatures</span>
                 <span class="button" v-on:click="toggleTab('samples')">Samples</span>
                 <span class="button button-inverse" v-if="plotOptions.unsaved" v-on:click="updatePlot()">Update</span>
             </div>

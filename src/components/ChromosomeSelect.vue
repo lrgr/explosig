@@ -15,18 +15,24 @@ export default {
   data: function() {
       return {
             chromosomes: {},
-            selected: ""
+            selected: "",
+            init: false
       };
   },
   mounted: function() {
     let vm = this;
     API.fetchChromosomes().then(function(chromosomes) {
         vm.chromosomes = chromosomes;
+        vm.selected = "1";
     });
   },
   watch: {
       selected: function(val) {
-        this.$emit('chromosome-select', val);
+        if(!this.init) {
+            this.init = true;
+        } else {
+            this.$emit('chromosome-select', val);
+        }
       }
   },
   methods: {

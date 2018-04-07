@@ -4,19 +4,24 @@
          <div class="spinner-wrapper">
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
+        <div class="bottom-options">
+            <ChromosomeSelect v-on:chromosome-select="setChromosome($event)" ref="chrSelect"/>
+        </div>
     </div>
 </template>
 
 <script>
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
+import ChromosomeSelect from './../ChromosomeSelect.vue'
 import * as d3 from 'd3';
 
 export default {
   name: 'SignatureGenomeBinsPlot',
   props: ['dataOptions', 'plotIndex'],
   components: {
-      Spinner
+      Spinner,
+      ChromosomeSelect
   },
   data: function() { 
         return {
@@ -25,7 +30,10 @@ export default {
             windowWidth: 0,
             width: 0,
             svg: null,
-            margin: { top: 20, right: 20, bottom: 30, left: 40 }
+            margin: { top: 20, right: 30, bottom: 30, left: 40 },
+            options: {
+                chromosome: ""
+            }
         };
   },
   computed: {
@@ -39,6 +47,12 @@ export default {
   watch: {
       windowWidth: function(val) {
           this.width = val - 40 - this.margin.left - this.margin.right;
+      },
+      options: {
+        handler: function() {
+          this.updatePlot();
+        },
+        deep: true
       }
   },
   mounted: function() {
@@ -52,10 +66,14 @@ export default {
     });
   },
   methods: {
+      setChromosome: function(chr) {
+          this.options.chromosome = chr;
+      },
       updatePlot: function() {
           var vm = this;
           vm.loading = true;
-          API.fetchGenomeSignatureBins(this.dataOptions).then(function(data) {
+          vm.dataOptions['chromosome'] = vm.options.chromosome;
+          API.fetchGenomeSignatureBins(vm.dataOptions).then(function(data) {
               vm.plotData = data;
               vm.drawPlot();
               vm.loading = false;
@@ -104,7 +122,7 @@ export default {
                     .attr("width", barWidth)
                     .attr("height", function(d) { return vm.height - y(+d); })
                     .attr("opacity", 0.5)
-                    .attr("fill", c20);
+                    .attr("fill", function(d, i) { return c20(i); });
             
           // x Axis
           vm.svg.append("g")

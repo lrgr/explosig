@@ -31,7 +31,7 @@ export default {
             windowWidth: 0,
             width: 0,
             svg: null,
-            margin: { top: 20, right: 20, bottom: 30, left: 40 },
+            margin: { top: 20, right: 30, bottom: 30, left: 60 },
             options: {
                 chromosome: ""
             }
@@ -50,7 +50,7 @@ export default {
           this.width = val - 40 - this.margin.left - this.margin.right;
       },
       options: {
-        handler: function(val) {
+        handler: function() {
           this.updatePlot();
         },
         deep: true
@@ -71,7 +71,6 @@ export default {
           return "#" + this.plotID;
       },
       setChromosome: function(chr) {
-          console.log(chr);
           this.options.chromosome = chr;
       },
       getChromosome: function(name) {
@@ -81,7 +80,7 @@ export default {
           var vm = this;
           vm.loading = true;
           if(vm.options.chromosome == "") {
-              vm.options.chromosome = "1";
+              vm.options.chromosome = "1"
           }
           vm.dataOptions['chromosome'] = vm.options.chromosome;
           
@@ -95,7 +94,7 @@ export default {
       drawPlot: function() {
           var vm = this;
           var data = {};
-          console.log(vm.plotData);
+          
           for(var i = 0; i < vm.plotData.length; i++) {
               var donor_id = vm.plotData[i]["Donor ID"];
               var pos = vm.plotData[i]["Chromosome Start"];
@@ -106,20 +105,19 @@ export default {
               }
           }
           vm.plotData = data;
-
-          var numSamples = Object.keys(vm.plotData).length;
+          
+          var sampleNames = Object.keys(vm.plotData);
+          var numSamples = sampleNames.length;
           var x = d3.scaleLinear().range([0, this.width]);
-          var y = d3.scaleBand().range([this.height, 0]).padding(0.1);
+          var y = d3.scaleOrdinal().domain(sampleNames).range(Array.from({length: numSamples}, (v, i) => (i+0.5)*(vm.height/numSamples)))
         
           x.domain([0, vm.getChromosome(vm.options.chromosome)]);
           y.domain([0, numSamples]);
 
           var barHeight = vm.height / numSamples;
+          var yMargin = 2;
 
           var plotElemID = this.getPlotElem();
-          console.log(plotElemID);
-          
-          console.log(data);
 
           d3.select(plotElemID).select("svg").remove();
 
@@ -131,11 +129,18 @@ export default {
             .attr("transform", 
                 "translate(" + vm.margin.left + "," + vm.margin.top + ")");
 
-          vm.svg.selectAll(".sample-bar")
-            .data(Object.keys(vm.plotData))
+          var sampleBars = vm.svg.selectAll(".sample-bar")
+            .data(sampleNames)
             .enter().append("g")
-                .attr("transform", function(d, i) { return "translate(0," + i*barHeight + ")"; })
-                .selectAll(".sample-bar")
+                .attr("transform", function(d, i) { return "translate(0," + (i*barHeight) + ")"; });
+            sampleBars.append("rect")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", this.width)
+                    .attr("height", barHeight - yMargin)
+                    .attr("fill", "gainsboro")
+                    .on('mouseover', vm.sampleTooltip);
+             sampleBars.selectAll(".sample-bar")
                 .data(function(d) { 
                     return vm.plotData[d];
                 })
@@ -144,9 +149,18 @@ export default {
                     .attr("x", function(d) { return x(+d); })
                     .attr("y", 0)
                     .attr("width", 3)
-                    .attr("height", barHeight)
+                    .attr("height", barHeight - yMargin)
                     .attr("opacity", 0.5)
                     .attr("fill", "blue");
+            
+             // x Axis
+          vm.svg.append("g")
+            .attr("transform", "translate(0," + vm.height + ")")
+            .call(d3.axisBottom(x));
+
+           // y Axis
+          vm.svg.append("g")
+            .call(d3.axisLeft(y).tickValues(sampleNames));
       }
   }
 }
