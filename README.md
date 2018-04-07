@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/keller-mark/signature-visualization-frontend.svg?branch=master)](https://travis-ci.org/keller-mark/signature-visualization-frontend)
+
 # Interactive Mutation Visualizations with Mutation Signatures
 
 ### Dependencies
