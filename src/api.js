@@ -26,7 +26,7 @@ export default class API {
         var url = API.api_base + "kataegis";
         console.log(JSON.stringify(dataOptions));
 
-        return d3.csv(url, { method: "POST", body:JSON.stringify(dataOptions) });
+        return d3.json(url, { method: "POST", body:JSON.stringify(dataOptions) });
     }
 
     static fetchChromosomes() {

@@ -20,3 +20,13 @@
 .bottom-options {
     padding: 0.5rem;
 }
+.tooltip {
+    width: auto;
+    height: auto;
+    display: inline-block;
+    text-align: left;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    font-size: 12px;
+    color: #FFF;
+}

@@ -27,5 +27,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: $color-darkgray;
   margin: 0px;
+  overflow-x: hidden;
 }
 </style>
