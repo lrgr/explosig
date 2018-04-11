@@ -21,6 +21,9 @@ export default {
   data: function() {
       return {
           plots: [{
+              type: 'ExposuresPlot',
+              title: 'Signature Exposures with Clinical Data'
+          },{
               type: 'KataegisPlot',
               title: 'Kataegis'
           }, {

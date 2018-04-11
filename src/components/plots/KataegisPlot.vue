@@ -85,7 +85,7 @@ export default {
         },
         options: {
             handler: function () {
-                this.updatePlot();
+                this.drawPlot();
             },
             deep: true
         }
@@ -138,6 +138,10 @@ export default {
         },
         drawPlot: function () {
             var vm = this;
+
+            if(vm.plotData == null) {
+                return;
+            }
 
             var sampleNames = Object.keys(vm.plotData);
             var numSamples = sampleNames.length;
