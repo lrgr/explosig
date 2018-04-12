@@ -18,4 +18,12 @@ span.button {
         background-color: $color-lgreen;
         color: $color-darkgray;
     }
+
+    &.button-secondary {
+        background-color: $color-green;
+        color: $color-darkgray;
+    }
+    &.button-selected {
+        opacity: 0.4;
+    }
 }

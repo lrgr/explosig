@@ -43,6 +43,8 @@ export default {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    padding: 1rem;
+    overflow-y: scroll;
     h2 {
         flex-shrink: 0;
         margin: 0.3rem;

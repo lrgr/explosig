@@ -3,19 +3,20 @@
         <div class="navbar">
             <span class="title">Mutation Visualizations</span>
             <div class="right-button-group">
-                <span class="button" v-on:click="openOptions = 'DataPicker'">Signatures</span>
-                <span class="button" v-on:click="openOptions = 'DataPicker'">Samples</span>
-                <span class="button button-inverse" v-on:click="openOptions = 'PlotPicker'">+ Plot</span>
+                <span class="button" v-on:click="showDataPicker('SignaturesPicker')">Signatures</span>
+                <span class="button" v-on:click="showDataPicker('SamplesPicker')">Samples</span>
+                <span class="button button-inverse" v-on:click="showPlotPicker()">+ Plot</span>
             </div>
         </div>
         
-        <div class="modal" v-show="openOptions !== null">
+        <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
-                <span class="modal-close" v-on:click="openOptions = null">Close</span>
-                <component :is="openOptions"></component>
+                <span class="modal-close" v-on:click="modalVisible = false">Close</span>
+                <PlotPicker v-if="plotPickerVisible"></PlotPicker>
+                <DataPicker v-if="dataPickerVisible" :dataPickerComponent="dataPickerComponent"></DataPicker>
             </div>
         </div>
-        <div class="modal-background" v-show="openOptions !== null" v-on:click="openOptions = null"></div>
+        <div class="modal-background" v-show="modalVisible" v-on:click="modalVisible = false"></div>
   </div>
 </template>
 
@@ -27,12 +28,26 @@ export default {
   name: 'NavBar',
   data: function() { 
         return {
-            openOptions: null
+            modalVisible: false,
+            plotPickerVisible: false,
+            dataPickerVisible: false,
+            dataPickerComponent: null
         };
   },
   components: {
       PlotPicker,
       DataPicker
+  },
+  methods: {
+      showPlotPicker: function() {
+          this.modalVisible = true;
+          this.plotPickerVisible = true;
+      },
+      showDataPicker: function(dataPickerComponent) {
+          this.modalVisible = true;
+          this.dataPickerVisible = true;
+          this.dataPickerComponent = dataPickerComponent;
+      }
   }
 }
 </script>
@@ -77,7 +92,7 @@ span.button {
     left: 10%;
     height: 80vh;
     width: 80%;
-    position: absolute;
+    position: fixed;
     background-color: $color-white;
     
     .modal-inner {
