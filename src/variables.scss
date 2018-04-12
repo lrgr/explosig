@@ -6,3 +6,16 @@ $color-gray: #648381;
 $color-purple: #575761;
 $color-yellow: #ffbf46;
 $color-white: #ffffff;
+
+span.button {
+    color: $color-white;
+    background-color: $color-darkgray;
+    padding: 0.3rem;
+    border-radius: 0.2rem;
+    cursor: pointer;
+
+    &.button-inverse {
+        background-color: $color-lgreen;
+        color: $color-darkgray;
+    }
+}

@@ -3,8 +3,8 @@
         <div class="navbar">
             <span class="title">Mutation Visualizations</span>
             <div class="right-button-group">
-                <span class="button" v-on:click="openOptions = 'SignaturesPicker'">Signatures</span>
-                <span class="button" v-on:click="openOptions = 'SamplesPicker'">Samples</span>
+                <span class="button" v-on:click="openOptions = 'DataPicker'">Signatures</span>
+                <span class="button" v-on:click="openOptions = 'DataPicker'">Samples</span>
                 <span class="button button-inverse" v-on:click="openOptions = 'PlotPicker'">+ Plot</span>
             </div>
         </div>
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Data from './Data.vue'
+import DataPicker from './DataPicker.vue'
 import PlotPicker from './PlotPicker.vue'
 
 export default {
@@ -31,7 +31,8 @@ export default {
         };
   },
   components: {
-      PlotPicker
+      PlotPicker,
+      DataPicker
   }
 }
 </script>
@@ -58,23 +59,13 @@ span.title {
     margin: 0.3rem 0.5rem;
 }
 span.button {
-    color: $color-white;
-    background-color: $color-darkgray;
     margin: 0rem 0.5rem;
-    padding: 0.3rem;
-    border-radius: 0.2rem;
-    cursor: pointer;
-
-    &.button-inverse {
-        background-color: $color-lgreen;
-        color: $color-darkgray;
-    }
 }
 .modal-background {
     z-index: 1;
     top: 0;
     left: 0;
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100vh;
     background-color: black;
@@ -90,14 +81,13 @@ span.button {
     background-color: $color-white;
     
     .modal-inner {
-        padding: 1rem;
         box-sizing: border-box;
         height: 100%;
-        overflow-y: scroll;
 
         .modal-close {
             position: absolute;
             right: 2rem;
+            top: 1rem;
             cursor: pointer;
         }
     }

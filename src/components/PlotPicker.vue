@@ -17,7 +17,6 @@
 
 <script>
 import Spinner from './Spinner.vue'
-import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'PlotPicker',
@@ -28,10 +27,7 @@ export default {
         return {
             loading: false
         };
-    },
-    computed: mapGetters({
-        signatures: 'allSignatures'
-    })
+    }
     
 }
 </script>
