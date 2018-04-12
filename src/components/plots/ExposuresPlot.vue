@@ -23,7 +23,14 @@
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            
+            <input type="checkbox" id="normalizeExposures" v-model="options.normalizeExposures">
+            <label for="normalizeExposures">Normalize</label>
+            &nbsp;
+            <select v-model="options.sortBy">
+                <option>Exposure to Signature 1</option>
+                <option>Clinical Variable - Tobacco</option>
+                <option>Clinical Variable - Alcohol</option>
+            </select>
         </div>
     </div>
 </template>
@@ -61,7 +68,8 @@ export default {
                 top: 0
             },
             options: {
-                
+                normalizeExposures: false,
+                sortBy: null
             }
         };
     },
@@ -86,7 +94,7 @@ export default {
         },
         options: {
             handler: function () {
-                this.updatePlot();
+                this.drawPlot();
             },
             deep: true
         }
@@ -123,6 +131,10 @@ export default {
         },
         drawPlot: function () {
             var vm = this;
+
+            if(vm.plotData == null) {
+                return;
+            }
 
             var barWidth = this.width / this.plotData.length;
             var sampleNames = vm.plotData.map(function(d) { return d["donor_id"]; });

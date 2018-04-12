@@ -3,16 +3,16 @@
         <div class="navbar">
             <span class="title">Mutation Visualizations</span>
             <div class="right-button-group">
-                <span class="button button-inverse" v-on:click="openOptions = 'data'">Data</span>
-                <span class="button button-inverse" v-on:click="openOptions = 'new-plot'">+ Plot</span>
+                <span class="button" v-on:click="openOptions = 'SignaturesPicker'">Signatures</span>
+                <span class="button" v-on:click="openOptions = 'SamplesPicker'">Samples</span>
+                <span class="button button-inverse" v-on:click="openOptions = 'PlotPicker'">+ Plot</span>
             </div>
         </div>
         
         <div class="modal" v-show="openOptions !== null">
             <div class="modal-inner">
                 <span class="modal-close" v-on:click="openOptions = null">Close</span>
-                <Data v-show="openOptions === 'data'"></Data>
-                <PlotPicker v-show="openOptions === 'new-plot'"></PlotPicker>
+                <component :is="openOptions"></component>
             </div>
         </div>
         <div class="modal-background" v-show="openOptions !== null" v-on:click="openOptions = null"></div>
@@ -31,7 +31,6 @@ export default {
         };
   },
   components: {
-      Data,
       PlotPicker
   }
 }

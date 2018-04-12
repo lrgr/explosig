@@ -17,17 +17,22 @@
 
 <script>
 import Spinner from './Spinner.vue'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'PlotPicker',
-  components: {
-    Spinner
-  },
-  data: function() {
-      return {
-          loading: false
-      };
-  }
+    name: 'PlotPicker',
+    components: {
+        Spinner
+    },
+    data: function() {
+        return {
+            loading: false
+        };
+    },
+    computed: mapGetters({
+        signatures: 'allSignatures'
+    })
+    
 }
 </script>
 
