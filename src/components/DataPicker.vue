@@ -1,6 +1,6 @@
 <template>
     <div class="plot-options">
-        <div v-if="signaturesVisible" class="main-options">
+        <div v-show="signaturesVisible" class="main-options">
             <div class="main-options-left">
                 <h3>Signatures</h3>
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="samplesVisible" class="main-options">
+        <div v-show="samplesVisible" class="main-options">
             <div class="main-options-left">
                 <h3>Samples</h3>
                 <button class="inline" v-on:click="toggleSources()">Toggle All</button>
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { DataOptionsBus } from './../buses/data-options-bus.js';
 import Spinner from './Spinner.vue'
 import API from './../api.js'
 
@@ -57,7 +58,6 @@ export default {
   components: {
     Spinner
   },
-  props: ['dataListing'],
   data: function() {
       return {
           loading: true,
@@ -105,15 +105,8 @@ export default {
           this.samplesVisible = true;
       },
       emitUpdate: function() {
-
-      }
-  },
-  watch: {
-      options: {
-        handler: function(val) {
-          this.$emit('unsaved', val);
-        },
-        deep: true
+        var vm = this;
+        DataOptionsBus.$emit('updateDataOptions', vm.options);
       }
   }
 }
@@ -127,10 +120,8 @@ export default {
 .plot-options {
     display: flex;
     flex-direction: column;
-    border: 0px solid green;
     height: 100%;
    .main-options {
-        border: 0px solid blue;
         flex-grow: 1;
         overflow-y: scroll;
         padding: 1rem;
@@ -180,7 +171,6 @@ export default {
    }
 
    .actions-bar {
-        border: 0px solid red;
         padding: 1rem;
         .button {
             float: right;

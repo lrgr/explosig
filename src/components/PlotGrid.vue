@@ -23,7 +23,7 @@ export default {
           plots: [{
               type: 'ExposuresPlot',
               title: 'Signature Exposures with Clinical Data'
-          },{
+          }, {
               type: 'KataegisPlot',
               title: 'Kataegis'
           }, {
@@ -42,7 +42,6 @@ export default {
 @import './../variables.scss';
 
 .plot-grid {
-    border: 0px solid red;
     .item {
         margin: 20px;
     }

@@ -8,61 +8,50 @@
         </div>
 
         <div class="plot">
-            <div class="plot-options" v-show="plotOptions.show">
-                <PlotOptions :currentTab="plotOptions.currentTab" v-on:unsaved="dataOptions = $event"/>
-            </div>
             <component v-bind:is="this.plotType" v-bind:dataOptions="this.dataOptions" ref="innerPlot" :plotIndex="this.plotIndex"></component>
         </div>
   </div>
 </template>
 
 <script>
-
-import PlotOptions from './PlotOptions.vue'
+import { DataOptionsBus } from './../buses/data-options-bus.js';
 
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
-
 
 export default {
   name: 'Plot',
   props: ['plotType', 'plotTitle', 'plotIndex'],
   data: function() { 
         return {
-            plotOptions: {
-                show: false,
-                unsaved: false,
-                currentTab: null
-            },
             dataOptions: {}
         };
   },
+  mounted: function() {
+      var vm = this;
+      DataOptionsBus.$on('updateDataOptions', function(val) {
+          console.log(val);
+          vm.dataOptions = val;
+      });
+  },
   methods: {
-        toggleTab: function(tabname) {
-            if(this.plotOptions.currentTab == tabname && this.plotOptions.show) {
-                this.plotOptions.show = false;
-            } else {
-                this.plotOptions.currentTab = tabname;
-                this.plotOptions.show = true;
-            }
-        },
         updatePlot() {
-            this.plotOptions.unsaved = false;
-            this.plotOptions.show = false;
             this.$refs.innerPlot.updatePlot()
+        },
+        removePlot() {
+            // TODO: emit plot removal
         }
   },
   watch: {
       dataOptions: {
         handler: function() {
-          this.plotOptions.unsaved = true;
+          this.updatePlot();
         },
         deep: true
       }
   },
   components: {
-      PlotOptions,
       SignatureGenomeBinsPlot,
       KataegisPlot,
       ExposuresPlot
@@ -93,30 +82,12 @@ export default {
 }
 
 span.button {
-    color: $color-white;
-    background-color: $color-darkgray;
     margin: 0rem 0.4rem;
     padding: 0.1rem 0.3rem;
     font-size: 1rem;
-    border-radius: 0.2rem;
-    cursor: pointer;
-
-    &.button-inverse {
-        background-color: $color-lgreen;
-        color: $color-darkgray;
-    }
 }
 .plot {
     border: 1px solid $color-lgray;;
     position:relative;
-
-    .plot-options {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.6);
-    }
 }
 </style>

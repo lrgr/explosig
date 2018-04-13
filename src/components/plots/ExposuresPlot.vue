@@ -115,7 +115,7 @@ export default {
             vm.loading = true;
             API.fetchExposures(vm.dataOptions).then(function (data) {
                 vm.plotData = data;
-                console.log(data);
+                //console.log(data);
                 vm.drawPlot();
                 vm.loading = false;
             });
@@ -153,7 +153,7 @@ export default {
 
             var series = stack(vm.plotData);
 
-            console.log(series);
+            //console.log(series);
 
             var c20 = d3.scaleOrdinal(d3.schemePaired);
             var xMargin = 2;

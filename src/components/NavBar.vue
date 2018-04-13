@@ -3,20 +3,19 @@
         <div class="navbar">
             <span class="title">Mutation Visualizations</span>
             <div class="right-button-group">
-                <span class="button" v-on:click="showDataPicker('SignaturesPicker')">Signatures</span>
-                <span class="button" v-on:click="showDataPicker('SamplesPicker')">Samples</span>
+                <span class="button" v-on:click="showDataPicker()">Data</span>
                 <span class="button button-inverse" v-on:click="showPlotPicker()">+ Plot</span>
             </div>
         </div>
         
         <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
-                <span class="modal-close" v-on:click="modalVisible = false">Close</span>
-                <PlotPicker v-if="plotPickerVisible"></PlotPicker>
-                <DataPicker v-if="dataPickerVisible" :dataPickerComponent="dataPickerComponent"></DataPicker>
+                <span class="modal-close" v-on:click="closeModal()">Close</span>
+                <PlotPicker v-show="plotPickerVisible"></PlotPicker>
+                <DataPicker v-show="dataPickerVisible"></DataPicker>
             </div>
         </div>
-        <div class="modal-background" v-show="modalVisible" v-on:click="modalVisible = false"></div>
+        <div class="modal-background" v-show="modalVisible" v-on:click="closeModal()"></div>
   </div>
 </template>
 
@@ -30,8 +29,7 @@ export default {
         return {
             modalVisible: false,
             plotPickerVisible: false,
-            dataPickerVisible: false,
-            dataPickerComponent: null
+            dataPickerVisible: false
         };
   },
   components: {
@@ -43,10 +41,14 @@ export default {
           this.modalVisible = true;
           this.plotPickerVisible = true;
       },
-      showDataPicker: function(dataPickerComponent) {
+      showDataPicker: function() {
           this.modalVisible = true;
           this.dataPickerVisible = true;
-          this.dataPickerComponent = dataPickerComponent;
+      },
+      closeModal: function() {
+          this.modalVisible = false;
+          this.dataPickerVisible = false;
+          this.plotPickerVisible = false;
       }
   }
 }
@@ -62,7 +64,6 @@ export default {
     background-color: $color-gray;
     padding: 0.5rem 0rem;
 }
-
 span.title {
     text-decoration: none;
     color: $color-white;

@@ -127,6 +127,7 @@ export default {
             if (vm.options.chromosome == "") {
                 vm.options.chromosome = "1"
             }
+            console.log(vm.dataOptions);
             vm.dataOptions['chromosome'] = vm.options.chromosome;
 
             API.fetchKataegis(this.dataOptions).then(function (data) {
