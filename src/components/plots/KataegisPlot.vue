@@ -27,7 +27,7 @@
 
 <script>
 import { dataOptions } from './../../buses/data-options-bus.js';
-
+import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import ChromosomeSelect from './../ChromosomeSelect.vue'
@@ -115,7 +115,8 @@ export default {
         },
         tooltip: function(donorID, y) {
             this.tooltipInfo.donorID = donorID;
-            this.tooltipInfo.projID = this.plotData[donorID]["proj_id"];
+            var projID = this.plotData[donorID]["proj_id"];
+            this.tooltipInfo.projID = projID;
             if(this.plotData[donorID]["kataegis"][this.options.chromosome] == null) {
                 this.tooltipInfo.kataegisCount = 0;
             } else {
@@ -123,6 +124,9 @@ export default {
             }
             this.tooltipInfo.left = d3.event.x;
             this.tooltipInfo.top = y + this.margin.top;
+
+            dispatch.call("link-donor", null, donorID);
+            dispatch.call("link-project", null, projID);
         },
         updatePlot: function () {
             var vm = this;
@@ -131,7 +135,6 @@ export default {
                 vm.options.chromosome = "1"
             }
             vm.globalDataOptions['chromosome'] = vm.options.chromosome;
-
             API.fetchKataegis(vm.globalDataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
@@ -172,7 +175,19 @@ export default {
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")");
 
-            var sampleBars = vm.svg.selectAll(".sample-bar")
+            // dispatch elements
+            let donorHighlight = vm.svg.append("g")
+                .append("rect")
+                .attr("x", -vm.margin.left)
+                .attr("y", 0)
+                .attr("width", (vm.width + vm.margin.left + vm.margin.right))
+                .attr("height", barHeight + 2 * yMargin)
+                .attr("transform", "translate(0," + (-yMargin) + ")")
+                .attr("opacity", 0)
+                .attr("fill", "silver");
+            
+            // plot elements
+            let sampleBars = vm.svg.selectAll(".sample-bar")
                 .data(sampleNames)
                 .enter().append("g")
                 .attr("transform", function (d, i) {
@@ -215,6 +230,13 @@ export default {
             // y Axis
             vm.svg.append("g")
                 .call(d3.axisLeft(y).tickValues(sampleNames));
+            
+            // dispatch callbacks
+            dispatch.on("link-donor.kataegis", function(donorID) {
+                donorHighlight
+                    .attr("y", barHeight * sampleNames.indexOf(donorID))
+                    .attr("opacity", 1);
+            });
         }
     }
 }
@@ -224,6 +246,6 @@ export default {
 <style scoped lang="scss">
 
 @import './../../variables.scss';
-@import './plot_style.scss';
+@import './plot-style.scss';
 
 </style>

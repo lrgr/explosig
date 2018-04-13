@@ -37,6 +37,7 @@
 
 <script>
 import { dataOptions } from './../../buses/data-options-bus.js';
+import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import * as d3 from 'd3';
@@ -65,8 +66,8 @@ export default {
                 projID: "",
                 signature: "",
                 exposure: "",
-                left: 0,
-                top: 0
+                left: null,
+                top: null
             },
             globalDataOptions: dataOptions,
             options: {
@@ -83,7 +84,7 @@ export default {
             return 'plot_' + this.plotIndex;
         },
         tooltipPosition: function() {
-            if(this.tooltipInfo.left == 0 && this.tooltipInfo.top == 0) {
+            if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
                 return 'display: none;';
             } else {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
@@ -123,13 +124,21 @@ export default {
             });
         },
         tooltip: function(donorID, projID, signature, exposure) {
-            this.tooltipInfo.donorID = donorID;
-            this.tooltipInfo.projID = projID;
-            this.tooltipInfo.signature = signature;
-            this.tooltipInfo.exposure = exposure;
+            this.tooltipInfo.donorID = donorID || this.tooltipInfo.donorID;
+            this.tooltipInfo.projID = projID || this.tooltipInfo.projID;
+            this.tooltipInfo.signature = signature || this.tooltipInfo.signature;
+            this.tooltipInfo.exposure = exposure || this.tooltipInfo.exposure;
 
             this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = d3.event.y;
+            this.tooltipInfo.top = d3.event.y - 50;
+
+            dispatch.call("link-donor", null, this.tooltipInfo.donorID);
+            dispatch.call("link-project", null, this.tooltipInfo.projID);
+            dispatch.call("link-signature", null, this.tooltipInfo.signature);
+        },
+        hideTooltip: function() {
+            this.tooltip.left = null;
+            this.tooltip.top = null;
         },
         drawPlot: function () {
             var vm = this;
@@ -155,8 +164,6 @@ export default {
 
             var series = stack(vm.plotData);
 
-            //console.log(series);
-
             var c20 = d3.scaleOrdinal(d3.schemeDark2);
             var xMargin = 2;
 
@@ -170,12 +177,26 @@ export default {
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")");
             
+             // dispatch elements
+            let donorHighlight = vm.svg.append("g")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", barWidth + 2 * xMargin)
+                .attr("height", vm.height)
+                .attr("transform", "translate(" + (-xMargin) + ",0)")
+                .attr("opacity", 0)
+                .attr("fill", "silver");
             
-            var layer = vm.svg.selectAll(".layer")
+            
+            let layer = vm.svg.selectAll(".layer")
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
-                .style("fill", function(d, i) { return c20(d["key"]); });
+                .style("fill", function(d) { return c20(d["key"]); })
+                .on('mouseover', function(d) {
+                    vm.tooltip(null, null, d["key"], null); 
+                });
             
                 
             layer.selectAll("rect")
@@ -185,7 +206,9 @@ export default {
                 .attr("y", function(d) { return y(d[1]); })
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", barWidth - xMargin)
-                .on('mouseover', function(d, i, j) { console.log(j); });
+                .on('mouseover', function(d, i) { 
+                    vm.tooltip(vm.plotData[i]["donor_id"], vm.plotData[i]["proj_id"], null, (d[1] - d[0])); 
+                });
 
             // x Axis
             vm.svg.append("g")
@@ -196,7 +219,12 @@ export default {
             vm.svg.append("g")
                 .call(d3.axisLeft(y));
 
-
+            // dispatch callbacks
+            dispatch.on("link-donor.exposures", function(donorID) {
+                donorHighlight
+                    .attr("x", barWidth * sampleNames.indexOf(donorID))
+                    .attr("opacity", 1);
+            });
     
         }
     }
@@ -207,6 +235,6 @@ export default {
 <style scoped lang="scss">
 
 @import './../../variables.scss';
-@import './plot_style.scss';
+@import './plot-style.scss';
 
 </style>

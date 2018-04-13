@@ -12,7 +12,7 @@
 
 <script>
 import { dataOptions } from './../../buses/data-options-bus.js';
-
+import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import ChromosomeSelect from './../ChromosomeSelect.vue'
@@ -135,10 +135,11 @@ export default {
                 .attr("height", function (d) {
                     return vm.height - y(+d);
                 })
-                .attr("opacity", 0.5)
-                .attr("fill", function (d, i) {
+                .attr("opacity", 1)
+                .attr("stroke", function (d, i) {
                     return c20(i);
-                });
+                })
+                .attr("fill", "transparent");
 
             // x Axis
             vm.svg.append("g")
@@ -157,6 +158,6 @@ export default {
 <style scoped lang="scss">
 
 @import './../../variables.scss';
-@import './plot_style.scss';
+@import './plot-style.scss';
 
 </style>

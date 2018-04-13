@@ -40,12 +40,14 @@ export default class API {
                     'alcohol_binary': d["Alcohol Binary"],
                     'tobacco_binary': d["Tobacco Binary"],
                     'tobacco_Intensity': d["Tobacco Intensity"]
-                }
+                },
+                'proj_id': d["proj_id"]
             }
             delete d[""];
             delete d["Alcohol Binary"];
             delete d["Tobacco Binary"];
             delete d["Tobacco Intensity"];
+            delete d["proj_id"];
             row["exposures"] = d;
             return row;
         });

@@ -24,11 +24,11 @@ export default {
               type: 'ExposuresPlot',
               title: 'Signature Exposures with Clinical Data'
           }, {
-              type: 'KataegisPlot',
-              title: 'Kataegis'
-          }, {
               type: 'SignatureGenomeBinsPlot',
               title: 'Manhattan Plot with Signatures'
+          }, {
+              type: 'KataegisPlot',
+              title: 'Kataegis'
           }],
           loading: false
       };

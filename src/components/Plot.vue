@@ -3,11 +3,12 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
+                <span class="button">?</span>
                 <span class="button button-warning" v-on:click="removePlot()">&ndash;</span>
             </div>
         </div>
-
         <div class="plot">
+  
             <component v-bind:is="this.plotType" ref="innerPlot" :plotIndex="this.plotIndex"></component>
         </div>
   </div>
@@ -42,14 +43,6 @@ export default {
             // TODO: emit plot removal
         }
   },
-/*   watch: {
-      dataOptions: {
-        handler: function() {
-          this.updatePlot();
-        },
-        deep: true
-      }
-  }, */
   components: {
       SignatureGenomeBinsPlot,
       KataegisPlot,

@@ -5,3 +5,7 @@ export const dataOptions = {
     'sources': [],
     'signatures': []
 };
+
+export const globalChromosomeSelected = {
+    value: ""
+};
