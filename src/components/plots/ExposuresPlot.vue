@@ -36,13 +36,14 @@
 </template>
 
 <script>
+import { dataOptions } from './../../buses/data-options-bus.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import * as d3 from 'd3';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['dataOptions', 'plotIndex'],
+    props: ['plotIndex'],
     components: {
         Spinner
     },
@@ -67,6 +68,7 @@ export default {
                 left: 0,
                 top: 0
             },
+            globalDataOptions: dataOptions,
             options: {
                 normalizeExposures: false,
                 sortBy: null
@@ -113,7 +115,7 @@ export default {
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            API.fetchExposures(vm.dataOptions).then(function (data) {
+            API.fetchExposures(vm.globalDataOptions).then(function (data) {
                 vm.plotData = data;
                 //console.log(data);
                 vm.drawPlot();
@@ -155,7 +157,7 @@ export default {
 
             //console.log(series);
 
-            var c20 = d3.scaleOrdinal(d3.schemePaired);
+            var c20 = d3.scaleOrdinal(d3.schemeDark2);
             var xMargin = 2;
 
             d3.select("#" + this.plotID).select("svg").remove();

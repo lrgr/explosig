@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { dataOptions } from './../../buses/data-options-bus.js';
+
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import ChromosomeSelect from './../ChromosomeSelect.vue'
@@ -34,7 +36,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'KataegisPlot',
-    props: ['dataOptions', 'plotIndex'],
+    props: ['plotIndex'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -59,6 +61,7 @@ export default {
                 left: 0,
                 top: 0
             },
+            globalDataOptions: dataOptions,
             options: {
                 chromosome: ""
             }
@@ -127,10 +130,9 @@ export default {
             if (vm.options.chromosome == "") {
                 vm.options.chromosome = "1"
             }
-            console.log(vm.dataOptions);
-            vm.dataOptions['chromosome'] = vm.options.chromosome;
+            vm.globalDataOptions['chromosome'] = vm.options.chromosome;
 
-            API.fetchKataegis(this.dataOptions).then(function (data) {
+            API.fetchKataegis(vm.globalDataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
                 vm.loading = false;

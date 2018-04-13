@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { DataOptionsBus } from './../buses/data-options-bus.js';
 import DataPicker from './DataPicker.vue'
 import PlotPicker from './PlotPicker.vue'
 
@@ -35,6 +36,12 @@ export default {
   components: {
       PlotPicker,
       DataPicker
+  },
+  mounted: function() {
+      var vm = this;
+      DataOptionsBus.$on('updateDataOptions', function() {
+          vm.closeModal();
+      });
   },
   methods: {
       showPlotPicker: function() {

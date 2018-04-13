@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { dataOptions } from './../../buses/data-options-bus.js';
+
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import ChromosomeSelect from './../ChromosomeSelect.vue'
@@ -18,7 +20,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'SignatureGenomeBinsPlot',
-    props: ['dataOptions', 'plotIndex'],
+    props: ['plotIndex'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -36,6 +38,7 @@ export default {
                 bottom: 30,
                 left: 40
             },
+            globalDataOptions: dataOptions,
             options: {
                 chromosome: ""
             }
@@ -77,8 +80,8 @@ export default {
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            vm.dataOptions['chromosome'] = vm.options.chromosome;
-            API.fetchGenomeSignatureBins(vm.dataOptions).then(function (data) {
+            vm.globalDataOptions['chromosome'] = vm.options.chromosome;
+            API.fetchGenomeSignatureBins(vm.globalDataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
                 vm.loading = false;

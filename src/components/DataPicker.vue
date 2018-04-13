@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { DataOptionsBus } from './../buses/data-options-bus.js';
+import { DataOptionsBus, dataOptions } from './../buses/data-options-bus.js';
 import Spinner from './Spinner.vue'
 import API from './../api.js'
 
@@ -63,10 +63,7 @@ export default {
           loading: true,
           signaturesVisible: true,
           samplesVisible: false,
-          options: {
-              signatures: [],
-              sources: []
-          },
+          options: dataOptions,
           signatures: [],
           sources: [],
           sigPresets: []
@@ -105,8 +102,7 @@ export default {
           this.samplesVisible = true;
       },
       emitUpdate: function() {
-        var vm = this;
-        DataOptionsBus.$emit('updateDataOptions', vm.options);
+        DataOptionsBus.$emit('updateDataOptions');
       }
   }
 }

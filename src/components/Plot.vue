@@ -8,7 +8,7 @@
         </div>
 
         <div class="plot">
-            <component v-bind:is="this.plotType" v-bind:dataOptions="this.dataOptions" ref="innerPlot" :plotIndex="this.plotIndex"></component>
+            <component v-bind:is="this.plotType" ref="innerPlot" :plotIndex="this.plotIndex"></component>
         </div>
   </div>
 </template>
@@ -25,16 +25,15 @@ export default {
   props: ['plotType', 'plotTitle', 'plotIndex'],
   data: function() { 
         return {
-            dataOptions: {}
+
         };
   },
   mounted: function() {
       var vm = this;
-      DataOptionsBus.$on('updateDataOptions', function(val) {
-          console.log(val);
-          vm.dataOptions = val;
+      DataOptionsBus.$on('updateDataOptions', function() {
+          vm.updatePlot();
       });
-  },
+  }, 
   methods: {
         updatePlot() {
             this.$refs.innerPlot.updatePlot()
@@ -43,14 +42,14 @@ export default {
             // TODO: emit plot removal
         }
   },
-  watch: {
+/*   watch: {
       dataOptions: {
         handler: function() {
           this.updatePlot();
         },
         deep: true
       }
-  },
+  }, */
   components: {
       SignatureGenomeBinsPlot,
       KataegisPlot,
