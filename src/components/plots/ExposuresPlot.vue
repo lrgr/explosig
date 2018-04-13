@@ -136,9 +136,11 @@ export default {
             dispatch.call("link-project", null, this.tooltipInfo.projID);
             dispatch.call("link-signature", null, this.tooltipInfo.signature);
         },
-        hideTooltip: function() {
-            this.tooltip.left = null;
-            this.tooltip.top = null;
+        tooltipDestroy: function() {
+            this.tooltipInfo.left = null;
+            this.tooltipInfo.top = null;
+
+            dispatch.call("link-donor-destroy");
         },
         drawPlot: function () {
             var vm = this;
@@ -175,16 +177,17 @@ export default {
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
                 .append("g")
                 .attr("transform",
-                    "translate(" + vm.margin.left + "," + vm.margin.top + ")");
+                    "translate(" + vm.margin.left + "," + vm.margin.top + ")")
+                .on('mouseleave', vm.tooltipDestroy);
             
              // dispatch elements
             let donorHighlight = vm.svg.append("g")
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", barWidth + 2 * xMargin)
-                .attr("height", vm.height)
-                .attr("transform", "translate(" + (-xMargin) + ",0)")
+                .attr("width", barWidth + xMargin)
+                .attr("height", (vm.height + vm.margin.top + vm.margin.bottom))
+                .attr("transform", "translate(" + (-xMargin) + "," + (-vm.margin.top) + ")")
                 .attr("opacity", 0)
                 .attr("fill", "silver");
             
@@ -224,6 +227,10 @@ export default {
                 donorHighlight
                     .attr("x", barWidth * sampleNames.indexOf(donorID))
                     .attr("opacity", 1);
+            });
+
+            dispatch.on("link-donor-destroy.exposures", function() {
+                donorHighlight.attr("opacity", 0);
             });
     
         }

@@ -14,6 +14,7 @@
                     <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.options.chromosome }})</td>
                 </tr>
             </table>
+            <span>Click for Rainfall Plot</span>
         </div>
 
          <div class="spinner-wrapper">
@@ -58,8 +59,8 @@ export default {
                 donorID: "",
                 projID: "",
                 kataegisCount: "",
-                left: 0,
-                top: 0
+                left: null,
+                top: null
             },
             globalDataOptions: dataOptions,
             options: {
@@ -75,7 +76,7 @@ export default {
             return 'plot_' + this.plotIndex;
         },
         tooltipPosition: function() {
-            if(this.tooltipInfo.left == 0 && this.tooltipInfo.top == 0) {
+            if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
                 return 'display: none;';
             } else {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
@@ -128,6 +129,12 @@ export default {
             dispatch.call("link-donor", null, donorID);
             dispatch.call("link-project", null, projID);
         },
+        tooltipDestroy: function() {
+            this.tooltipInfo.top = null;
+            this.tooltipInfo.left = null;
+
+            dispatch.call("link-donor-destroy");
+        },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
@@ -173,15 +180,16 @@ export default {
                 .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
                 .append("g")
                 .attr("transform",
-                    "translate(" + vm.margin.left + "," + vm.margin.top + ")");
+                    "translate(" + vm.margin.left + "," + vm.margin.top + ")")
+                .on('mouseleave', vm.tooltipDestroy);
 
             // dispatch elements
             let donorHighlight = vm.svg.append("g")
                 .append("rect")
                 .attr("x", -vm.margin.left)
                 .attr("y", 0)
-                .attr("width", (vm.width + vm.margin.left + vm.margin.right))
-                .attr("height", barHeight + 2 * yMargin)
+                .attr("width", (vm.width + vm.margin.left + 10))
+                .attr("height", barHeight + yMargin)
                 .attr("transform", "translate(0," + (-yMargin) + ")")
                 .attr("opacity", 0)
                 .attr("fill", "silver");
@@ -236,6 +244,10 @@ export default {
                 donorHighlight
                     .attr("y", barHeight * sampleNames.indexOf(donorID))
                     .attr("opacity", 1);
+            });
+
+            dispatch.on("link-donor-destroy.kataegis", function() {
+                donorHighlight.attr("opacity", 0);
             });
         }
     }
