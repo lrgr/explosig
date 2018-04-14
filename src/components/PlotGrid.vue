@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { globalPlotList } from './../buses/data-options-bus.js';
 import Plot from './Plot.vue'
 
 export default {
@@ -20,16 +21,7 @@ export default {
   },
   data: function() {
       return {
-          plots: [{
-              type: 'ExposuresPlot',
-              title: 'Signature Exposures with Clinical Data'
-          }, {
-              type: 'SignatureGenomeBinsPlot',
-              title: 'Manhattan Plot with Signatures'
-          }, {
-              type: 'KataegisPlot',
-              title: 'Kataegis'
-          }],
+          plots: globalPlotList,
           loading: false
       };
   }

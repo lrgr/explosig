@@ -5,7 +5,7 @@
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            <ChromosomeSelect v-on:chromosome-select="setChromosome($event)" ref="chrSelect"/>
+            <ChromosomeSelect ref="chrSelect" />
         </div>
         
         <div class="plot-info" v-if="showInfo">
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { globalDataOptions } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -25,7 +25,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'SignatureGenomeBinsPlot',
-    props: ['plotIndex', 'showInfo'],
+    props: ['plotIndex', 'showInfo', 'windowWidth'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -34,7 +34,6 @@ export default {
         return {
             loading: false,
             plotData: null,
-            windowWidth: 0,
             width: 0,
             svg: null,
             margin: {
@@ -44,16 +43,14 @@ export default {
                 left: 80
             },
             dataOptions: globalDataOptions,
-            options: {
-                chromosome: ""
-            }
+            chromosome: globalChromosomeSelected
         };
     },
     computed: {
-        height: function () {
+        height: function() {
             return 400 - this.margin.top - this.margin.bottom;
         },
-        plotID: function () {
+        plotID: function() {
             return 'plot_' + this.plotIndex;
         }
     },
@@ -61,34 +58,21 @@ export default {
         windowWidth: function (val) {
             this.width = val - 40 - this.margin.left - this.margin.right;
         },
-        options: {
+        chromosome: {
             handler: function () {
                 this.updatePlot();
             },
             deep: true
         }
     },
-    mounted: function () {
-        let vm = this;
-        vm.windowWidth = window.innerWidth;
-        window.addEventListener('resize', function () {
-            vm.windowWidth = window.innerWidth;
-            if (vm.plotData != null) {
-                vm.drawPlot();
-            }
-        });
-    },
     methods: {
-        setChromosome: function (chr) {
-            this.options.chromosome = chr;
-        },
         tooltipDestroy: function() {
             dispatch.call("link-donor-destroy");
         },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            vm.dataOptions['chromosome'] = vm.options.chromosome;
+            vm.dataOptions['chromosome'] = vm.chromosome.value;
             API.fetchGenomeSignatureBins(vm.dataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
@@ -97,6 +81,10 @@ export default {
         },
         drawPlot: function () {
             var vm = this;
+
+            if(vm.plotData == null) {
+                return;
+            }
 
             var x = d3.scaleLinear().range([0, this.width]);
             var y = d3.scaleLinear().range([this.height, 0]);

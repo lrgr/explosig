@@ -11,7 +11,7 @@
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
                 </tr>
                 <tr>
-                    <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.options.chromosome }})</td>
+                    <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.chromosome.value }})</td>
                 </tr>
             </table>
             <span>Click for Rainfall Plot</span>
@@ -21,7 +21,7 @@
             <Spinner v-if="loading" class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            <ChromosomeSelect v-on:chromosome-select="setChromosome($event)" ref="chrSelect"/>
+            <ChromosomeSelect ref="chrSelect" />
         </div>
 
         <div class="plot-info" v-if="showInfo">
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { globalDataOptions } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -43,7 +43,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'KataegisPlot',
-    props: ['plotIndex', 'showInfo'],
+    props: ['plotIndex', 'showInfo', 'windowWidth'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -52,7 +52,6 @@ export default {
         return {
             loading: false,
             plotData: null,
-            windowWidth: 0,
             width: 0,
             svg: null,
             margin: {
@@ -69,9 +68,7 @@ export default {
                 top: null
             },
             dataOptions: globalDataOptions,
-            options: {
-                chromosome: ""
-            }
+            chromosome: globalChromosomeSelected
         };
     },
     computed: {
@@ -93,41 +90,28 @@ export default {
         windowWidth: function (val) {
             this.width = val - 40 - this.margin.left - this.margin.right;
         },
-        options: {
+        chromosome: {
             handler: function () {
                 this.drawPlot();
             },
             deep: true
         }
     },
-    mounted: function () {
-        let vm = this;
-        vm.windowWidth = window.innerWidth;
-        window.addEventListener('resize', function () {
-            vm.windowWidth = window.innerWidth;
-            if (vm.plotData != null) {
-                vm.drawPlot();
-            }
-        });
-    },
     methods: {
         getPlotElem: function () {
             return "#" + this.plotID;
         },
-        setChromosome: function (chr) {
-            this.options.chromosome = chr;
-        },
-        getChromosome: function (name) {
-            return this.$refs.chrSelect.getChromosome(name);
+        getChromosomeLength: function (name) {
+            return this.$refs.chrSelect.getChromosomeLength(name);
         },
         tooltip: function(donorID, y) {
             this.tooltipInfo.donorID = donorID;
             var projID = this.plotData[donorID]["proj_id"];
             this.tooltipInfo.projID = projID;
-            if(this.plotData[donorID]["kataegis"][this.options.chromosome] == null) {
+            if(this.plotData[donorID]["kataegis"][this.chromosome.value] == null) {
                 this.tooltipInfo.kataegisCount = 0;
             } else {
-                this.tooltipInfo.kataegisCount = this.plotData[donorID]["kataegis"][this.options.chromosome].length;
+                this.tooltipInfo.kataegisCount = this.plotData[donorID]["kataegis"][this.chromosome.value].length;
             }
             this.tooltipInfo.left = d3.event.x;
             this.tooltipInfo.top = y + this.margin.top;
@@ -143,13 +127,13 @@ export default {
             dispatch.call("link-donor-destroy");
             dispatch.call("link-genome-destroy");
         },
+        addRainfallPlot: function(donor_id, proj_id) {
+            console.log(donor_id, proj_id);
+        },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            if (vm.options.chromosome == "") {
-                vm.options.chromosome = "1"
-            }
-            vm.dataOptions['chromosome'] = vm.options.chromosome;
+
             API.fetchKataegis(vm.dataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
@@ -171,7 +155,7 @@ export default {
                 .domain(sampleNames)
                 .range([0, vm.height]);
 
-            x.domain([0, vm.getChromosome(vm.options.chromosome)]);
+            x.domain([0, vm.getChromosomeLength(vm.chromosome.value)]);
 
             var barHeight = vm.height / numSamples;
             var yMargin = 2;
@@ -212,14 +196,16 @@ export default {
                 .attr("fill", "silver");
             
             // plot elements
-            let sampleBars = vm.svg.selectAll(".sample-bar")
+            let sampleBars = vm.svg.selectAll(".sample-bar-g")
                 .data(sampleNames)
                 .enter().append("g")
+                .attr("class", "sample-bar-g")
                 .attr("transform", function (d, i) {
                     return "translate(0," + (i * barHeight) + ")";
                 });
 
             sampleBars.append("rect")
+                .attr("class", "sample-bar")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", vm.width)
@@ -227,12 +213,12 @@ export default {
                 .attr("fill", function(d) { return colorScale(vm.plotData[d]["proj_id"]); })
                 .on('mousemove', function(d, i) { vm.tooltip(d, barHeight*i) })
                 .on('click', (d, i) => {
-                    console.log(d);
+                    vm.addRainfallPlot(d, vm.plotData[d]["proj_id"]);
                 });
 
-            sampleBars.selectAll(".sample-bar")
+            sampleBars.selectAll(".sample-bar-g")
                 .data(function (d) {
-                    var sampleMutations = vm.plotData[d]["kataegis"][vm.options.chromosome];
+                    var sampleMutations = vm.plotData[d]["kataegis"][vm.chromosome.value];
                     if(sampleMutations == null) {
                         return [];
                     } else {

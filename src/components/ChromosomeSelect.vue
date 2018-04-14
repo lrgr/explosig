@@ -1,8 +1,8 @@
 <template>
     <div>
-        <select v-model="selected.value">
+        <select v-on:change="setChromosome($event.target.value)">
             <option disabled value="">Chromosome</option>
-            <option v-for="chr in Object.keys(chromosomes)" :key="chr" v-bind:value="chr">chr{{ chr }}</option>
+            <option v-for="chr in Object.keys(chromosomes)" :key="chr" v-bind:value="chr" :selected="chr == selected.value">chr{{ chr }}</option>
         </select>
     </div>
 </template>
@@ -16,32 +16,24 @@ export default {
   data: function() {
       return {
             chromosomes: {},
-            selected: globalChromosomeSelected,
-            init: false
+            init: false,
+            selected: globalChromosomeSelected
       };
   },
   mounted: function() {
     let vm = this;
     API.fetchChromosomes().then(function(chromosomes) {
         vm.chromosomes = chromosomes;
-        vm.selected.value = "1";
     });
   },
-  watch: {
-      selected: {
-        handler: function(selected) {
-            if(!this.init) {
-                this.init = true;
-            } else {
-                this.$emit('chromosome-select', selected.value);
-            }
-        },
-        deep: true
-      }
-  },
   methods: {
-      getChromosome: function(name) {
+      getChromosomeLength: function(name) {
           return this.chromosomes[name];
+      },
+      setChromosome: function(event) {
+          
+            this.selected.value = event;
+         
       }
   }
 }

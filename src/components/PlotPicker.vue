@@ -1,21 +1,25 @@
 <template>
-    <div class="plot-picker">
-        <h2>+ Plot</h2>
+    <div>
+        <div class="plot-picker">
+            <h2>+ Plot</h2>
+            <ul>
+                <li v-for="plotType in this.plotTypes" :key="plotType.type" @click="addPlot(plotType.type, plotType.title)">{{ plotType.title }}</li>
+            </ul>
+        </div>
+        <h4>Coming Soon:</h4>
         <ul>
             <li>Signatures</li>
             <li>Signatures per Cancer Type</li>
-            <li>Manhattan Plot with Signatures</li>
             <li>Manhattan Plot with Mutation Contexts</li>
             <li>Manhattan Plot with Mutation Types</li>
-            <li>Kataegis</li>
-            <li>Signature Exposures with Clinical Data</li>
             <li>Signature Exposure Box Plots per Cancer Type</li>
         </ul>
-        <Spinner v-if="loading"></Spinner>
     </div>
 </template>
 
 <script>
+import { globalPlotList } from './../buses/data-options-bus.js';
+
 import Spinner from './Spinner.vue'
 
 export default {
@@ -25,8 +29,31 @@ export default {
     },
     data: function() {
         return {
-            loading: false
+            plotTypes: [{
+                type: 'ExposuresPlot',
+                title: 'Signature Exposures with Clinical Data',
+                data: {}
+            }, {
+                type: 'SignatureGenomeBinsPlot',
+                title: 'Manhattan Plot with Signatures',
+                data: {}
+            }, {
+                type: 'KataegisPlot',
+                title: 'Kataegis',
+                data: {}
+            }],
+            selectedPlots: globalPlotList
         };
+    },
+    methods: {
+        addPlot: function(plotType, plotTitle, plotData = {}) {
+            this.selectedPlots.push({
+                type: plotType,
+                title: plotTitle,
+                data: plotData
+            });
+            this.$emit('closePlotPicker');
+        }
     }
     
 }
@@ -66,7 +93,10 @@ export default {
         
         
     }
-    
+}
+h4 {
+    margin-left: 1rem;
+    margin-bottom: 0;
 }
 
 </style>

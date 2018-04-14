@@ -11,7 +11,7 @@
         <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" v-on:click="closeModal()">Close</span>
-                <PlotPicker v-show="plotPickerVisible"></PlotPicker>
+                <PlotPicker v-show="plotPickerVisible" v-on:closePlotPicker="closeModal()"></PlotPicker>
                 <DataPicker v-show="dataPickerVisible"></DataPicker>
             </div>
         </div>

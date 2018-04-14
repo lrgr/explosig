@@ -7,5 +7,7 @@ export const globalDataOptions = {
 };
 
 export const globalChromosomeSelected = {
-    value: ""
+    value: "1"
 };
+
+export const globalPlotList = [];

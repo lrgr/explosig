@@ -52,7 +52,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['plotIndex', 'showInfo'],
+    props: ['plotIndex', 'showInfo', 'windowWidth'],
     components: {
         Spinner
     },
@@ -60,7 +60,6 @@ export default {
         return {
             loading: false,
             plotData: null,
-            windowWidth: 0,
             width: 0,
             svg: null,
             margin: {
@@ -109,16 +108,6 @@ export default {
             },
             deep: true
         }
-    },
-    mounted: function () {
-        let vm = this;
-        vm.windowWidth = window.innerWidth;
-        window.addEventListener('resize', function () {
-            vm.windowWidth = window.innerWidth;
-            if (vm.plotData != null) {
-                vm.drawPlot();
-            }
-        });
     },
     methods: {
         fileInput: function(files) {

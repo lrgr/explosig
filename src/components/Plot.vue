@@ -8,13 +8,19 @@
             </div>
         </div>
         <div class="plot">
-            <component v-bind:is="this.plotType" ref="innerPlot" :plotIndex="this.plotIndex" :showInfo="this.showInfo"></component>
+            <component 
+                v-bind:is="this.plotType" 
+                ref="innerPlot" 
+                :plotIndex="this.plotIndex" 
+                :showInfo="this.showInfo"
+                :windowWidth="this.windowWidth"
+            ></component>
         </div>
   </div>
 </template>
 
 <script>
-import { DataOptionsBus } from './../buses/data-options-bus.js';
+import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.js';
 
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
@@ -25,18 +31,33 @@ export default {
   props: ['plotType', 'plotTitle', 'plotIndex'],
   data: function() { 
         return {
-            showInfo: false
+            showInfo: false,
+            windowWidth: 0,
+            dataOptions: globalDataOptions
         };
   },
   mounted: function() {
-      var vm = this;
-      DataOptionsBus.$on('updateDataOptions', function() {
-          vm.updatePlot();
-      });
+        let vm = this;
+        vm.updatePlot();
+        DataOptionsBus.$on('updateDataOptions', function() {
+            vm.updatePlot();
+        });
+      
+        vm.windowWidth = window.innerWidth;
+        window.addEventListener('resize', () => {
+            vm.windowWidth = window.innerWidth;
+            vm.drawPlot();
+        });
+      
   }, 
   methods: {
         updatePlot() {
-            this.$refs.innerPlot.updatePlot()
+            if(this.dataOptions.signatures.length > 0 && this.dataOptions.sources.length > 0) {
+                this.$refs.innerPlot.updatePlot();
+            }
+        },
+        drawPlot() {
+            this.$refs.innerPlot.drawPlot();
         },
         removePlot() {
             // TODO: emit plot removal
