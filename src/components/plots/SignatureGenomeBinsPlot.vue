@@ -7,6 +7,11 @@
         <div class="bottom-options">
             <ChromosomeSelect v-on:chromosome-select="setChromosome($event)" ref="chrSelect"/>
         </div>
+        
+        <div class="plot-info" v-if="showInfo">
+            <h3>Info</h3>
+            <p>This plot displays bins of mutations assigned to the selected signatures for the selected datasets, across the genome.</p>
+        </div>
     </div>
 </template>
 
@@ -20,7 +25,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'SignatureGenomeBinsPlot',
-    props: ['plotIndex'],
+    props: ['plotIndex', 'showInfo'],
     components: {
         Spinner,
         ChromosomeSelect

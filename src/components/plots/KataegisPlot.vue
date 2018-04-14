@@ -23,6 +23,12 @@
         <div class="bottom-options">
             <ChromosomeSelect v-on:chromosome-select="setChromosome($event)" ref="chrSelect"/>
         </div>
+
+        <div class="plot-info" v-if="showInfo">
+            <h3>Info</h3>
+            <p>This plot displays each donor, with mutations in "kataegis regions" highlighted along the chromosome. </p>
+            <p>For the purposes of this plot, kataegis is defined as six or more mutations with an average intermutation distance of less than or equal to 1,000 bp.</p>
+        </div>
     </div>
 </template>
 
@@ -37,7 +43,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'KataegisPlot',
-    props: ['plotIndex'],
+    props: ['plotIndex', 'showInfo'],
     components: {
         Spinner,
         ChromosomeSelect

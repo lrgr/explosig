@@ -3,13 +3,12 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
-                <span class="button">?</span>
+                <span class="button" v-on:click="showInfo = !showInfo">?</span>
                 <span class="button button-warning" v-on:click="removePlot()">&ndash;</span>
             </div>
         </div>
         <div class="plot">
-  
-            <component v-bind:is="this.plotType" ref="innerPlot" :plotIndex="this.plotIndex"></component>
+            <component v-bind:is="this.plotType" ref="innerPlot" :plotIndex="this.plotIndex" :showInfo="this.showInfo"></component>
         </div>
   </div>
 </template>
@@ -26,7 +25,7 @@ export default {
   props: ['plotType', 'plotTitle', 'plotIndex'],
   data: function() { 
         return {
-
+            showInfo: false
         };
   },
   mounted: function() {

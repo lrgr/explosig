@@ -32,6 +32,14 @@
                 <option>Clinical Variable - Alcohol</option>
             </select>
         </div>
+
+        <div class="plot-info" v-if="showInfo">
+            <h3>Info</h3>
+            <p>This plot displays exposures to selected signatures for each donor in the selected dataset, along with clinical data such as alcohol and tobacco usage.</p>
+            <h3>Settings</h3>
+            <label>Use local file: &nbsp;</label>
+            <input type="file" accept=".csv" v-on:input="fileInput($event.target.files)">
+        </div>
     </div>
 </template>
 
@@ -44,7 +52,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['plotIndex'],
+    props: ['plotIndex', 'showInfo'],
     components: {
         Spinner
     },
@@ -113,12 +121,48 @@ export default {
         });
     },
     methods: {
-        updatePlot: function () {
-            var vm = this;
+        fileInput: function(files) {
+            let vm = this;
             vm.loading = true;
-            API.fetchExposures(vm.globalDataOptions).then(function (data) {
+
+            let file = files[0];
+            if(file) {
+                var reader = new FileReader();
+                reader.onloadend = function(evt) {
+                    var dataUrl = evt.target.result;
+                    d3.csv(dataUrl, vm.rowOp).then((data) => {
+                        vm.plotData = data;
+                        vm.drawPlot();
+                        vm.loading = false;
+                        vm.showInfo = false;
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        rowOp: function(d) {
+            var row = {
+                'donor_id': d[""],
+                'clinical': {
+                    'alcohol_binary': d["Alcohol Binary"],
+                    'tobacco_binary': d["Tobacco Binary"],
+                    'tobacco_intensity': d["Tobacco Intensity"]
+                },
+                'proj_id': d["proj_id"]
+            }
+            delete d[""];
+            delete d["Alcohol Binary"];
+            delete d["Tobacco Binary"];
+            delete d["Tobacco Intensity"];
+            delete d["proj_id"];
+            row["exposures"] = d;
+            return row;
+        },
+        updatePlot: function () {
+            let vm = this;
+            vm.loading = true;
+            API.fetchExposures(vm.globalDataOptions, vm.rowOp).then((data) => {
                 vm.plotData = data;
-                //console.log(data);
                 vm.drawPlot();
                 vm.loading = false;
             });
@@ -151,7 +195,7 @@ export default {
 
             var barWidth = this.width / this.plotData.length;
             var sampleNames = vm.plotData.map((d) => { return d["donor_id"]; });
-            var sigNames = vm.globalDataOptions["signatures"];
+            var sigNames = Object.keys(vm.plotData[0]["exposures"]);
 
             // height and margins for clinical variable rects
             let cHeight = 15;
@@ -238,9 +282,15 @@ export default {
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
                 .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("fill", (d, i) => { 
-                    return d3.interpolateGreys(vm.plotData[i]["clinical"]["alcohol_binary"]);
+                .attr("stroke-width", (d, i) => {
+                    return ((vm.plotData[i]["clinical"]["alcohol_binary"] == "") ? 0 : 2)
+                })
+                .attr("fill", (d, i) => {
+                    if(vm.plotData[i]["clinical"]["alcohol_binary"] == "") {
+                        return "transparent";
+                    } else {
+                        return d3.interpolateGreys(vm.plotData[i]["clinical"]["alcohol_binary"]);
+                    }
                 });
             
             vm.svg.selectAll(".clinical-tobacco")
@@ -251,9 +301,16 @@ export default {
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
                 .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("fill", (d, i) => { 
-                    return d3.interpolateGreys(vm.plotData[i]["clinical"]["tobacco_binary"]);
+                .attr("stroke-width", (d, i) => {
+                    return ((vm.plotData[i]["clinical"]["tobacco_binary"] == "") ? 0 : 2)
+                })
+                .attr("fill", (d, i) => {
+                    if(vm.plotData[i]["clinical"]["tobacco_binary"] == "") {
+                        return "transparent";
+                    } else {
+                        return d3.interpolateGreys(vm.plotData[i]["clinical"]["tobacco_binary"]);
+                        //return d3.interpolateGreys(vm.plotData[i]["clinical"]["tobacco_intensity"] / 100.0);
+                    }
                 });
 
             // x Axis
