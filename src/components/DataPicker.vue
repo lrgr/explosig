@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { DataOptionsBus, dataOptions } from './../buses/data-options-bus.js';
+import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.js';
 import Spinner from './Spinner.vue'
 import API from './../api.js'
 
@@ -63,7 +63,7 @@ export default {
           loading: true,
           signaturesVisible: true,
           samplesVisible: false,
-          options: dataOptions,
+          options: globalDataOptions,
           signatures: [],
           sources: [],
           sigPresets: []

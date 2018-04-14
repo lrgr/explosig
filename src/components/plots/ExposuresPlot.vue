@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { dataOptions } from './../../buses/data-options-bus.js';
+import { globalDataOptions } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -77,7 +77,7 @@ export default {
                 left: null,
                 top: null
             },
-            globalDataOptions: dataOptions,
+            dataOptions: globalDataOptions,
             options: {
                 normalizeExposures: false,
                 sortBy: null
@@ -161,7 +161,7 @@ export default {
         updatePlot: function () {
             let vm = this;
             vm.loading = true;
-            API.fetchExposures(vm.globalDataOptions, vm.rowOp).then((data) => {
+            API.fetchExposures(vm.dataOptions, vm.rowOp).then((data) => {
                 vm.plotData = data;
                 vm.drawPlot();
                 vm.loading = false;

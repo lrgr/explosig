@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { dataOptions } from './../../buses/data-options-bus.js';
+import { globalDataOptions } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -43,7 +43,7 @@ export default {
                 bottom: 30,
                 left: 80
             },
-            globalDataOptions: dataOptions,
+            dataOptions: globalDataOptions,
             options: {
                 chromosome: ""
             }
@@ -88,8 +88,8 @@ export default {
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            vm.globalDataOptions['chromosome'] = vm.options.chromosome;
-            API.fetchGenomeSignatureBins(vm.globalDataOptions).then(function (data) {
+            vm.dataOptions['chromosome'] = vm.options.chromosome;
+            API.fetchGenomeSignatureBins(vm.dataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
                 vm.loading = false;

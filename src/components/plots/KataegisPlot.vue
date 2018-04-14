@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { dataOptions } from './../../buses/data-options-bus.js';
+import { globalDataOptions } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -68,7 +68,7 @@ export default {
                 left: null,
                 top: null
             },
-            globalDataOptions: dataOptions,
+            dataOptions: globalDataOptions,
             options: {
                 chromosome: ""
             }
@@ -149,8 +149,8 @@ export default {
             if (vm.options.chromosome == "") {
                 vm.options.chromosome = "1"
             }
-            vm.globalDataOptions['chromosome'] = vm.options.chromosome;
-            API.fetchKataegis(vm.globalDataOptions).then(function (data) {
+            vm.dataOptions['chromosome'] = vm.options.chromosome;
+            API.fetchKataegis(vm.dataOptions).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
                 vm.loading = false;
@@ -225,7 +225,10 @@ export default {
                 .attr("width", vm.width)
                 .attr("height", barHeight - yMargin)
                 .attr("fill", function(d) { return colorScale(vm.plotData[d]["proj_id"]); })
-                .on('mousemove', function(d, i) { vm.tooltip(d, barHeight*i) });
+                .on('mousemove', function(d, i) { vm.tooltip(d, barHeight*i) })
+                .on('click', (d, i) => {
+                    console.log(d);
+                });
 
             sampleBars.selectAll(".sample-bar")
                 .data(function (d) {
@@ -254,7 +257,7 @@ export default {
 
             // y Axis
             vm.svg.append("g")
-                .call(d3.axisLeft(y));
+                .call(d3.axisLeft(y).tickSizeOuter(0));
             
             // dispatch callbacks
             dispatch.on("link-donor.kataegis", function(donorID) {
