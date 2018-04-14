@@ -336,11 +336,21 @@ export default {
             // y Axis for clinical vars
             vm.svg.append("g")
                 .call(d3.axisLeft(yClinicalAlcohol).tickSizeOuter(0))
-                .attr("transform", "translate(0," + (vm.height - 2*cHeight - cMargin) + ")");
+                .attr("transform", "translate(0," + (vm.height - 2*cHeight - cMargin) + ")")
+                .selectAll("text")	
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.4em")
+                    .attr("dy", ".1em")
+                    .attr("transform", "rotate(-25)");
 
             vm.svg.append("g")
                 .call(d3.axisLeft(yClinicalTobacco).tickSizeOuter(0))
-                .attr("transform", "translate(0," + (vm.height - cHeight) + ")");
+                .attr("transform", "translate(0," + (vm.height - cHeight) + ")")
+                .selectAll("text")	
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.4em")
+                    .attr("dy", ".1em")
+                    .attr("transform", "rotate(-25)");
 
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotID, (donorID) => {
