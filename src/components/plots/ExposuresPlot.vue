@@ -343,13 +343,13 @@ export default {
                 .attr("transform", "translate(0," + (vm.height - cHeight) + ")");
 
             // dispatch callbacks
-            dispatch.on("link-donor.exposures", (donorID) => {
+            dispatch.on("link-donor." + this.plotID, (donorID) => {
                 donorHighlight
                     .attr("x", barWidth * sampleNames.indexOf(donorID))
                     .attr("opacity", 1);
             });
 
-            dispatch.on("link-donor-destroy.exposures", () => {
+            dispatch.on("link-donor-destroy." + this.plotID, () => {
                 donorHighlight.attr("opacity", 0);
             });
     

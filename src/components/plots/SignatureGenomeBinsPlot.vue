@@ -159,13 +159,13 @@ export default {
                 .call(d3.axisLeft(y));
             
             // dispatch callbacks
-            dispatch.on("link-genome.manhattan", function(location) {
+            dispatch.on("link-genome." + this.plotID, function(location) {
                 genomeHighlight
                     .attr("x", location)
                     .attr("opacity", 1);
             });
 
-            dispatch.on("link-genome-destroy.manhattan", function() {
+            dispatch.on("link-genome-destroy." + this.plotID, function() {
                 genomeHighlight.attr("opacity", 0);
             });
         }

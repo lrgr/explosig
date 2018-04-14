@@ -246,23 +246,23 @@ export default {
                 .call(d3.axisLeft(y).tickSizeOuter(0));
             
             // dispatch callbacks
-            dispatch.on("link-donor.kataegis", function(donorID) {
+            dispatch.on("link-donor." + this.plotID, function(donorID) {
                 donorHighlight
                     .attr("y", barHeight * sampleNames.indexOf(donorID))
                     .attr("opacity", 1);
             });
 
-            dispatch.on("link-donor-destroy.kataegis", function() {
+            dispatch.on("link-donor-destroy." + this.plotID, function() {
                 donorHighlight.attr("opacity", 0);
             });
 
-            dispatch.on("link-genome.kataegis", function(location) {
+            dispatch.on("link-genome." + this.plotID, function(location) {
                 genomeHighlight
                     .attr("x", location)
                     .attr("opacity", 1);
             });
 
-            dispatch.on("link-genome-destroy.kataegis", function() {
+            dispatch.on("link-genome-destroy." + this.plotID, function() {
                 genomeHighlight.attr("opacity", 0);
             });
         }
