@@ -39,7 +39,7 @@ export default class API {
                 'clinical': {
                     'alcohol_binary': d["Alcohol Binary"],
                     'tobacco_binary': d["Tobacco Binary"],
-                    'tobacco_Intensity': d["Tobacco Intensity"]
+                    'tobacco_intensity': d["Tobacco Intensity"]
                 },
                 'proj_id': d["proj_id"]
             }

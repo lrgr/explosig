@@ -150,24 +150,39 @@ export default {
             }
 
             var barWidth = this.width / this.plotData.length;
-            var sampleNames = vm.plotData.map(function(d) { return d["donor_id"]; });
+            var sampleNames = vm.plotData.map((d) => { return d["donor_id"]; });
+            var sigNames = vm.globalDataOptions["signatures"];
+
+            // height and margins for clinical variable rects
+            let cHeight = 15;
+            let cMargin = 3;
 
             var x = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, this.width]);
             var y = d3.scaleLinear()
             .domain([0, 1])
-            .range([this.height, 0]);
+            .range([this.height - 2*(cHeight + cMargin), 0]);
             var stack = d3.stack()
-                .keys(function(d) { return Object.keys(d[Object.keys(d)[0]]["exposures"]); })
-                .value(function(d, key) { return d["exposures"][key]; })
+                .keys((d) => { return Object.keys(d[Object.keys(d)[0]]["exposures"]); })
+                .value((d, key) => { return d["exposures"][key]; })
                 .order(d3.stackOrderNone)
                 .offset(d3.stackOffsetNone);
 
             var series = stack(vm.plotData);
 
-            var c20 = d3.scaleOrdinal(d3.schemeDark2);
+            var colorScale = d3.interpolateRainbow;
             var xMargin = 2;
+
+            var yClinicalAlcohol = d3.scaleBand()
+                .domain(["Alcohol"])
+                .range([cHeight, 0]);
+            
+            var yClinicalTobacco = d3.scaleBand()
+                .domain(["Tobacco"])
+                .range([cHeight, 0]);
+
+             
 
             d3.select("#" + this.plotID).select("svg").remove();
 
@@ -196,26 +211,54 @@ export default {
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
-                .style("fill", function(d) { return c20(d["key"]); })
-                .on('mousemove', function(d) {
+                .style("fill", (d, i) => { return colorScale(i / parseFloat(sigNames.length)); })
+                .on('mousemove', (d) => {
                     vm.tooltip(null, null, d["key"], null); 
                 });
             
                 
             layer.selectAll("rect")
-                .data(function(d) { return d; })
+                .data((d) => { return d; })
             .enter().append("rect")
-                .attr("x", function(d, i) { return i*barWidth; })
-                .attr("y", function(d) { return y(d[1]); })
-                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                .attr("x", (d, i) => { return i*barWidth; })
+                .attr("y", (d) => { return y(d[1]); })
+                .attr("height", (d) => { return y(d[0]) - y(d[1]); })
                 .attr("width", barWidth - xMargin)
-                .on('mouseover', function(d, i) { 
+                .on('mouseover', (d, i) => { 
                     vm.tooltip(vm.plotData[i]["donor_id"], vm.plotData[i]["proj_id"], null, (d[1] - d[0])); 
+                });
+            
+        
+            // clinical variables
+            vm.svg.selectAll(".clinical-alcohol")
+                .data(sampleNames)
+            .enter().append("rect")
+                .attr("x", (d, i) => { return i*barWidth + 1; })
+                .attr("y", vm.height - 2*(cHeight) - cMargin)
+                .attr("height", cHeight)
+                .attr("width", barWidth - xMargin - 2)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("fill", (d, i) => { 
+                    return d3.interpolateGreys(vm.plotData[i]["clinical"]["alcohol_binary"]);
+                });
+            
+            vm.svg.selectAll(".clinical-tobacco")
+                .data(sampleNames)
+            .enter().append("rect")
+                .attr("x", (d, i) => { return i*barWidth + 1; })
+                .attr("y", vm.height - cHeight + 1)
+                .attr("height", cHeight)
+                .attr("width", barWidth - xMargin - 2)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("fill", (d, i) => { 
+                    return d3.interpolateGreys(vm.plotData[i]["clinical"]["tobacco_binary"]);
                 });
 
             // x Axis
             vm.svg.append("g")
-                .attr("transform", "translate(0," + vm.height + ")")
+                .attr("transform", "translate(0," + (vm.height + 2*cMargin) + ")")
                 .attr("class", "x_axis")
                 .call(d3.axisBottom(x))
                 .selectAll("text")	
@@ -238,20 +281,29 @@ export default {
             // text label for the y axis
             vm.svg.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", 0 - vm.margin.left)
+                .attr("y", 0 - vm.margin.left + 10)
                 .attr("x", 0 - (vm.height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text("Signature Exposures");  
+            
+            // y Axis for clinical vars
+            vm.svg.append("g")
+                .call(d3.axisLeft(yClinicalAlcohol).tickSizeOuter(0))
+                .attr("transform", "translate(0," + (vm.height - 2*cHeight - cMargin) + ")");
+
+            vm.svg.append("g")
+                .call(d3.axisLeft(yClinicalTobacco).tickSizeOuter(0))
+                .attr("transform", "translate(0," + (vm.height - cHeight) + ")");
 
             // dispatch callbacks
-            dispatch.on("link-donor.exposures", function(donorID) {
+            dispatch.on("link-donor.exposures", (donorID) => {
                 donorHighlight
                     .attr("x", barWidth * sampleNames.indexOf(donorID))
                     .attr("opacity", 1);
             });
 
-            dispatch.on("link-donor-destroy.exposures", function() {
+            dispatch.on("link-donor-destroy.exposures", () => {
                 donorHighlight.attr("opacity", 0);
             });
     
