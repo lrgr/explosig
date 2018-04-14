@@ -58,8 +58,8 @@ export default {
             margin: {
                 top: 20,
                 right: 30,
-                bottom: 30,
-                left: 40
+                bottom: 100,
+                left: 80
             },
             tooltipInfo: {
                 donorID: "",
@@ -78,7 +78,7 @@ export default {
     },
     computed: {
         height: function () {
-            return 400 - this.margin.top - this.margin.bottom;
+            return 450 - this.margin.top - this.margin.bottom;
         },
         plotID: function () {
             return 'plot_' + this.plotIndex;
@@ -186,7 +186,7 @@ export default {
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", barWidth + xMargin)
-                .attr("height", (vm.height + vm.margin.top + vm.margin.bottom))
+                .attr("height", (vm.height + vm.margin.top + 60))
                 .attr("transform", "translate(" + (-xMargin) + "," + (-vm.margin.top) + ")")
                 .attr("opacity", 0)
                 .attr("fill", "silver");
@@ -197,7 +197,7 @@ export default {
             .enter().append("g")
                 .attr("class", "layer")
                 .style("fill", function(d) { return c20(d["key"]); })
-                .on('mouseover', function(d) {
+                .on('mousemove', function(d) {
                     vm.tooltip(null, null, d["key"], null); 
                 });
             
@@ -216,11 +216,33 @@ export default {
             // x Axis
             vm.svg.append("g")
                 .attr("transform", "translate(0," + vm.height + ")")
-                .call(d3.axisBottom(x));
+                .attr("class", "x_axis")
+                .call(d3.axisBottom(x))
+                .selectAll("text")	
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.8em")
+                    .attr("dy", ".15em")
+                    .attr("transform", "rotate(-65)");
+            
+            // text label for the x axis
+            vm.svg.append("text")             
+                .attr("transform",
+                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 60) + ")")
+                .style("text-anchor", "middle")
+                .text("Donors");
 
             // y Axis
             vm.svg.append("g")
                 .call(d3.axisLeft(y));
+            
+            // text label for the y axis
+            vm.svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - vm.margin.left)
+                .attr("x", 0 - (vm.height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Signature Exposures");  
 
             // dispatch callbacks
             dispatch.on("link-donor.exposures", function(donorID) {

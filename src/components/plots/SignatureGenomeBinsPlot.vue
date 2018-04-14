@@ -36,7 +36,7 @@ export default {
                 top: 20,
                 right: 30,
                 bottom: 30,
-                left: 40
+                left: 80
             },
             globalDataOptions: dataOptions,
             options: {
@@ -77,6 +77,9 @@ export default {
         setChromosome: function (chr) {
             this.options.chromosome = chr;
         },
+        tooltipDestroy: function() {
+            dispatch.call("link-donor-destroy");
+        },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
@@ -113,7 +116,19 @@ export default {
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
                 .append("g")
                 .attr("transform",
-                    "translate(" + vm.margin.left + "," + vm.margin.top + ")");
+                    "translate(" + vm.margin.left + "," + vm.margin.top + ")")
+                .on('mouseleave', vm.tooltipDestroy);
+            
+            // dispatch elements
+            let genomeHighlight = vm.svg.append("g")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 20)
+                .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
+                .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
+                .attr("opacity", 0)
+                .attr("fill", "silver");
 
             vm.svg.selectAll(".bar-wrap")
                 .data(this.plotData)
@@ -149,6 +164,17 @@ export default {
             // y Axis
             vm.svg.append("g")
                 .call(d3.axisLeft(y));
+            
+            // dispatch callbacks
+            dispatch.on("link-genome.manhattan", function(location) {
+                genomeHighlight
+                    .attr("x", location)
+                    .attr("opacity", 1);
+            });
+
+            dispatch.on("link-genome-destroy.manhattan", function() {
+                genomeHighlight.attr("opacity", 0);
+            });
         }
     }
 }

@@ -128,12 +128,14 @@ export default {
 
             dispatch.call("link-donor", null, donorID);
             dispatch.call("link-project", null, projID);
+            dispatch.call("link-genome", null, d3.event.x);
         },
         tooltipDestroy: function() {
             this.tooltipInfo.top = null;
             this.tooltipInfo.left = null;
 
             dispatch.call("link-donor-destroy");
+            dispatch.call("link-genome-destroy");
         },
         updatePlot: function () {
             var vm = this;
@@ -159,12 +161,11 @@ export default {
             var sampleNames = Object.keys(vm.plotData);
             var numSamples = sampleNames.length;
             var x = d3.scaleLinear().range([0, vm.width]);
-            var y = d3.scaleOrdinal().domain(sampleNames).range(Array.from({
-                length: numSamples
-            }, (v, i) => (i + 0.5) * (vm.height / numSamples)))
+            var y = d3.scaleBand()
+                .domain(sampleNames)
+                .range([0, vm.height]);
 
             x.domain([0, vm.getChromosome(vm.options.chromosome)]);
-            y.domain([0, numSamples]);
 
             var barHeight = vm.height / numSamples;
             var yMargin = 2;
@@ -194,6 +195,16 @@ export default {
                 .attr("opacity", 0)
                 .attr("fill", "silver");
             
+            let genomeHighlight = vm.svg.append("g")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 20)
+                .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
+                .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
+                .attr("opacity", 0)
+                .attr("fill", "silver");
+            
             // plot elements
             let sampleBars = vm.svg.selectAll(".sample-bar")
                 .data(sampleNames)
@@ -208,7 +219,7 @@ export default {
                 .attr("width", vm.width)
                 .attr("height", barHeight - yMargin)
                 .attr("fill", function(d) { return colorScale(vm.plotData[d]["proj_id"]); })
-                .on('mouseover', function(d, i) { vm.tooltip(d, barHeight*i) });
+                .on('mousemove', function(d, i) { vm.tooltip(d, barHeight*i) });
 
             sampleBars.selectAll(".sample-bar")
                 .data(function (d) {
@@ -237,7 +248,7 @@ export default {
 
             // y Axis
             vm.svg.append("g")
-                .call(d3.axisLeft(y).tickValues(sampleNames));
+                .call(d3.axisLeft(y));
             
             // dispatch callbacks
             dispatch.on("link-donor.kataegis", function(donorID) {
@@ -248,6 +259,16 @@ export default {
 
             dispatch.on("link-donor-destroy.kataegis", function() {
                 donorHighlight.attr("opacity", 0);
+            });
+
+            dispatch.on("link-genome.kataegis", function(location) {
+                genomeHighlight
+                    .attr("x", location)
+                    .attr("opacity", 1);
+            });
+
+            dispatch.on("link-genome-destroy.kataegis", function() {
+                genomeHighlight.attr("opacity", 0);
             });
         }
     }

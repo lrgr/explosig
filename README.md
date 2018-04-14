@@ -2,6 +2,8 @@
 
 # Interactive Mutation Visualizations with Mutation Signatures
 
+Hosted: [https://keller-mark.github.io/signature-visualization-frontend/](https://keller-mark.github.io/signature-visualization-frontend/)
+
 ### Dependencies
 - frontend
   - nodejs
@@ -9,10 +11,10 @@
   - `yarn install`
 
 ### Run
-- frontend: [http://localhost:8080](http://localhost:8080)
-  ```
-  yarn serve
-  ```
+frontend: [http://localhost:8080](http://localhost:8080)
+```
+yarn serve
+```
 
 ## Build
 ```
