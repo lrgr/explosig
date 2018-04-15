@@ -29,6 +29,13 @@ export default class API {
         return d3.json(url, { method: "POST", body:JSON.stringify(dataOptions) });
     }
 
+    static fetchRainfall(rainfallOptions) {
+        var url = API.api_base + "kataegis-rainfall";
+        console.log(JSON.stringify(rainfallOptions));
+
+        return d3.csv(url, { method: "POST", body:JSON.stringify(rainfallOptions) });
+    }
+
     static fetchExposures(dataOptions, rowOp) {
         var url = API.api_base + "exposures";
         //console.log(JSON.stringify(dataOptions));

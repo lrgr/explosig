@@ -2,7 +2,8 @@
     <div class="plot-grid">
         <Plot v-for="(plot, index) in plotList" 
             :key="index" 
-            :plotType="plot.type" 
+            :plotType="plot.type"
+            :plotOptions="plot.options"
             v-on:removePlot="removePlot(index)"
             class="item"
         ></Plot>

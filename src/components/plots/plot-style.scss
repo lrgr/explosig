@@ -3,7 +3,7 @@
     height: 450px;
     border: 0px solid red;
     svg {
-        border: 1px solid blue;
+        border: 0px solid blue;
     }
 }
 
@@ -19,6 +19,10 @@
 
 .bottom-options {
     padding: 0.5rem;
+    .option-control {
+        display: inline-block;
+        margin-right: 2rem;
+    }
 }
 .tooltip {
     width: auto;

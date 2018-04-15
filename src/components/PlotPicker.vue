@@ -43,10 +43,10 @@ export default {
         };
     },
     methods: {
-        addPlot: function(plotType, plotTitle, plotData = {}) {
+        addPlot: function(plotType, plotTitle, plotOptions = {}) {
             this.selectedPlots.push({
                 type: plotType,
-                data: plotData
+                options: plotOptions
             });
             this.$emit('closePlotPicker');
         }

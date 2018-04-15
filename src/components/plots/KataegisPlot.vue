@@ -14,7 +14,7 @@
                     <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.chromosome.value }})</td>
                 </tr>
             </table>
-            <span>Click for Rainfall Plot</span>
+            <span>&nbsp;Click for Rainfall Plot</span>
         </div>
 
          <div class="spinner-wrapper">
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected, globalPlotList } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -69,7 +69,8 @@ export default {
                 top: null
             },
             dataOptions: globalDataOptions,
-            chromosome: globalChromosomeSelected
+            chromosome: globalChromosomeSelected,
+            plotList: globalPlotList
         };
     },
     mounted: function() {
@@ -132,7 +133,10 @@ export default {
             dispatch.call("link-genome-destroy");
         },
         addRainfallPlot: function(donor_id, proj_id) {
-            console.log(donor_id, proj_id);
+            this.plotList.push({
+                type: 'RainfallPlot',
+                options: { 'proj_id': proj_id, 'donor_id': donor_id }
+            });
         },
         updatePlot: function () {
             var vm = this;

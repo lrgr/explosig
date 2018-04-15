@@ -12,6 +12,7 @@
                 v-bind:is="this.plotType" 
                 ref="innerPlot" 
                 :plotIndex="this.plotIndex" 
+                :plotOptions="this.plotOptions" 
                 :showInfo="this.showInfo"
                 :windowWidth="this.windowWidth"
                 v-on:titleInit="plotTitle = $event"
@@ -26,10 +27,12 @@ import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.j
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
+import RainfallPlot from './plots/RainfallPlot.vue'
+
 
 export default {
   name: 'Plot',
-  props: ['plotType'],
+  props: ['plotType', 'plotOptions'],
   data: function() { 
         return {
             showInfo: false,
@@ -78,7 +81,8 @@ export default {
   components: {
       SignatureGenomeBinsPlot,
       KataegisPlot,
-      ExposuresPlot
+      ExposuresPlot,
+      RainfallPlot
   }
 }
 </script>
