@@ -31,16 +31,13 @@ export default {
         return {
             plotTypes: [{
                 type: 'ExposuresPlot',
-                title: 'Signature Exposures with Clinical Data',
-                data: {}
+                title: 'Signature Exposures with Clinical Data'
             }, {
                 type: 'SignatureGenomeBinsPlot',
-                title: 'Manhattan Plot with Signatures',
-                data: {}
+                title: 'Manhattan Plot with Signatures'
             }, {
                 type: 'KataegisPlot',
-                title: 'Kataegis',
-                data: {}
+                title: 'Kataegis'
             }],
             selectedPlots: globalPlotList
         };
@@ -49,7 +46,6 @@ export default {
         addPlot: function(plotType, plotTitle, plotData = {}) {
             this.selectedPlots.push({
                 type: plotType,
-                title: plotTitle,
                 data: plotData
             });
             this.$emit('closePlotPicker');

@@ -50,6 +50,7 @@ export default {
     },
     data: function () {
         return {
+            title: 'Kataegis',
             loading: false,
             plotData: null,
             width: 0,
@@ -70,6 +71,9 @@ export default {
             dataOptions: globalDataOptions,
             chromosome: globalChromosomeSelected
         };
+    },
+    mounted: function() {
+        this.$emit('titleInit', this.title);
     },
     computed: {
         height: function () {

@@ -14,6 +14,7 @@
                 :plotIndex="this.plotIndex" 
                 :showInfo="this.showInfo"
                 :windowWidth="this.windowWidth"
+                v-on:titleInit="plotTitle = $event"
             ></component>
         </div>
   </div>
@@ -28,12 +29,13 @@ import ExposuresPlot from './plots/ExposuresPlot.vue'
 
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotTitle', 'plotIndex'],
+  props: ['plotType', 'plotIndex'],
   data: function() { 
         return {
             showInfo: false,
             windowWidth: 0,
-            dataOptions: globalDataOptions
+            dataOptions: globalDataOptions,
+            plotTitle: ""
         };
   },
   mounted: function() {

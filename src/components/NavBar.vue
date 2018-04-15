@@ -11,7 +11,7 @@
         <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" v-on:click="closeModal()">Close</span>
-                <PlotPicker v-show="plotPickerVisible" v-on:closePlotPicker="closeModal()"></PlotPicker>
+                <PlotPicker v-show="plotPickerVisible" v-on:closePlotPicker="closePlotPicker()"></PlotPicker>
                 <DataPicker v-show="dataPickerVisible"></DataPicker>
             </div>
         </div>
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { DataOptionsBus } from './../buses/data-options-bus.js';
+import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.js';
 import DataPicker from './DataPicker.vue'
 import PlotPicker from './PlotPicker.vue'
 
@@ -30,7 +30,8 @@ export default {
         return {
             modalVisible: false,
             plotPickerVisible: false,
-            dataPickerVisible: false
+            dataPickerVisible: false,
+            dataOptions: globalDataOptions
         };
   },
   components: {
@@ -56,6 +57,12 @@ export default {
           this.modalVisible = false;
           this.dataPickerVisible = false;
           this.plotPickerVisible = false;
+      },
+      closePlotPicker: function() {
+          this.closeModal();
+          if(this.dataOptions.sources.length == 0 && this.dataOptions.signatures.length == 0) {
+              this.showDataPicker();
+          }
       }
   }
 }
@@ -84,6 +91,22 @@ span.title {
 span.button {
     margin: 0rem 0.5rem;
 }
+
+.plus-plot {
+    background-color: $color-lgreen;
+    width: 50%;
+    margin-left: 25%;
+    margin-top: 10vh;
+    text-align: center;
+    padding: 8rem 0;
+    border-radius: 1rem;
+    cursor: pointer;
+    span {
+        font-size: 3rem;
+        color: $color-darkgray;
+    }
+}
+
 .modal-background {
     z-index: 1;
     top: 0;

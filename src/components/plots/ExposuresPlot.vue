@@ -58,6 +58,7 @@ export default {
     },
     data: function () {
         return {
+            title: 'Signature Exposures with Clinical Data',
             loading: false,
             plotData: null,
             width: 0,
@@ -82,6 +83,9 @@ export default {
                 sortBy: null
             }
         };
+    },
+    mounted: function() {
+        this.$emit('titleInit', this.title);
     },
     computed: {
         height: function () {
