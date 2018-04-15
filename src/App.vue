@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList } from './buses/data-options-bus.js';
+import { globalDataOptions, globalPlotList, globalChromosomeSelected } from './buses/data-options-bus.js';
 
 import PlotGrid from './components/PlotGrid.vue'
 import NavBar from './components/NavBar.vue'
@@ -22,24 +22,27 @@ export default {
     var paramStr = window.location.hash.substring(1) // remove the initial "#"
     if(paramStr.length > 0) {
       var params = JSON.parse(decodeURIComponent(paramStr));
-      if(params.data && params.data.signatures && params.data.sources && params.plots) {
+      if(params.data && params.data.signatures && params.data.sources && params.plots && params.chr) {
         params.data.signatures.map((x) => { this.dataOptions.signatures.push(x); });
         params.data.sources.map((x) => { this.dataOptions.sources.push(x); });
         params.plots.map((x) => { this.plotList.push(x); });
+        this.chromosomeSelected.value = params.chr;
       }
     }
   },
   data: function() {
     return {
       dataOptions: globalDataOptions,
-      plotList: globalPlotList
+      plotList: globalPlotList,
+      chromosomeSelected: globalChromosomeSelected
     }
   },
   methods: {
     setHash: function() {
       let hashData = {
         'data': this.dataOptions,
-        'plots': this.plotList
+        'plots': this.plotList,
+        'chr': this.chromosomeSelected.value
       };
       window.location.hash = JSON.stringify(hashData);
     }
@@ -52,7 +55,13 @@ export default {
       deep: true
     },
     plotList: {
-      handler: function(val) {
+      handler: function() {
+        this.setHash();
+      },
+      deep: true
+    },
+    chromosomeSelected: {
+      handler: function() {
         this.setHash();
       },
       deep: true

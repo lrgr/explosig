@@ -135,7 +135,7 @@ export default {
         },
         rowOp: function(d) {
             var row = {
-                'donor_id': d[""],
+                'donor_id': d["donor_id"],
                 'clinical': {
                     'alcohol_binary': d["Alcohol Binary"],
                     'tobacco_binary': d["Tobacco Binary"],
@@ -143,7 +143,7 @@ export default {
                 },
                 'proj_id': d["proj_id"]
             }
-            delete d[""];
+            delete d["donor_id"];
             delete d["Alcohol Binary"];
             delete d["Tobacco Binary"];
             delete d["Tobacco Intensity"];
@@ -167,7 +167,7 @@ export default {
             this.tooltipInfo.exposure = exposure || this.tooltipInfo.exposure;
 
             this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = d3.event.y - 50;
+            this.tooltipInfo.top = this.height + 30;
 
             dispatch.call("link-donor", null, this.tooltipInfo.donorID);
             dispatch.call("link-project", null, this.tooltipInfo.projID);
