@@ -17,7 +17,7 @@ export default class API {
         //console.log(JSON.stringify(dataOptions));
 
         return d3.csv(url, { method: "POST", body: JSON.stringify(dataOptions) }, function(d) {
-            var row = {name: d[""], vals: d};
+            var row = { name: d[""], vals: d };
             delete row.vals[""];
             return row;
         });
@@ -31,7 +31,7 @@ export default class API {
 
     static fetchRainfall(rainfallOptions) {
         var url = API.api_base + "kataegis-rainfall";
-        console.log(JSON.stringify(rainfallOptions));
+        //console.log(JSON.stringify(rainfallOptions));
 
         return d3.csv(url, { method: "POST", body:JSON.stringify(rainfallOptions) });
     }

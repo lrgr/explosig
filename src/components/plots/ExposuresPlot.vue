@@ -19,8 +19,8 @@
             </table>
         </div>
 
-        <div class="spinner-wrapper">
-            <Spinner v-if="loading" class="spinner"></Spinner>
+        <div class="spinner-wrapper" v-if="loading">
+            <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
             <input type="checkbox" id="normalizeExposures" v-model="options.normalizeExposures">
@@ -67,7 +67,7 @@ export default {
                 top: 20,
                 right: 30,
                 bottom: 100,
-                left: 80
+                left: 90
             },
             tooltipInfo: {
                 donorID: "",
@@ -358,9 +358,14 @@ export default {
 
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotID, (donorID) => {
-                donorHighlight
-                    .attr("x", barWidth * sampleNames.indexOf(donorID))
-                    .attr("opacity", 1);
+                let i = sampleNames.indexOf(donorID);
+                if(i != null && i != -1) {
+                    donorHighlight
+                        .attr("x", barWidth * i)
+                        .attr("opacity", 1);
+                } else {
+                    donorHighlight.attr("opacity", 0);
+                }
             });
 
             dispatch.on("link-donor-destroy." + this.plotID, () => {
@@ -377,5 +382,7 @@ export default {
 
 @import './../../variables.scss';
 @import './plot-style.scss';
+
+
 
 </style>

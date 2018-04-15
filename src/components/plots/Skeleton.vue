@@ -10,8 +10,8 @@
             </table>
         </div>
 
-         <div class="spinner-wrapper">
-            <Spinner v-if="loading" class="spinner"></Spinner>
+         <div class="spinner-wrapper" v-if="loading">
+            <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" />

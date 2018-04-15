@@ -1,8 +1,8 @@
 <template>
     <div>
         <div :id="this.plotID" class="plot-component"></div>
-         <div class="spinner-wrapper">
-            <Spinner v-if="loading" class="spinner"></Spinner>
+         <div class="spinner-wrapper" v-if="loading">
+            <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" />
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -40,11 +40,12 @@ export default {
             margin: {
                 top: 20,
                 right: 30,
-                bottom: 30,
-                left: 80
+                bottom: 50,
+                left: 90
             },
             dataOptions: globalDataOptions,
-            chromosome: globalChromosomeSelected
+            chromosome: globalChromosomeSelected,
+            chromosomeLocation: globalChromosomeLocation
         };
     },
     mounted: function() {
@@ -67,11 +68,20 @@ export default {
                 this.updatePlot();
             },
             deep: true
+        },
+        chromosomeLocation: {
+            handler: function () {
+                this.drawPlot();
+            },
+            deep: true
         }
     },
     methods: {
         tooltipDestroy: function() {
             dispatch.call("link-donor-destroy");
+        },
+        getChromosomeLength: function (name) {
+            return this.$refs.chrSelect.getChromosomeLength(name);
         },
         updatePlot: function () {
             var vm = this;
@@ -94,9 +104,10 @@ export default {
             var y = d3.scaleLinear().range([this.height, 0]);
             var c20 = d3.scaleOrdinal(d3.schemeDark2);
 
-            var xMax = d3.max(this.plotData.map(row => parseInt(row.name)));
-            var yMax = d3.max(this.plotData.map(row => d3.max(Object.values(row.vals).map(val => parseInt(val)))));
-            x.domain([0, xMax]);
+            let chrLen = vm.getChromosomeLength(vm.chromosome.value);
+            let yMax = d3.max(this.plotData.map(row => d3.max(Object.values(row.vals).map(val => parseInt(val)))));
+           
+            x.domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
             y.domain([0, yMax]);
 
             var barWidth = 0;
@@ -104,6 +115,8 @@ export default {
                 var numBars = this.plotData.length;
                 barWidth = (vm.width) / numBars;
             }
+
+            let windowSize = (vm.chromosomeLocation.end - vm.chromosomeLocation.start) / chrLen;
 
             d3.select("#" + this.plotID).select("svg").remove();
 
@@ -128,13 +141,15 @@ export default {
                 .attr("fill", "silver");
 
             vm.svg.selectAll(".bar-wrap")
-                .data(this.plotData)
+                .data(this.plotData.filter((el) => {
+                    return (+el.name >= vm.chromosomeLocation.start && +el.name <= vm.chromosomeLocation.end);
+                }))
                 .enter().append("g")
-                .attr("transform", function (d, i) {
-                    return "translate(" + i * barWidth + ",0)";
+                .attr("transform", function (d) {
+                    return "translate(" + x(+d.name) + ",0)";
                 })
                 .selectAll(".bar-wrap")
-                .data(function (d) {
+                .data(function(d) {
                     return Object.values(d.vals);
                 })
                 .enter().append("rect")
@@ -143,24 +158,39 @@ export default {
                 .attr("y", function (d) {
                     return y(+d);
                 })
-                .attr("width", barWidth)
+                .attr("width", barWidth * (1/windowSize))
                 .attr("height", function (d) {
                     return vm.height - y(+d);
                 })
-                .attr("opacity", 1)
-                .attr("stroke", function (d, i) {
+                .attr("opacity", 0.4)
+                .attr("fill", function (d, i) {
                     return c20(i);
-                })
-                .attr("fill", "transparent");
+                });
 
             // x Axis
             vm.svg.append("g")
                 .attr("transform", "translate(0," + vm.height + ")")
                 .call(d3.axisBottom(x));
+            
+            // text label for the x axis
+            vm.svg.append("text")             
+                .attr("transform",
+                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text("Chromosome Location");
 
             // y Axis
             vm.svg.append("g")
                 .call(d3.axisLeft(y));
+            
+            // text label for the y axis
+            vm.svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - vm.margin.left + 5)
+                .attr("x", 0 - (vm.height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Number of Mutations in Signature Bin");  
             
             // dispatch callbacks
             dispatch.on("link-genome." + this.plotID, function(location) {

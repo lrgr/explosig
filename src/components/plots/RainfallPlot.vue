@@ -10,8 +10,8 @@
             </table>
         </div>
 
-         <div class="spinner-wrapper">
-            <Spinner v-if="loading" class="spinner"></Spinner>
+         <div class="spinner-wrapper" v-if="loading">
+            <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" class="option-control" />
@@ -19,17 +19,25 @@
                 <input type="checkbox" v-model="highlightKataegis" :id="this.plotID + '_highlight_kataegis'" />
                 <label :for="this.plotID + '_highlight_kataegis'">Highlight Kataegis Regions</label>
             </div>
+            <div class="option-control">
+                <label>Color by&nbsp;</label>
+                <select>
+                    <option>Mutation Context</option>
+                    <option>Assigned Signature</option>
+                </select>
+            </div>
         </div>
 
         <div class="plot-info" v-if="showInfo">
             <h3>Info</h3>
             <p>This plot displays mutations by their genome location and the distance to the previous mutation. Points are colored by mutation context (e.g. A[T>G]C)</p>
+            <p>To zoom in along chromosome location, click and drag mouse below the axis. To zoom out, double click.</p>
         </div>
     </div>
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -54,8 +62,8 @@ export default {
             margin: {
                 top: 20,
                 right: 30,
-                bottom: 30,
-                left: 80
+                bottom: 50,
+                left: 90
             },
             tooltipInfo: {
                 var: '',
@@ -64,6 +72,7 @@ export default {
             },
             dataOptions: globalDataOptions,
             chromosome: globalChromosomeSelected,
+            chromosomeLocation: globalChromosomeLocation,
             highlightKataegis: true
         };
     },
@@ -92,6 +101,12 @@ export default {
         chromosome: {
             handler: function () {
                 this.updatePlot();
+            },
+            deep: true
+        },
+        chromosomeLocation: {
+            handler: function () {
+                this.drawPlot();
             },
             deep: true
         },
@@ -150,12 +165,11 @@ export default {
             let maxDist = d3.max( vm.plotData.map((el) => +el.mut_dist) );
 
             let kataegisPoints = vm.plotData.filter((el) => (+el.kataegis == 1));
-            console.log(kataegisPoints);
 
             // scales
             let x = d3.scaleLinear()
                 .range([0, vm.width])
-                .domain([0, chrLen]);
+                .domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
             let y = d3.scaleLinear()
                 .range([vm.height, 0])
                 .domain([0, maxDist]);
@@ -171,6 +185,26 @@ export default {
                 .append("g")
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")");
+            
+            // dispatch elements
+            let donorHighlight = vm.svg.append("g")
+                .append("rect")
+                .attr("x", -vm.margin.left)
+                .attr("y", -vm.margin.top)
+                .attr("width", (vm.width + vm.margin.left + 10))
+                .attr("height", (vm.height + vm.margin.top + vm.margin.bottom))
+                .attr("opacity", 0)
+                .attr("fill", "silver");
+            
+            let genomeHighlight = vm.svg.append("g")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 20)
+                .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
+                .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
+                .attr("opacity", 0)
+                .attr("fill", "silver");
             
             // kataegis highlights
             let kataegisBars = vm.svg.selectAll('.kataegis-bar')
@@ -204,7 +238,7 @@ export default {
             // point for each mutation, colored by mutation context
             let points = vm.svg.selectAll('.point')
 			    .data(vm.plotData)
-			.enter().append('circle')
+		    .enter().append('circle')
                 .attr('class', 'point')
                 .attr('cx', function(d){return x(+d.pos);})
                 .attr('cy', function(d){ return y(+d.mut_dist); })
@@ -213,16 +247,76 @@ export default {
                     // map hashed value to value between 0 and 1
                     return d3.interpolateRainbow((hashFunc(d.context) + contextOffset) / contextMax); 
                 });
+            
+            // zoom with brush
+            vm.svg.append("g")
+                .attr("class", "brush")
+                .call(
+                    d3.brushX()
+                        .on("end." + vm.plotID, brushend)
+                );
+            //create brush function redraw scatterplot with x selection
+            function brushend() {
+                var s = d3.event.selection;
+                if(s) {
+                    var s2 = s.map((el) => Math.floor(x.invert(el)));
+                    vm.chromosomeLocation.start = s2[0];
+                    vm.chromosomeLocation.end = s2[1];
+                } else {
+                    vm.chromosomeLocation.start = 0;
+                    vm.chromosomeLocation.end = chrLen;
+                }
+                vm.drawPlot();
+            }
                 
             
              // x Axis
             vm.svg.append("g")
                 .attr("transform", "translate(0," + vm.height + ")")
                 .call(d3.axisBottom(x));
+            
+            // text label for the x axis
+            vm.svg.append("text")             
+                .attr("transform",
+                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text("Chromosome Location");
 
             // y Axis
             vm.svg.append("g")
                 .call(d3.axisLeft(y).tickSizeOuter(0));
+            
+            // text label for the y axis
+            vm.svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - vm.margin.left + 5)
+                .attr("x", 0 - (vm.height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Distance to Previous Mutation");  
+            
+            // dispatch callbacks
+            dispatch.on("link-donor." + this.plotID, function(donorID) {
+                if(donorID == vm.plotOptions.donor_id) {
+                    donorHighlight.attr("opacity", 0.5);
+                } else {
+                    donorHighlight.attr("opacity", 0);
+                }
+            });
+
+            dispatch.on("link-donor-destroy." + this.plotID, function() {
+                donorHighlight.attr("opacity", 0);
+            });
+
+            dispatch.on("link-genome." + this.plotID, function(location) {
+                genomeHighlight
+                    .attr("x", location)
+                    .attr("opacity", 1);
+            });
+
+            dispatch.on("link-genome-destroy." + this.plotID, function() {
+                genomeHighlight.attr("opacity", 0);
+            });
         }
     }
 }

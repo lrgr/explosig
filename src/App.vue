@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList, globalChromosomeSelected } from './buses/data-options-bus.js';
+import { globalDataOptions, globalPlotList, globalChromosomeSelected, globalChromosomeLocation } from './buses/data-options-bus.js';
 
 import PlotGrid from './components/PlotGrid.vue'
 import NavBar from './components/NavBar.vue'
@@ -26,7 +26,9 @@ export default {
         params.data.signatures.map((x) => { this.dataOptions.signatures.push(x); });
         params.data.sources.map((x) => { this.dataOptions.sources.push(x); });
         params.plots.map((x) => { this.plotList.push(x); });
-        this.chromosomeSelected.value = params.chr;
+        this.chromosomeSelected.value = params.chr.value;
+        this.chromosomeLocation.start = params.chr.start;
+        this.chromosomeLocation.end = params.chr.end;
       }
     }
   },
@@ -34,7 +36,8 @@ export default {
     return {
       dataOptions: globalDataOptions,
       plotList: globalPlotList,
-      chromosomeSelected: globalChromosomeSelected
+      chromosomeSelected: globalChromosomeSelected,
+      chromosomeLocation: globalChromosomeLocation
     }
   },
   methods: {
@@ -42,7 +45,11 @@ export default {
       let hashData = {
         'data': this.dataOptions,
         'plots': this.plotList,
-        'chr': this.chromosomeSelected.value
+        'chr': { 
+          'value': this.chromosomeSelected.value,
+          'start': this.chromosomeLocation.start,
+          'end': this.chromosomeLocation.end
+        }
       };
       window.location.hash = JSON.stringify(hashData);
     }

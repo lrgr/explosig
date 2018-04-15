@@ -17,8 +17,8 @@
             <span>&nbsp;Click for Rainfall Plot</span>
         </div>
 
-         <div class="spinner-wrapper">
-            <Spinner v-if="loading" class="spinner"></Spinner>
+         <div class="spinner-wrapper" v-if="loading">
+            <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" />
@@ -28,12 +28,14 @@
             <h3>Info</h3>
             <p>This plot displays each donor, with mutations in "kataegis regions" highlighted along the chromosome. </p>
             <p>For the purposes of this plot, kataegis is defined as six or more mutations with an average intermutation distance of less than or equal to 1,000 bp.</p>
+            <p>To view the rainfall plot for a donor, click on its colored row.</p>
+            <p>To zoom in along chromosome location, click and drag mouse below the axis. To zoom out, double click.</p>
         </div>
     </div>
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected, globalPlotList } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation, globalPlotList } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -58,8 +60,8 @@ export default {
             margin: {
                 top: 20,
                 right: 30,
-                bottom: 30,
-                left: 80
+                bottom: 50,
+                left: 90
             },
             tooltipInfo: {
                 donorID: "",
@@ -70,6 +72,7 @@ export default {
             },
             dataOptions: globalDataOptions,
             chromosome: globalChromosomeSelected,
+            chromosomeLocation: globalChromosomeLocation,
             plotList: globalPlotList
         };
     },
@@ -96,6 +99,12 @@ export default {
             this.width = val - 40 - this.margin.left - this.margin.right;
         },
         chromosome: {
+            handler: function () {
+                this.drawPlot();
+            },
+            deep: true
+        },
+        chromosomeLocation: {
             handler: function () {
                 this.drawPlot();
             },
@@ -158,12 +167,14 @@ export default {
 
             var sampleNames = Object.keys(vm.plotData);
             var numSamples = sampleNames.length;
+            let chrLen = vm.getChromosomeLength(vm.chromosome.value);
+
             var x = d3.scaleLinear().range([0, vm.width]);
             var y = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, vm.height]);
 
-            x.domain([0, vm.getChromosomeLength(vm.chromosome.value)]);
+            x.domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
 
             var barHeight = vm.height / numSamples;
             var yMargin = 2;
@@ -181,6 +192,27 @@ export default {
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
                 .on('mouseleave', vm.tooltipDestroy);
+            
+            // zoom with brush
+            vm.svg.append("g")
+                .attr("class", "brush")
+                .call(
+                    d3.brushX()
+                        .on("end." + vm.plotID, brushend)
+                );
+            //create brush function redraw scatterplot with x selection
+            function brushend() {
+                var s = d3.event.selection;
+                if(s) {
+                    var s2 = s.map((el) => Math.floor(x.invert(el)));
+                    vm.chromosomeLocation.start = s2[0];
+                    vm.chromosomeLocation.end = s2[1];
+                } else {
+                    vm.chromosomeLocation.start = 0;
+                    vm.chromosomeLocation.end = chrLen;
+                }
+                vm.drawPlot();
+            }
 
             // dispatch elements
             let donorHighlight = vm.svg.append("g")
@@ -248,16 +280,37 @@ export default {
             vm.svg.append("g")
                 .attr("transform", "translate(0," + vm.height + ")")
                 .call(d3.axisBottom(x));
+            
+            // text label for the x axis
+            vm.svg.append("text")             
+                .attr("transform",
+                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text("Chromosome Location");
 
             // y Axis
             vm.svg.append("g")
                 .call(d3.axisLeft(y).tickSizeOuter(0));
             
+            // text label for the y axis
+            vm.svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - vm.margin.left + 5)
+                .attr("x", 0 - (vm.height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Donor");  
+            
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotID, function(donorID) {
-                donorHighlight
-                    .attr("y", barHeight * sampleNames.indexOf(donorID))
-                    .attr("opacity", 1);
+                let i = sampleNames.indexOf(donorID);
+                if(i != null && i != -1) {
+                    donorHighlight
+                        .attr("y", barHeight * i)
+                        .attr("opacity", 1);
+                } else {
+                    donorHighlight.attr("opacity", 0);
+                }
             });
 
             dispatch.on("link-donor-destroy." + this.plotID, function() {

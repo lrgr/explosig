@@ -9,7 +9,7 @@
 
 <script>
 import API from './../api.js'
-import { globalChromosomeSelected } from './../buses/data-options-bus.js';
+import { globalChromosomeSelected, globalChromosomeLocation } from './../buses/data-options-bus.js';
 
 export default {
   name: 'ChromosomeSelect',
@@ -17,7 +17,8 @@ export default {
       return {
             chromosomes: {},
             init: false,
-            selected: globalChromosomeSelected
+            selected: globalChromosomeSelected,
+            location: globalChromosomeLocation
       };
   },
   mounted: function() {
@@ -31,8 +32,9 @@ export default {
           return this.chromosomes[name];
       },
       setChromosome: function(event) {
-          
             this.selected.value = event;
+            this.location.start = 0;
+            this.location.end = this.getChromosomeLength(event);
          
       }
   }
