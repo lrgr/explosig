@@ -79,7 +79,7 @@ export default {
             },
             dataOptions: globalDataOptions,
             options: {
-                normalizeExposures: false,
+                normalizeExposures: true,
                 sortBy: null
             }
         };
@@ -190,6 +190,10 @@ export default {
             var sampleNames = vm.plotData.map((d) => { return d["donor_id"]; });
             var sigNames = Object.keys(vm.plotData[0]["exposures"]);
 
+            var maxCountSum = d3.max(vm.plotData.map((d) => {
+                return d3.sum(Object.values(d["exposures"]));
+            }));
+
             // height and margins for clinical variable rects
             let cHeight = 15;
             let cMargin = 3;
@@ -198,7 +202,7 @@ export default {
                 .domain(sampleNames)
                 .range([0, this.width]);
             var y = d3.scaleLinear()
-            .domain([0, 1])
+            .domain([0, maxCountSum])
             .range([this.height - 2*(cHeight + cMargin), 0]);
             var stack = d3.stack()
                 .keys((d) => { return Object.keys(d[Object.keys(d)[0]]["exposures"]); })
@@ -257,7 +261,7 @@ export default {
             layer.selectAll("rect")
                 .data((d) => { return d; })
             .enter().append("rect")
-                .attr("x", (d, i) => { return i*barWidth; })
+                .attr("x", (d, i) => { return x(vm.plotData[i]["donor_id"]); })
                 .attr("y", (d) => { return y(d[1]); })
                 .attr("height", (d) => { return y(d[0]) - y(d[1]); })
                 .attr("width", barWidth - xMargin)
@@ -270,7 +274,7 @@ export default {
             vm.svg.selectAll(".clinical-alcohol")
                 .data(sampleNames)
             .enter().append("rect")
-                .attr("x", (d, i) => { return i*barWidth + 1; })
+                .attr("x", (d, i) => { return x(d) + 1; })
                 .attr("y", vm.height - 2*(cHeight) - cMargin)
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
@@ -289,7 +293,7 @@ export default {
             vm.svg.selectAll(".clinical-tobacco")
                 .data(sampleNames)
             .enter().append("rect")
-                .attr("x", (d, i) => { return i*barWidth + 1; })
+                .attr("x", (d, i) => { return x(d) + 1; })
                 .attr("y", vm.height - cHeight + 1)
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
@@ -310,7 +314,7 @@ export default {
             vm.svg.append("g")
                 .attr("transform", "translate(0," + (vm.height + 2*cMargin) + ")")
                 .attr("class", "x_axis")
-                .call(d3.axisBottom(x))
+                .call(d3.axisBottom(x).tickSizeOuter(0).tickPadding(0))
                 .selectAll("text")	
                     .style("text-anchor", "end")
                     .attr("dx", "-.8em")
@@ -361,7 +365,7 @@ export default {
                 let i = sampleNames.indexOf(donorID);
                 if(i != null && i != -1) {
                     donorHighlight
-                        .attr("x", barWidth * i)
+                        .attr("x", x(donorID))
                         .attr("opacity", 1);
                 } else {
                     donorHighlight.attr("opacity", 0);
