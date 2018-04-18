@@ -25,11 +25,16 @@
         <div class="bottom-options">
             <input type="checkbox" id="normalizeExposures" v-model="options.normalizeExposures">
             <label for="normalizeExposures">Normalize</label>
+            &nbsp; &nbsp;
+            Sort by
             &nbsp;
-            <select v-model="options.sortBy">
-                <option>Exposure to Signature 1</option>
-                <option>Clinical Variable - Tobacco</option>
-                <option>Clinical Variable - Alcohol</option>
+            <select v-model="sortByCategory">
+                <option value="exposures">Signature Exposure</option>
+                <option value="clinical">Clinical Variable</option>
+            </select>
+            &nbsp;
+            <select v-model="options.sortBy" v-if="sortByCategory !== null">
+                <option v-for="sortByOption in sortByList" :key="sortByOption" :value="sortByOption">{{ sortByOption }}</option>
             </select>
         </div>
 
@@ -79,9 +84,13 @@ export default {
             },
             dataOptions: globalDataOptions,
             options: {
-                normalizeExposures: true,
+                normalizeExposures: false,
                 sortBy: null
-            }
+            },
+            sortByCategory: null,
+            sortByList: [],
+            sigNames: [],
+            clinicalNames: []
         };
     },
     mounted: function() {
@@ -111,6 +120,13 @@ export default {
                 this.drawPlot();
             },
             deep: true
+        },
+        sortByCategory: function(val) {
+            if(val == "exposures") {
+                this.sortByList = this.sigNames;
+            } else if(val == "clinical") {
+                this.sortByList = this.clinicalNames;
+            }
         }
     },
     methods: {
@@ -125,6 +141,8 @@ export default {
                     var dataUrl = evt.target.result;
                     d3.csv(dataUrl, vm.rowOp).then((data) => {
                         vm.plotData = data;
+                        vm.sigNames = Object.keys(vm.plotData[0]["exposures"]).sort();
+                        vm.clinicalNames = Object.keys(vm.plotData[0]["clinical"]);
                         vm.drawPlot();
                         vm.loading = false;
                         vm.showInfo = false;
@@ -156,6 +174,8 @@ export default {
             vm.loading = true;
             API.fetchExposures(vm.dataOptions, vm.rowOp).then((data) => {
                 vm.plotData = data;
+                vm.sigNames = Object.keys(vm.plotData[0]["exposures"]).sort();
+                vm.clinicalNames = Object.keys(vm.plotData[0]["clinical"]);
                 vm.drawPlot();
                 vm.loading = false;
             });
@@ -187,10 +207,35 @@ export default {
             }
 
             var barWidth = this.width / this.plotData.length;
-            var sampleNames = vm.plotData.map((d) => { return d["donor_id"]; });
-            var sigNames = Object.keys(vm.plotData[0]["exposures"]);
+            
+            
+          
+            
+            // normalize data if necessary
+            var normalizedData = vm.plotData;
+            if(vm.options.normalizeExposures) {
+                normalizedData = normalizedData.map((d) => {
+                    // deep copy of exposures objects
+                    d = Object.assign({}, d);
+                    d["exposures"] = Object.assign({}, d["exposures"]);
 
-            var maxCountSum = d3.max(vm.plotData.map((d) => {
+                    let dMax = d3.sum(Object.values(d["exposures"]));
+                    Object.keys(d["exposures"]).map((sigName) => {
+                        d["exposures"][sigName] = d["exposures"][sigName] / parseFloat(dMax);
+                    });
+                    return d;
+                });
+            }
+            // sort data if necessary
+            if(vm.sortByCategory != null && vm.options.sortBy != null && vm.sortByList.indexOf(vm.options.sortBy) >= 0) {
+                
+                normalizedData.sort(function(x, y) {
+                    //console.log(x[vm.sortByCategory][vm.options.sortBy]);
+                    return d3.descending(+x[vm.sortByCategory][vm.options.sortBy], +y[vm.sortByCategory][vm.options.sortBy]);
+                });
+            }
+            // compute max for y axis
+            var maxCountSum = d3.max(normalizedData.map((d) => {
                 return d3.sum(Object.values(d["exposures"]));
             }));
 
@@ -198,19 +243,33 @@ export default {
             let cHeight = 15;
             let cMargin = 3;
 
+            var sampleNames = normalizedData.map((d) => { return d["donor_id"]; });
+
+            // axis scales
             var x = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, this.width]);
             var y = d3.scaleLinear()
             .domain([0, maxCountSum])
             .range([this.height - 2*(cHeight + cMargin), 0]);
+            // stacked bar values
             var stack = d3.stack()
-                .keys((d) => { return Object.keys(d[Object.keys(d)[0]]["exposures"]); })
+                .keys((d) => { 
+                    var sigNames = Object.keys(d[Object.keys(d)[0]]["exposures"]); 
+                    /* if(vm.sortByCategory == "exposures" && vm.options.sortBy != null) {
+                        var sortSigName = vm.options.sortBy;
+                        var sigIndex = sigNames.indexOf(sortSigName);
+                        var temp = sigNames[0];
+                        sigNames[0] = sortSigName;
+                        sigNames[sigIndex] = temp;
+                    } */
+                    return sigNames;
+                })
                 .value((d, key) => { return d["exposures"][key]; })
                 .order(d3.stackOrderNone)
                 .offset(d3.stackOffsetNone);
 
-            var series = stack(vm.plotData);
+            var series = stack(normalizedData);
 
             var colorScale = d3.interpolateRainbow;
             var xMargin = 2;
@@ -252,7 +311,7 @@ export default {
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
-                .style("fill", (d, i) => { return colorScale(i / parseFloat(sigNames.length)); })
+                .style("fill", (d, i) => { return colorScale(i / parseFloat(vm.sigNames.length)); })
                 .on('mousemove', (d) => {
                     vm.tooltip(null, null, d["key"], null); 
                 });
@@ -261,12 +320,12 @@ export default {
             layer.selectAll("rect")
                 .data((d) => { return d; })
             .enter().append("rect")
-                .attr("x", (d, i) => { return x(vm.plotData[i]["donor_id"]); })
+                .attr("x", (d, i) => { return x(normalizedData[i]["donor_id"]); })
                 .attr("y", (d) => { return y(d[1]); })
                 .attr("height", (d) => { return y(d[0]) - y(d[1]); })
                 .attr("width", barWidth - xMargin)
                 .on('mouseover', (d, i) => { 
-                    vm.tooltip(vm.plotData[i]["donor_id"], vm.plotData[i]["proj_id"], null, (d[1] - d[0])); 
+                    vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0])); 
                 });
             
         
@@ -280,13 +339,13 @@ export default {
                 .attr("width", barWidth - xMargin - 2)
                 .attr("stroke", "black")
                 .attr("stroke-width", (d, i) => {
-                    return ((vm.plotData[i]["clinical"]["alcohol_binary"] == "") ? 0 : 2)
+                    return ((normalizedData[i]["clinical"]["alcohol_binary"] == "") ? 0 : 2)
                 })
                 .attr("fill", (d, i) => {
-                    if(vm.plotData[i]["clinical"]["alcohol_binary"] == "") {
+                    if(normalizedData[i]["clinical"]["alcohol_binary"] == "") {
                         return "transparent";
                     } else {
-                        return d3.interpolateGreys(vm.plotData[i]["clinical"]["alcohol_binary"]);
+                        return d3.interpolateGreys(normalizedData[i]["clinical"]["alcohol_binary"]);
                     }
                 });
             
@@ -299,14 +358,14 @@ export default {
                 .attr("width", barWidth - xMargin - 2)
                 .attr("stroke", "black")
                 .attr("stroke-width", (d, i) => {
-                    return ((vm.plotData[i]["clinical"]["tobacco_binary"] == "") ? 0 : 2)
+                    return ((normalizedData[i]["clinical"]["tobacco_binary"] == "") ? 0 : 2)
                 })
                 .attr("fill", (d, i) => {
-                    if(vm.plotData[i]["clinical"]["tobacco_binary"] == "") {
+                    if(normalizedData[i]["clinical"]["tobacco_binary"] == "") {
                         return "transparent";
                     } else {
-                        return d3.interpolateGreys(vm.plotData[i]["clinical"]["tobacco_binary"]);
-                        //return d3.interpolateGreys(vm.plotData[i]["clinical"]["tobacco_intensity"] / 100.0);
+                        return d3.interpolateGreys(normalizedData[i]["clinical"]["tobacco_binary"]);
+                        //return d3.interpolateGreys(normalizedData[i]["clinical"]["tobacco_intensity"] / 100.0);
                     }
                 });
 
