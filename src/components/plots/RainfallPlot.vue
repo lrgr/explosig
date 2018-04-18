@@ -16,14 +16,18 @@
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" class="option-control" />
             <div class="option-control">
+                <input type="checkbox" v-model="logScale" :id="this.plotID + '_log_scale'" />
+                <label :for="this.plotID + '_log_scale'">Log Scale</label>
+            </div>
+            <div class="option-control">
                 <input type="checkbox" v-model="highlightKataegis" :id="this.plotID + '_highlight_kataegis'" />
-                <label :for="this.plotID + '_highlight_kataegis'">Highlight Kataegis Regions</label>
+                <label :for="this.plotID + '_highlight_kataegis'">Highlight Kataegis Events</label>
             </div>
             <div class="option-control">
                 <label>Color by&nbsp;</label>
                 <select>
                     <option>Mutation Context</option>
-                    <option>Assigned Signature</option>
+                    <!--<option>Assigned Signature</option>-->
                 </select>
             </div>
         </div>
@@ -73,7 +77,8 @@ export default {
             dataOptions: globalDataOptions,
             chromosome: globalChromosomeSelected,
             chromosomeLocation: globalChromosomeLocation,
-            highlightKataegis: true
+            highlightKataegis: true,
+            logScale: true
         };
     },
     mounted: function() {
@@ -111,6 +116,9 @@ export default {
             deep: true
         },
         highlightKataegis: function() {
+            this.drawPlot();
+        },
+        logScale: function() {
             this.drawPlot();
         }
     },
@@ -170,9 +178,13 @@ export default {
             let x = d3.scaleLinear()
                 .range([0, vm.width])
                 .domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
-            let y = d3.scaleLinear()
-                .range([vm.height, 0])
-                .domain([0, maxDist]);
+
+            var y = d3.scaleLinear();
+            if(vm.logScale) {
+                y = d3.scaleLog();
+            }
+            y.range([vm.height, 0]);
+            y.domain([1, maxDist]);
             
             // svg
             let plotElemID = vm.getPlotElem();
