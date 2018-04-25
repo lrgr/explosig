@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { globalDataOptions } from './../../buses/data-options-bus.js';
+import { globalDataOptions, LegendListBus } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -312,12 +312,25 @@ export default {
                 .attr("transform", "translate(" + (-xMargin) + "," + (-vm.margin.top) + ")")
                 .attr("opacity", 0)
                 .attr("fill", "silver");
+
+            var legendInfo = {
+                "meta": {
+                    "title": "Signatures"
+                },
+                "data": {}
+            }
+            series.map((d, i) => { 
+                legendInfo.data[d["key"]] = colorScale(i / parseFloat(vm.sigNames.length)); 
+            });
+            LegendListBus.$emit("signatures", legendInfo);
             
             let layer = XContainer.selectAll(".layer")
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
-                .style("fill", (d, i) => { return colorScale(i / parseFloat(vm.sigNames.length)); })
+                .style("fill", (d, i) => { 
+                    return colorScale(i / parseFloat(vm.sigNames.length)); 
+                })
                 .on('mousemove', (d) => {
                     vm.tooltip(null, null, d["key"], null); 
                 });

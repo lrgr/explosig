@@ -15,9 +15,9 @@
                     <span class="title">Legend</span>
                 </div>
                 <div class="legend-list">
-                    <Legend v-for="(legend, index) in legendList"
+                    <Legend v-for="(legendKey, index) in legendKeys"
                         :key="index"
-                        :legend="legend"
+                        :legendKey="legendKey"
                         class="legend-item"
                     ></Legend>
                 </div>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { globalPlotList, globalLegendList, DataOptionsBus } from './../buses/data-options-bus.js';
+import { globalPlotList, globalLegendKeys, DataOptionsBus } from './../buses/data-options-bus.js';
 import Plot from './Plot.vue'
 import Legend from './Legend.vue'
 
@@ -40,7 +40,7 @@ export default {
   data: function() {
       return {
           plotList: globalPlotList,
-          legendList: globalLegendList,
+          legendKeys: globalLegendKeys,
           loading: false,
       };
   },
@@ -76,6 +76,8 @@ export default {
     display: inline-block;
     vertical-align: top;
     box-sizing: border-box;
+    position: fixed;
+    
     
     .legend {
         margin-top: 20px;

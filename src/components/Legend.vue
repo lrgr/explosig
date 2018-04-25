@@ -1,22 +1,35 @@
 <template>
-    <div>
-        <div v-if="Object.keys(legend.data).length > 0">
-        {{ legend.meta.title }}
+    <div class="legend-wrapper">
+        <div class="legend" v-if="legendInfo != null && Object.keys(legendInfo.data).length > 0">
+            <span class="legend-key">{{ legendInfo.meta.title }}</span>
+            <div v-for="(itemColor, itemName) in legendInfo.data" :key="itemName">
+                <span class="item-color" :style="{ backgroundColor: itemColor }"></span><span class="item-name">{{ itemName }}</span>
+            </div>
         </div>
+        
     </div>
 </template>
 
 <script>
+import { LegendListBus } from './../buses/data-options-bus.js'
 import * as d3 from 'd3';
 
 export default {
   name: 'Legend',
-  props: ['legend'],
+  props: ['legendKey'],
   data: function() {
       return {
-          
+          legendInfo: null
       };
+  },
+  mounted: function() {
+      // subscribe using legendKey
+      let vm = this;
+      LegendListBus.$on(vm.legendKey, function(updatedLegendInfo) {
+          vm.legendInfo = updatedLegendInfo;
+      });
   }
+  
 }
 </script>
 
@@ -24,7 +37,28 @@ export default {
 <style scoped lang="scss">
 
 @import './../variables.scss';
-
-
+.legend-wrapper {
+    width: 100%;
+    display: block;
+    position: relative;
+    .legend {
+        margin-top: 1rem;
+        margin-left: 1rem;
+        box-sizing: border-box;
+        .legend-key {
+            display: inline-block;
+        }
+        .item-color {
+            width: 1rem;
+            height: 0.5rem;
+            display: inline-block;
+        }
+        .item-name {
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            display: inline-block;
+        }
+    }
+}
 
 </style>

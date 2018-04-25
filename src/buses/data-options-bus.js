@@ -17,29 +17,11 @@ export const globalChromosomeLocation = {
 
 export const globalPlotList = [];
 
-export const globalLegendList = {
-    "signatures": {
-        "meta": {
-            "title": "Signatures"
-        },
-        "data": {}
-    },
-    "projects": {
-        "meta": {
-            "title": "Samples"
-        },
-        "data": {}
-    },
-    "contexts": {
-        "meta": {
-            "title": "Mutation Types"
-        },
-        "data": {}
-    },
-    "clinical": {
-        "meta": {
-            "title": "Clinical Variables"
-        },
-        "data": {}
-    } 
-};
+export const globalLegendKeys = [
+    "signatures",
+    "projects",
+    "contexts",
+    "clinical"
+];
+
+export const LegendListBus = new Vue();
