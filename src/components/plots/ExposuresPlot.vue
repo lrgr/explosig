@@ -199,6 +199,17 @@ export default {
 
             dispatch.call("link-donor-destroy");
         },
+        getTranslation: function(transform) {
+            // Reference: https://stackoverflow.com/questions/38224875/replacing-d3-transform-in-d3-v4
+
+            // Dummy g element for calculations
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            // Set the transform attribute to the provided string value.
+            g.setAttributeNS(null, "transform", transform);
+            var matrix = g.transform.baseVal.consolidate().matrix;
+            // As per definition values e and f are the ones for the translation.
+            return [matrix.e, matrix.f];
+        },
         drawPlot: function () {
             var vm = this;
 
@@ -206,10 +217,10 @@ export default {
                 return;
             }
 
-            var barWidth = this.width / this.plotData.length;
-            
-            
-          
+            let minBarWidth = 20;
+            let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
+            // expand plot width to account for minimum bar width adjustments
+            let plotWidth = barWidth * this.plotData.length;
             
             // normalize data if necessary
             var normalizedData = vm.plotData;
@@ -248,7 +259,7 @@ export default {
             // axis scales
             var x = d3.scaleBand()
                 .domain(sampleNames)
-                .range([0, this.width]);
+                .range([0, plotWidth]);
             var y = d3.scaleLinear()
             .domain([0, maxCountSum])
             .range([this.height - 2*(cHeight + cMargin), 0]);
@@ -256,13 +267,6 @@ export default {
             var stack = d3.stack()
                 .keys((d) => { 
                     var sigNames = Object.keys(d[Object.keys(d)[0]]["exposures"]); 
-                    /* if(vm.sortByCategory == "exposures" && vm.options.sortBy != null) {
-                        var sortSigName = vm.options.sortBy;
-                        var sigIndex = sigNames.indexOf(sortSigName);
-                        var temp = sigNames[0];
-                        sigNames[0] = sortSigName;
-                        sigNames[sigIndex] = temp;
-                    } */
                     return sigNames;
                 })
                 .value((d, key) => { return d["exposures"][key]; })
@@ -283,20 +287,23 @@ export default {
                 .range([cHeight, 0]);
 
              
-
+            // create svg elements
             d3.select("#" + this.plotID).select("svg").remove();
 
             vm.svg = d3.select("#" + this.plotID)
                 .append("svg")
-                .attr("width", this.width + this.margin.left + this.margin.right)
+                .attr("width", plotWidth + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
                 .append("g")
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
                 .on('mouseleave', vm.tooltipDestroy);
             
+            let XContainer = vm.svg.append("g")
+                .attr("transform", "translate(0,0)");
+            
              // dispatch elements
-            let donorHighlight = vm.svg.append("g")
+            let donorHighlight = XContainer.append("g")
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
@@ -306,8 +313,7 @@ export default {
                 .attr("opacity", 0)
                 .attr("fill", "silver");
             
-            
-            let layer = vm.svg.selectAll(".layer")
+            let layer = XContainer.selectAll(".layer")
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
@@ -316,7 +322,6 @@ export default {
                     vm.tooltip(null, null, d["key"], null); 
                 });
             
-                
             layer.selectAll("rect")
                 .data((d) => { return d; })
             .enter().append("rect")
@@ -327,10 +332,9 @@ export default {
                 .on('mouseover', (d, i) => { 
                     vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0])); 
                 });
-            
         
             // clinical variables
-            vm.svg.selectAll(".clinical-alcohol")
+            XContainer.selectAll(".clinical-alcohol")
                 .data(sampleNames)
             .enter().append("rect")
                 .attr("x", (d, i) => { return x(d) + 1; })
@@ -349,7 +353,7 @@ export default {
                     }
                 });
             
-            vm.svg.selectAll(".clinical-tobacco")
+            XContainer.selectAll(".clinical-tobacco")
                 .data(sampleNames)
             .enter().append("rect")
                 .attr("x", (d, i) => { return x(d) + 1; })
@@ -369,27 +373,53 @@ export default {
                     }
                 });
 
-            // x Axis
-            vm.svg.append("g")
+            // x Axis container
+            let xAxis = XContainer.append("g")
                 .attr("transform", "translate(0," + (vm.height + 2*cMargin) + ")")
-                .attr("class", "x_axis")
-                .call(d3.axisBottom(x).tickSizeOuter(0).tickPadding(0))
+                .attr("class", "x_axis");
+
+            // x Axis ticks
+            xAxis.call(d3.axisBottom(x).tickSizeOuter(0).tickPadding(0))
                 .selectAll("text")	
                     .style("text-anchor", "end")
                     .attr("dx", "-.8em")
                     .attr("dy", ".15em")
                     .attr("transform", "rotate(-65)");
             
+            // x Axis drag target
+            xAxis.append("rect")
+                .attr("class", "x-drag-target")
+                .attr("width", plotWidth)
+                .attr("height", 60)
+                .attr("fill", "transparent")
+                .attr("opacity", "0")
+                .style("cursor", "pointer")
+                .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
+                    var newX = vm.getTranslation(XContainer.attr("transform"))[0] + d3.event.dx;
+                    newX = Math.max(-plotWidth + vm.width, newX);
+                    newX = Math.min(barWidth, newX);
+                    XContainer.attr("transform", "translate(" + newX + ",0)");
+                }));
+            
             // text label for the x axis
-            vm.svg.append("text")             
+            vm.svg.append("text")
                 .attr("transform",
-                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 60) + ")")
+                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 70) + ")")
                 .style("text-anchor", "middle")
                 .text("Donors");
 
-            // y Axis
-            vm.svg.append("g")
-                .call(d3.axisLeft(y));
+            // y Axis container
+            let yAxis = vm.svg.append("g");
+            
+            // y axis white background
+            yAxis.append("rect")
+                    .attr("width", vm.margin.left)
+                    .attr("height", vm.height + 2*(cMargin) + vm.margin.bottom)
+                    .attr("transform", "translate(" + (-vm.margin.left) + ",0)")
+                    .attr("fill", "#FFF");
+            
+            // y Axis exposures ticks
+            yAxis.call(d3.axisLeft(y));
             
             // text label for the y axis
             vm.svg.append("text")
@@ -446,6 +476,9 @@ export default {
 @import './../../variables.scss';
 @import './plot-style.scss';
 
-
+.plot-component {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
 
 </style>
