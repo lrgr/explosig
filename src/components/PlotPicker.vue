@@ -67,7 +67,7 @@ export default {
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    overflow-y: scroll;
+    overflow-y: auto;
     h2 {
         flex-shrink: 0;
         margin: 0.3rem;

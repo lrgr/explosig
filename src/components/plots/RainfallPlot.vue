@@ -340,4 +340,9 @@ export default {
 @import './../../variables.scss';
 @import './plot-style.scss';
 
+.plot-component {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
 </style>

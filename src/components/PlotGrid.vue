@@ -9,13 +9,17 @@
                 class="item"
             ></Plot>
         </div>
-        <div class="legend-wrapper">
+        <div class="legend-wrapper" v-if="plotList.length > 0">
             <div class="legend">
                 <div class="options-bar">
                     <span class="title">Legend</span>
                 </div>
                 <div class="legend-list">
-
+                    <Legend v-for="(legend, index) in legendList"
+                        :key="index"
+                        :legend="legend"
+                        class="legend-item"
+                    ></Legend>
                 </div>
             </div>
         </div>
@@ -23,17 +27,20 @@
 </template>
 
 <script>
-import { globalPlotList, DataOptionsBus } from './../buses/data-options-bus.js';
+import { globalPlotList, globalLegendList, DataOptionsBus } from './../buses/data-options-bus.js';
 import Plot from './Plot.vue'
+import Legend from './Legend.vue'
 
 export default {
   name: 'PlotGrid',
   components: {
-    Plot
+    Plot,
+    Legend
   },
   data: function() {
       return {
           plotList: globalPlotList,
+          legendList: globalLegendList,
           loading: false,
       };
   },
@@ -73,6 +80,7 @@ export default {
     .legend {
         margin-top: 20px;
         margin-right: 20px;
+        
         .options-bar {
             display: inline-block;
             width: 100%;
@@ -87,10 +95,11 @@ export default {
             }
         }
         .legend-list {
-            height: 200px;
+            height: 85vh;
             width: 100%;
             border: 1px solid $color-lgray;
             box-sizing: border-box;
+            overflow-y: auto;
         }
     }
 }

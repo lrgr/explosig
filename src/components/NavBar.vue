@@ -135,6 +135,7 @@ span.button {
             right: 2rem;
             top: 1rem;
             cursor: pointer;
+            user-select: none;
         }
     }
 }

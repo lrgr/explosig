@@ -16,3 +16,30 @@ export const globalChromosomeLocation = {
 };
 
 export const globalPlotList = [];
+
+export const globalLegendList = {
+    "signatures": {
+        "meta": {
+            "title": "Signatures"
+        },
+        "data": {}
+    },
+    "projects": {
+        "meta": {
+            "title": "Samples"
+        },
+        "data": {}
+    },
+    "contexts": {
+        "meta": {
+            "title": "Mutation Types"
+        },
+        "data": {}
+    },
+    "clinical": {
+        "meta": {
+            "title": "Clinical Variables"
+        },
+        "data": {}
+    } 
+};

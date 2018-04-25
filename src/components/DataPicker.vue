@@ -119,7 +119,7 @@ export default {
     height: 100%;
    .main-options {
         flex-grow: 1;
-        overflow-y: scroll;
+        overflow-y: auto;
         padding: 1rem;
         display: flex;
         flex-direction: row;
