@@ -1,12 +1,24 @@
 <template>
-    <div class="plot-grid">
-        <Plot v-for="(plot, index) in plotList" 
-            :key="index" 
-            :plotType="plot.type"
-            :plotOptions="plot.options"
-            v-on:removePlot="removePlot(index)"
-            class="item"
-        ></Plot>
+    <div>
+        <div class="plot-grid">
+            <Plot v-for="(plot, index) in plotList" 
+                :key="index" 
+                :plotType="plot.type"
+                :plotOptions="plot.options"
+                v-on:removePlot="removePlot(index)"
+                class="item"
+            ></Plot>
+        </div>
+        <div class="legend-wrapper">
+            <div class="legend">
+                <div class="options-bar">
+                    <span class="title">Legend</span>
+                </div>
+                <div class="legend-list">
+
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -44,11 +56,46 @@ export default {
 <style scoped lang="scss">
 
 @import './../variables.scss';
-
 .plot-grid {
+    display: inline-block;
+    width: 80%;
+
     .item {
         margin: 20px;
     }
 }
+.legend-wrapper {
+    width: 20%;
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    
+    .legend {
+        margin-top: 20px;
+        margin-right: 20px;
+        .options-bar {
+            display: inline-block;
+            width: 100%;
+            background-color: $color-lgray;
+            padding: 0.5rem 0rem;
+
+            span.title {
+                text-decoration: none;
+                color: $color-white;
+                font-size: 1.2rem;
+                margin: 0 1rem;
+            }
+        }
+        .legend-list {
+            height: 200px;
+            width: 100%;
+            border: 1px solid $color-lgray;
+            box-sizing: border-box;
+        }
+    }
+}
+
+
+
 
 </style>

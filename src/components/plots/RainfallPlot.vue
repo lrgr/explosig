@@ -101,7 +101,7 @@ export default {
     },
     watch: {
         windowWidth: function (val) {
-            this.width = val - 40 - this.margin.left - this.margin.right;
+            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
         },
         chromosome: {
             handler: function () {
