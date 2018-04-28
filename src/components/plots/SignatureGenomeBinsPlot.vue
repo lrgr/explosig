@@ -137,7 +137,7 @@ export default {
                 .attr("width", 20)
                 .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
                 .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
-                .attr("opacity", 0)
+                .attr("fill-opacity", 0)
                 .attr("fill", "silver");
 
             vm.svg.selectAll(".bar-wrap")
@@ -162,7 +162,7 @@ export default {
                 .attr("height", function (d) {
                     return vm.height - y(+d);
                 })
-                .attr("opacity", 0.4)
+                .attr("fill-opacity", 0.4)
                 .attr("fill", function (d, i) {
                     return c20(i);
                 });
@@ -196,11 +196,11 @@ export default {
             dispatch.on("link-genome." + this.plotID, function(location) {
                 genomeHighlight
                     .attr("x", location)
-                    .attr("opacity", 1);
+                    .attr("fill-opacity", 1);
             });
 
             dispatch.on("link-genome-destroy." + this.plotID, function() {
-                genomeHighlight.attr("opacity", 0);
+                genomeHighlight.attr("fill-opacity", 0);
             });
         }
     }

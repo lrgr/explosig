@@ -205,7 +205,7 @@ export default {
                 .attr("y", -vm.margin.top)
                 .attr("width", (vm.width + vm.margin.left + 10))
                 .attr("height", (vm.height + vm.margin.top + vm.margin.bottom))
-                .attr("opacity", 0)
+                .attr("fill-opacity", 0)
                 .attr("fill", "silver");
             
             let genomeHighlight = vm.svg.append("g")
@@ -215,7 +215,7 @@ export default {
                 .attr("width", 20)
                 .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
                 .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
-                .attr("opacity", 0)
+                .attr("fill-opacity", 0)
                 .attr("fill", "silver");
             
             // kataegis highlights
@@ -227,7 +227,7 @@ export default {
                 .attr('y', 0)
                 .attr('width', 3)
                 .attr('height', vm.height)
-                .attr('opacity', (vm.highlightKataegis ? 1 : 0))
+                .attr('fill-opacity', (vm.highlightKataegis ? 1 : 0))
                 .attr('fill', "#FFC4C4");
 
             // hash string to int: 
@@ -310,24 +310,24 @@ export default {
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotID, function(donorID) {
                 if(donorID == vm.plotOptions.donor_id) {
-                    donorHighlight.attr("opacity", 0.5);
+                    donorHighlight.attr("fill-opacity", 0.5);
                 } else {
-                    donorHighlight.attr("opacity", 0);
+                    donorHighlight.attr("fill-opacity", 0);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotID, function() {
-                donorHighlight.attr("opacity", 0);
+                donorHighlight.attr("fill-opacity", 0);
             });
 
             dispatch.on("link-genome." + this.plotID, function(location) {
                 genomeHighlight
                     .attr("x", location)
-                    .attr("opacity", 1);
+                    .attr("fill-opacity", 1);
             });
 
             dispatch.on("link-genome-destroy." + this.plotID, function() {
-                genomeHighlight.attr("opacity", 0);
+                genomeHighlight.attr("fill-opacity", 0);
             });
         }
     }

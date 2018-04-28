@@ -310,7 +310,7 @@ export default {
                 .attr("width", barWidth + xMargin)
                 .attr("height", (vm.height + vm.margin.top + 60))
                 .attr("transform", "translate(" + (-xMargin) + "," + (-vm.margin.top) + ")")
-                .attr("opacity", 0)
+                .attr("fill-opacity", 0)
                 .attr("fill", "silver");
 
             var legendInfo = {
@@ -395,8 +395,8 @@ export default {
             xAxis.call(d3.axisBottom(x).tickSizeOuter(0).tickPadding(0))
                 .selectAll("text")	
                     .style("text-anchor", "end")
-                    .attr("dx", "-.8em")
-                    .attr("dy", ".15em")
+                    .attr("x", "-.8em")
+                    .attr("y", ".15em")
                     .attr("transform", "rotate(-65)");
             
             // x Axis drag target
@@ -405,7 +405,7 @@ export default {
                 .attr("width", plotWidth)
                 .attr("height", 60)
                 .attr("fill", "transparent")
-                .attr("opacity", "0")
+                .attr("fill-opacity", "0")
                 .style("cursor", "pointer")
                 .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
                     var newX = vm.getTranslation(XContainer.attr("transform"))[0] + d3.event.dx;
@@ -468,14 +468,14 @@ export default {
                 if(i != null && i != -1) {
                     donorHighlight
                         .attr("x", x(donorID))
-                        .attr("opacity", 1);
+                        .attr("fill-opacity", 1);
                 } else {
-                    donorHighlight.attr("opacity", 0);
+                    donorHighlight.attr("fill-opacity", 0);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotID, () => {
-                donorHighlight.attr("opacity", 0);
+                donorHighlight.attr("fill-opacity", 0);
             });
     
         }
