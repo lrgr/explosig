@@ -128,7 +128,7 @@ export default {
                 this.tooltipInfo.kataegisCount = this.plotData[donorID]["kataegis"][this.chromosome.value].length;
             }
             this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = y + this.margin.top;
+            this.tooltipInfo.top = this.height + this.margin.top;
 
             dispatch.call("link-donor", null, donorID);
             dispatch.call("link-project", null, projID);
@@ -146,6 +146,17 @@ export default {
                 type: 'RainfallPlot',
                 options: { 'proj_id': proj_id, 'donor_id': donor_id }
             });
+        },
+        getTranslation: function(transform) {
+            // Reference: https://stackoverflow.com/questions/38224875/replacing-d3-transform-in-d3-v4
+
+            // Dummy g element for calculations
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            // Set the transform attribute to the provided string value.
+            g.setAttributeNS(null, "transform", transform);
+            var matrix = g.transform.baseVal.consolidate().matrix;
+            // As per definition values e and f are the ones for the translation.
+            return [matrix.e, matrix.f];
         },
         updatePlot: function () {
             var vm = this;
@@ -169,15 +180,21 @@ export default {
             var numSamples = sampleNames.length;
             let chrLen = vm.getChromosomeLength(vm.chromosome.value);
 
+            let minBarHeight = 10;
+            var barHeight = Math.max(minBarHeight, vm.height / numSamples);
+            // expand plot height to account for minimum bar height adjustments
+            let plotHeight = barHeight * numSamples;
+            var yMargin = 2;
+
+
             var x = d3.scaleLinear().range([0, vm.width]);
             var y = d3.scaleBand()
                 .domain(sampleNames)
-                .range([0, vm.height]);
+                .range([0, plotHeight]);
 
             x.domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
 
-            var barHeight = vm.height / numSamples;
-            var yMargin = 2;
+            
 
             var colorScale = d3.scaleOrdinal(d3.schemePastel1);
 
@@ -187,21 +204,18 @@ export default {
             vm.svg = d3.select(plotElemID)
                 .append("svg")
                 .attr("width", vm.width + vm.margin.left + vm.margin.right)
-                .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
+                .attr("height", plotHeight + vm.margin.top + vm.margin.bottom)
                 .append("g")
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
                 .on('mouseleave', vm.tooltipDestroy);
             
-            // zoom with brush
-            vm.svg.append("g")
-                .attr("class", "brush")
-                .call(
-                    d3.brushX()
-                        .on("end." + vm.plotID, brushend)
-                );
+            let YContainer = vm.svg.append("g")
+                .attr("transform", "translate(0,0)");
+            
+            
             //create brush function redraw scatterplot with x selection
-            function brushend() {
+            function brushendX() {
                 var s = d3.event.selection;
                 if(s) {
                     var s2 = s.map((el) => Math.floor(x.invert(el)));
@@ -213,9 +227,10 @@ export default {
                 }
                 vm.drawPlot();
             }
+            
 
             // dispatch elements
-            let donorHighlight = vm.svg.append("g")
+            let donorHighlight = YContainer.append("g")
                 .append("rect")
                 .attr("x", -vm.margin.left)
                 .attr("y", 0)
@@ -225,18 +240,18 @@ export default {
                 .attr("fill-opacity", 0)
                 .attr("fill", "silver");
             
-            let genomeHighlight = vm.svg.append("g")
+            let genomeHighlight = YContainer.append("g")
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", 20)
-                .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
+                .attr("height", plotHeight + vm.margin.top + vm.margin.bottom)
                 .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
                 .attr("fill-opacity", 0)
                 .attr("fill", "silver");
             
             // plot elements
-            let sampleBars = vm.svg.selectAll(".sample-bar-g")
+            let sampleBars = YContainer.selectAll(".sample-bar-g")
                 .data(sampleNames)
                 .enter().append("g")
                 .attr("class", "sample-bar-g")
@@ -276,21 +291,27 @@ export default {
                 .attr("fill-opacity", 0.5)
                 .attr("fill", "black");
 
-            // x Axis
-            vm.svg.append("g")
-                .attr("transform", "translate(0," + vm.height + ")")
-                .call(d3.axisBottom(x));
-            
-            // text label for the x axis
-            vm.svg.append("text")             
-                .attr("transform",
-                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
-                .style("text-anchor", "middle")
-                .text("Chromosome Location");
-
             // y Axis
-            vm.svg.append("g")
-                .call(d3.axisLeft(y).tickSizeOuter(0));
+            let yAxis = YContainer.append("g")
+                .attr("class", "y_axis");
+            
+            yAxis.call(d3.axisLeft(y).tickSizeOuter(0));
+
+            // y Axis drag target
+            yAxis.append("rect")
+                .attr("class", "y-drag-target")
+                .attr("width", vm.margin.left)
+                .attr("height", plotHeight)
+                .attr("x", -vm.margin.left)
+                .attr("fill", "transparent")
+                .attr("fill-opacity", "0")
+                .style("cursor", "pointer")
+                .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
+                    var newY = vm.getTranslation(YContainer.attr("transform"))[1] + d3.event.dy;
+                    newY = Math.max(-plotHeight + vm.height, newY);
+                    newY = Math.min(0, newY);
+                    YContainer.attr("transform", "translate(0," + newY + ")");
+                }));
             
             // text label for the y axis
             vm.svg.append("text")
@@ -300,6 +321,36 @@ export default {
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text("Donor");  
+             
+            
+            // white background rects to hide overflow-y
+            vm.svg.append("g")
+                .append("rect")
+                .attr("x", -vm.margin.left)
+                .attr("y", vm.height)
+                .attr("width", vm.width + vm.margin.left + vm.margin.right)
+                .attr("height", plotHeight - vm.height - vm.margin.top)
+                .attr("fill", "#FFF");
+
+            // x Axis
+            let xAxis = vm.svg.append("g")
+                .attr("transform", "translate(0," + vm.height + ")")
+                .call(d3.axisBottom(x));
+            
+            // zoom with brush x
+            xAxis.append("g")
+                .attr("class", "brush")
+                .call(
+                    d3.brushX()
+                        .on("end." + vm.plotID, brushendX)
+                );
+            
+            // text label for the x axis
+            vm.svg.append("text")             
+                .attr("transform",
+                        "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text("Chromosome Location");
             
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotID, function(donorID) {
@@ -336,5 +387,10 @@ export default {
 
 @import './../../variables.scss';
 @import './plot-style.scss';
+
+.plot-component {
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
 
 </style>

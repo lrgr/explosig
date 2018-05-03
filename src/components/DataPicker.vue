@@ -5,15 +5,16 @@
                 <h3>Signatures</h3>
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
                 <div class="option-group">
-                    <div v-for="signature in signatures" :key="signature">
-                        <input type="checkbox" :value="signature" :id="signature" name="signatures" v-model="options.signatures">
-                        <label :for="signature">{{ signature }}</label>
+                    <div v-for="signature in sortedSignatures" :key="signature.name" class="tooltip">
+                        <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
+                        <label :for="signature.name">{{ signature.name }}</label>
+                        <span class="tooltiptext">{{ signature.description }}</span>
                     </div>
                     <Spinner v-if="loading" class="spinner"></Spinner>
                 </div>
             </div>
             <div class="main-options-right">
-                <h3>Presets</h3>
+                <h3>Per-Cancer Presets</h3>
                 <div class="option-group">
                     <div v-for="preset in sigPresets" :key="preset.name" class="preset-buttons">
                         <p>{{ preset.name }}</p>
@@ -28,14 +29,20 @@
             </div>
         </div>
         <div v-show="samplesVisible" class="main-options">
-            <div class="main-options-left">
+            <div>
                 <h3>Samples</h3>
                 <button class="inline" v-on:click="toggleSources()">Toggle All</button>
                 <div class="option-group">
-                    <div v-for="source in sources" :key="source">
-                        <input type="checkbox" :value="source" :id="source" name="sources" v-model="options.sources">
-                        <label :for="source">{{ source }}</label>
-                    </div>
+                    <table>
+                    <tr v-for="(sourceData, sourceName) in sources" :key="sourceName">
+                        <td>
+                        <input type="checkbox" :value="sourceName" :id="sourceName" name="sources" v-model="options.sources">
+                        <label :for="sourceName">{{ sourceName }}</label>
+                        </td>
+                        <td class="cell-gray">{{ sourceData.name }}</td>
+                        <td class="cell-gray">({{ sourceData.num_donors }} donors)</td>
+                    </tr>
+                    </table>
                     <Spinner v-if="loading" class="spinner"></Spinner>
                 </div>
             </div>
@@ -64,8 +71,8 @@ export default {
           signaturesVisible: true,
           samplesVisible: false,
           options: globalDataOptions,
-          signatures: [],
-          sources: [],
+          signatures: {},
+          sources: {},
           sigPresets: []
       };
   },
@@ -78,19 +85,31 @@ export default {
             vm.loading = false;
         });
   },
+  computed: {
+      sortedSignatures: function() {
+        var sigs = [];
+        Object.keys(this.signatures).map((name) => { 
+            var sig = this.signatures[name];
+            sig["name"] = name;
+            sigs.push(sig); 
+        });
+        sigs = sigs.sort((a, b) => (a.index - b.index));
+        return sigs;
+      }
+  },
   methods: {
       toggleSources: function() {
-          if(this.options.sources.length == this.sources.length) {
+          if(this.options.sources.length == Object.keys(this.sources).length) {
               this.options.sources = [];
           } else {
-              this.options.sources = this.sources;
+              this.options.sources = Object.keys(this.sources);
           }
       },
       toggleSignatures: function() {
-          if(this.options.signatures.length == this.signatures.length) {
+          if(this.options.signatures.length == Object.keys(this.signatures).length) {
               this.options.signatures = [];
           } else {
-              this.options.signatures = this.signatures;
+              this.options.signatures = Object.keys(this.signatures);
           }
       },
       showSignatures: function() {
@@ -123,6 +142,18 @@ export default {
         padding: 1rem;
         display: flex;
         flex-direction: row;
+        table, th, td {
+            border: 0px solid black;
+        }
+        table {
+            th, td {
+                padding: 5px;
+            }
+            .cell-gray {
+                color: $color-gray;
+            }
+            border-collapse: collapse;
+        }
         .main-options-left, .main-options-right {
             flex-basis: 50%;
         }
@@ -174,6 +205,43 @@ export default {
         }
    }
     
+}
+
+
+/* Tooltip container */
+.tooltip {
+    display: block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 500px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+ 
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
 }
 
 </style>
