@@ -2,7 +2,7 @@
 
 # Interactive Mutation Visualizations with Mutation Signatures
 
-Hosted: [https://keller-mark.github.io/signature-visualization-frontend/](https://keller-mark.github.io/signature-visualization-frontend/)
+Hosted: [https://mutation-signature-explorer.lrgr.io/](https://mutation-signature-explorer.lrgr.io/)
 
 ### Dependencies
 - nodejs
