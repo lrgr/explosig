@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/lrgr/mutation-signature-explorer.svg?branch=master)](https://travis-ci.org/lrgr/mutation-signature-explorer)
 
-# Interactive Mutation Visualizations with Mutation Signatures
+# Mutation Signature Explorer
 
 Hosted: [https://mutation-signature-explorer.lrgr.io/](https://mutation-signature-explorer.lrgr.io/)
 

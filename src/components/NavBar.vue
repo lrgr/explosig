@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="navbar">
-            <span class="title">Mutation Visualizations</span>
+            <span class="title">Mutation Signature Explorer</span>
             <div class="right-button-group">
                 <span class="button" v-on:click="showDataPicker()">Data</span>
                 <span class="button button-inverse" v-on:click="showPlotPicker()">+ Plot</span>

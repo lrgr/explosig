@@ -7,8 +7,7 @@
                 <div class="option-group">
                     <div v-for="signature in sortedSignatures" :key="signature.name" class="tooltip">
                         <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
-                        <label :for="signature.name">{{ signature.name }}</label>
-                        <span class="tooltiptext">{{ signature.description }}</span>
+                        <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'">{{ signature.name }}</label>
                     </div>
                     <Spinner v-if="loading" class="spinner"></Spinner>
                 </div>
@@ -56,7 +55,7 @@
 </template>
 
 <script>
-import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.js';
+import { DataOptionsBus, globalDataOptions, globalMeta } from './../buses/data-options-bus.js';
 import Spinner from './Spinner.vue'
 import API from './../api.js'
 
@@ -71,6 +70,7 @@ export default {
           signaturesVisible: true,
           samplesVisible: false,
           options: globalDataOptions,
+          meta: globalMeta,
           signatures: {},
           sources: {},
           sigPresets: []
@@ -83,18 +83,22 @@ export default {
             vm.signatures = listing.sigs;
             vm.sigPresets = listing.sig_presets;
             vm.loading = false;
+            
+            // Convert signatures object to array, sort by index, save to global variable
+            var sigArray = [];
+            let sigNames = Object.keys(listing.sigs);
+            for(var i = 0; i < sigNames.length; i++) {
+                var sig = listing.sigs[sigNames[i]];
+                sig['name'] = sigNames[i];
+                sigArray.push(sig);
+            }
+            sigArray = sigArray.sort((a, b) => (a.index - b.index));
+            vm.meta['signatures'] = sigArray;
         });
   },
   computed: {
       sortedSignatures: function() {
-        var sigs = [];
-        Object.keys(this.signatures).map((name) => { 
-            var sig = this.signatures[name];
-            sig["name"] = name;
-            sigs.push(sig); 
-        });
-        sigs = sigs.sort((a, b) => (a.index - b.index));
-        return sigs;
+        return this.meta['signatures'];
       }
   },
   methods: {
@@ -208,40 +212,64 @@ export default {
 }
 
 
-/* Tooltip container */
-.tooltip {
-    display: block;
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
 }
 
-/* Tooltip text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 500px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
- 
-    /* Position the tooltip text - see examples below! */
-    position: absolute;
-    z-index: 1;
+/* Hide the tooltip content by default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  top: 0%;
+  left: 100%;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  padding: 7px;
+  width: 360px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+  display: inline-block;
 }
 
-.tooltip .tooltiptext::after {
-    content: " ";
-    position: absolute;
-    top: 100%; /* At the bottom of the tooltip */
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: black transparent transparent transparent;
+/* Triangle hack to make tooltip look like a speech bubble */
+[data-tooltip]:after {
+  position: absolute;
+  top: 6px;
+  left: 100%;
+  margin-left: 5px;
+  width: 0;
+  border-right: 5px solid #000;
+  border-right: 5px solid hsla(0, 0%, 20%, 0.9);
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  opacity: 1;
 }
 
 </style>

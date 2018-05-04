@@ -30,6 +30,7 @@
             <p>For the purposes of this plot, kataegis is defined as six or more mutations with an average intermutation distance of less than or equal to 1,000 bp.</p>
             <p>To view the rainfall plot for a donor, click on its colored row.</p>
             <p>To zoom in along chromosome location, click and drag mouse below the axis. To zoom out, double click.</p>
+            <p>Drag along the y axis to pan across additional donors.</p>
         </div>
     </div>
 </template>
@@ -118,7 +119,7 @@ export default {
         getChromosomeLength: function (name) {
             return this.$refs.chrSelect.getChromosomeLength(name);
         },
-        tooltip: function(donorID, y) {
+        tooltip: function(donorID) {
             this.tooltipInfo.donorID = donorID;
             var projID = this.plotData[donorID]["proj_id"];
             this.tooltipInfo.projID = projID;
@@ -266,8 +267,8 @@ export default {
                 .attr("width", vm.width)
                 .attr("height", barHeight - yMargin)
                 .attr("fill", function(d) { return colorScale(vm.plotData[d]["proj_id"]); })
-                .on('mousemove', function(d, i) { vm.tooltip(d, barHeight*i) })
-                .on('click', (d, i) => {
+                .on('mousemove', function(d, i) { vm.tooltip(d) })
+                .on('click', (d) => {
                     vm.addRainfallPlot(d, vm.plotData[d]["proj_id"]);
                 });
 
@@ -320,7 +321,7 @@ export default {
                 .attr("x", 0 - (vm.height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Donor");  
+                .text("Donors");  
              
             
             // white background rects to hide overflow-y

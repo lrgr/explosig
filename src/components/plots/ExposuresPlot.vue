@@ -41,6 +41,7 @@
         <div class="plot-info" v-if="showInfo">
             <h3>Info</h3>
             <p>This plot displays exposures to selected signatures for each donor in the selected dataset, along with clinical data such as alcohol and tobacco usage.</p>
+            <p>Drag along the x axis to pan across additional donors.</p>
             <h3>Settings</h3>
             <label>Use local file: &nbsp;</label>
             <input type="file" accept=".csv" v-on:input="fileInput($event.target.files)">

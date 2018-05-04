@@ -24,4 +24,8 @@ export const globalLegendKeys = [
     "clinical"
 ];
 
+export const globalMeta = {
+    'signatures': []
+};
+
 export const LegendListBus = new Vue();
