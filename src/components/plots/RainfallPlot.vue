@@ -229,23 +229,6 @@ export default {
                 .attr('height', vm.height)
                 .attr('fill-opacity', (vm.highlightKataegis ? 1 : 0))
                 .attr('fill', "#FFC4C4");
-
-            // hash string to int: 
-            // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
-            let hashFunc = function(str) {
-                var hash = 0, i, chr;
-                if (str.length === 0) return hash;
-                for (i = 0; i < str.length; i++) {
-                    chr   = str.charCodeAt(i);
-                    hash  = ((hash << 5) - hash) + chr;
-                    hash |= 0; // Convert to 32bit integer
-                }
-                return hash;
-            };
-            // get min and max hash values for mutation contexts
-            let contextExtent = d3.extent(vm.plotData.map((el) => hashFunc(el.context)));
-            let contextOffset = 0 - contextExtent[0];
-            let contextMax = contextExtent[1] + contextOffset;
             
             // point for each mutation, colored by mutation context
             let points = vm.svg.selectAll('.point')
@@ -255,9 +238,9 @@ export default {
                 .attr('cx', function(d){return x(+d.pos);})
                 .attr('cy', function(d){ return y(+d.mut_dist); })
                 .attr('r', 3)
-                .style('fill', function(d){ 
+                .style('fill', function(d){
                     // map hashed value to value between 0 and 1
-                    return d3.interpolateRainbow((hashFunc(d.context) + contextOffset) / contextMax); 
+                    return d3.interpolateRainbow(+d.cat_index / 96); 
                 });
             
             // zoom with brush

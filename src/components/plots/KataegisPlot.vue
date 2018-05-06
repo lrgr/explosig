@@ -330,7 +330,7 @@ export default {
                 .attr("x", -vm.margin.left)
                 .attr("y", vm.height)
                 .attr("width", vm.width + vm.margin.left + vm.margin.right)
-                .attr("height", plotHeight - vm.height - vm.margin.top)
+                .attr("height", plotHeight)
                 .attr("fill", "#FFF");
 
             // x Axis
