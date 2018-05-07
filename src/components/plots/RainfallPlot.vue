@@ -5,7 +5,13 @@
         <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
                 <tr>
-                    <th>Var Name</th><td>{{ this.tooltipInfo.var }}</td>
+                    <th>Position</th><td>{{ this.tooltipInfo.position }}</td>
+                </tr>
+                <tr>
+                    <th>Distance to Previous</th><td>{{ this.tooltipInfo.mutDist }}</td>
+                </tr>
+                <tr>
+                    <th>Mutation Category</th><td>{{ this.tooltipInfo.category }}</td>
                 </tr>
             </table>
         </div>
@@ -41,7 +47,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation, LegendListBus, mutationCategories } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
@@ -70,7 +76,9 @@ export default {
                 left: 90
             },
             tooltipInfo: {
-                var: '',
+                category: '',
+                position: '',
+                mutDist: '',
                 left: null,
                 top: null
             },
@@ -129,21 +137,19 @@ export default {
         getChromosomeLength: function (name) {
             return this.$refs.chrSelect.getChromosomeLength(name);
         },
-        tooltip: function(donorID, y) {
-            this.tooltipInfo.var = donorID;
+        tooltip: function(category, position, mutDist) {
+            this.tooltipInfo.category = category;
+            this.tooltipInfo.position = position;
+            this.tooltipInfo.mutDist = mutDist;
             
             this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = y + this.margin.top;
+            this.tooltipInfo.top = this.height + this.margin.top;
 
-            dispatch.call("link-donor", null, donorID);
-            dispatch.call("link-genome", null, d3.event.x);
         },
         tooltipDestroy: function() {
             this.tooltipInfo.top = null;
             this.tooltipInfo.left = null;
 
-            dispatch.call("link-donor-destroy");
-            dispatch.call("link-genome-destroy");
         },
         updatePlot: function () {
             let vm = this;
@@ -241,10 +247,32 @@ export default {
                 .style('fill', function(d){
                     // map hashed value to value between 0 and 1
                     return d3.interpolateRainbow(+d.cat_index / 96); 
+                })
+                .on("mouseover", function(d) {
+                    vm.tooltip(d.cat, d.pos, d.mut_dist);
                 });
             
+            
+            var legendInfo = {
+                "meta": {
+                    "title": "Contexts"
+                },
+                "data": {}
+            };
+
+            let catNames = Object.keys(mutationCategories);
+            for(var i = 0; i < catNames.length; i++) {
+                legendInfo["data"][catNames[i]] = d3.interpolateRainbow(mutationCategories[catNames[i]] / 96);
+            }
+            LegendListBus.$emit("contexts", legendInfo); 
+            
+             // x Axis
+            let xAxis = vm.svg.append("g")
+                .attr("transform", "translate(0," + vm.height + ")")
+                .call(d3.axisBottom(x));
+            
             // zoom with brush
-            vm.svg.append("g")
+            xAxis.append("g")
                 .attr("class", "brush")
                 .call(
                     d3.brushX()
@@ -263,12 +291,6 @@ export default {
                 }
                 vm.drawPlot();
             }
-                
-            
-             // x Axis
-            vm.svg.append("g")
-                .attr("transform", "translate(0," + vm.height + ")")
-                .call(d3.axisBottom(x));
             
             // text label for the x axis
             vm.svg.append("text")             
