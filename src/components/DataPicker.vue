@@ -1,18 +1,27 @@
 <template>
     <div class="plot-options">
         <div v-show="signaturesVisible" class="main-options">
-            <div class="main-options-left">
+            <div class="option-group">
                 <h3>Signatures</h3>
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
-                <div class="option-group">
+                <div id="signaturePicker">
+                    <div id="signaturePickerCheckboxes">
+                        <div v-for="signature in sortedSignatures" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
+                            <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'" :style="{ lineHeight: rowHeight + 'px'}">{{ signature.name }}</label>
+                            <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
+                        </div>
+                    </div>
+                <!-- svg here --></div>
+                <Spinner v-if="loading" class="spinner"></Spinner>
+                <!--<div class="option-group">
                     <div v-for="signature in sortedSignatures" :key="signature.name" class="tooltip">
                         <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
                         <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'">{{ signature.name }}</label>
                     </div>
                     <Spinner v-if="loading" class="spinner"></Spinner>
-                </div>
+                </div>-->
             </div>
-            <div class="main-options-right">
+            <!--<div class="main-options-right">
                 <h3>Per-Cancer Presets</h3>
                 <div class="option-group">
                     <div v-for="preset in sigPresets" :key="preset.name" class="preset-buttons">
@@ -25,7 +34,7 @@
                     </div>
                     <Spinner v-if="loading" class="spinner"></Spinner>
                 </div>
-            </div>
+            </div>-->
         </div>
         <div v-show="samplesVisible" class="main-options">
             <div>
@@ -58,6 +67,7 @@
 import { DataOptionsBus, globalDataOptions, globalMeta } from './../buses/data-options-bus.js';
 import Spinner from './Spinner.vue'
 import API from './../api.js'
+import * as d3 from 'd3';
 
 export default {
   name: 'DataPicker',
@@ -73,7 +83,17 @@ export default {
           meta: globalMeta,
           signatures: {},
           sources: {},
-          sigPresets: []
+          sigPresets: [],
+          windowWidth: 0,
+          windowHeight: 0,
+          rowHeight: 0,
+          svg: null,
+          margin: {
+            top: 130,
+            right: 30,
+            bottom: 10,
+            left: 100
+          }
       };
   },
   mounted: function() {
@@ -94,11 +114,27 @@ export default {
             }
             sigArray = sigArray.sort((a, b) => (a.index - b.index));
             vm.meta['signatures'] = sigArray;
+
+            vm.drawPlot();
+        });
+
+        vm.windowWidth = window.innerWidth;
+        vm.windowHeight = window.innerHeight;
+        window.addEventListener('resize', () => {
+            vm.windowWidth = window.innerWidth;
+            vm.windowHeight = window.innerHeight;
+            vm.drawPlot();
         });
   },
   computed: {
       sortedSignatures: function() {
         return this.meta['signatures'];
+      },
+      height: function () {
+        return 604 - this.margin.top - this.margin.bottom;
+      },
+      width: function() {
+          return this.windowWidth*0.8 - this.margin.left - this.margin.right - 60;
       }
   },
   methods: {
@@ -126,6 +162,84 @@ export default {
       },
       emitUpdate: function() {
         DataOptionsBus.$emit('updateDataOptions');
+      },
+      drawPlot: function () {
+            var vm = this;
+
+            let sigNames = vm.sortedSignatures.map((sig) => sig.name);
+            let cancerTypes = vm.sigPresets.map((preset) => preset.name);
+            
+            
+
+            // axis scales
+            var x = d3.scaleBand()
+                .domain(Array.from(Array(vm.sigPresets.length).keys()))
+                .range([0, vm.width]);
+            var y = d3.scaleBand()
+                .domain(sigNames)
+                .range([0, vm.height]);
+
+            vm.rowHeight = y.step() * 0.75;
+
+            d3.select("#signaturePicker").select("svg").remove();
+
+            vm.svg = d3.select("#signaturePicker")
+                .append("svg")
+                .attr("width", this.width + this.margin.left + this.margin.right)
+                .attr("height", this.height + this.margin.top + this.margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + vm.margin.left + "," + vm.margin.top + ")");
+            
+            vm.svg.selectAll(".signatureRow")
+                .data(vm.sortedSignatures)
+            .enter().append("g")
+                .attr("class", "signatureRow")
+                .append("rect")
+                    .attr("width", vm.width)
+                    .attr("height", y.step())
+                    .attr("x", 0)
+                    .attr("y", (d) => y(d.name))
+                    .attr("fill", "silver")
+                    .attr("fill-opacity", 0);
+            
+            vm.svg.selectAll(".cancerTypeColumn")
+                .data(vm.sigPresets)
+            .enter().append("g")
+                .attr("class", "cancerTypeColumn")
+                .attr("transform", (d, i) => "translate(" + x(i) + ",0)")
+                    .selectAll(".perCancerTypeCell")
+                    .data((d) => d.signatures)
+                .enter().append("rect")
+                    .attr("class", "perCancerTypeCell")
+                    .attr("x", 0)
+                    .attr("width", x.step()-2)
+                    .attr("height", y.step()-2)
+                    .attr("y", (d) => y(d))
+                    .attr("fill", "#575761");
+            /*
+            // y Axis container
+            let yAxis = vm.svg.append("g");
+            
+            // y Axis ticks
+            yAxis.call(d3.axisLeft(y).tickSizeOuter(0));
+            */
+            // x Axis container
+            let xAxis = vm.svg.append("g");
+            
+            // x Axis ticks
+            xAxis.call(d3.axisTop(x).tickSizeOuter(0).tickFormat((d) => cancerTypes[d]))
+                .selectAll("text")	
+                    .style("text-anchor", "end")
+                    .style("cursor", "pointer")
+                    .attr("dx", "-.5em")
+                    .attr("dy", ".8em")
+                    .attr("transform", "rotate(45)")
+                    .on("click", (d) => {
+                        vm.options.signatures = vm.sigPresets[d].signatures;  
+                    });
+
+            
       }
   }
 }
@@ -167,6 +281,25 @@ export default {
             margin-top: 0.3rem;
             margin-left: 0rem;
             display: inline-block;
+        }
+        #signaturePicker {
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            #signaturePickerCheckboxes {
+                position: absolute;
+                top: 125px;
+                width: 100px;
+                text-align: right;
+                .tooltip {
+                    label {
+                        font-size: 11px;
+                    }
+                    input[type=checkbox] {
+                        transform: scale(0.8);
+                    }
+                }
+            }
         }
         button.inline {
             display: inline-block;
@@ -233,7 +366,7 @@ export default {
   top: 0%;
   left: 100%;
   margin-bottom: 5px;
-  margin-left: 10px;
+  margin-left: 23px;
   padding: 7px;
   width: 360px;
   -webkit-border-radius: 3px;
@@ -247,14 +380,15 @@ export default {
   font-size: 14px;
   line-height: 1.2;
   display: inline-block;
+  white-space: normal;
 }
 
 /* Triangle hack to make tooltip look like a speech bubble */
 [data-tooltip]:after {
   position: absolute;
-  top: 6px;
+  top: 3px;
   left: 100%;
-  margin-left: 5px;
+  margin-left: 18px;
   width: 0;
   border-right: 5px solid #000;
   border-right: 5px solid hsla(0, 0%, 20%, 0.9);

@@ -262,8 +262,8 @@ export default {
                 .domain(sampleNames)
                 .range([0, plotWidth]);
             var y = d3.scaleLinear()
-            .domain([0, maxCountSum])
-            .range([this.height - 2*(cHeight + cMargin), 0]);
+                .domain([0, maxCountSum])
+                .range([this.height - 2*(cHeight + cMargin), 0]);
             // stacked bar values
             var stack = d3.stack()
                 .keys((d) => { 
