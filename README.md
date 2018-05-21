@@ -2,7 +2,7 @@
 
 # Mutation Signature Explorer
 
-Hosted: [https://mutation-signature-explorer.lrgr.io/](https://mutation-signature-explorer.lrgr.io/)
+Hosted: [https://imuse.lrgr.io/](https://imuse.lrgr.io/)
 
 ### Dependencies
 - nodejs
