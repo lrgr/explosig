@@ -11,7 +11,7 @@
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
                 </tr>
                 <tr>
-                    <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.chromosome.value }})</td>
+                    <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.selectedChromosome.name }})</td>
                 </tr>
             </table>
             <span>&nbsp;Click for Rainfall Plot</span>
@@ -21,7 +21,7 @@
             <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            <ChromosomeSelect ref="chrSelect" />
+            <ChromosomeSelect />
         </div>
 
         <div class="plot-info" v-if="showInfo">
@@ -36,8 +36,9 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation, globalPlotList } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalPlotList } from './../../buses/data-options-bus.js';
 import { dispatch } from './plot-link.js';
+import { mapGetters } from 'vuex'
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
 import ChromosomeSelect from './../ChromosomeSelect.vue'
@@ -72,8 +73,6 @@ export default {
                 top: null
             },
             dataOptions: globalDataOptions,
-            chromosome: globalChromosomeSelected,
-            chromosomeLocation: globalChromosomeLocation,
             plotList: globalPlotList
         };
     },
@@ -93,20 +92,17 @@ export default {
             } else {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
             }
-        }
+        },
+        ...mapGetters({
+            selectedChromosome: 'selectedChromosome'
+        })
     },
     watch: {
         windowWidth: function (val) {
             this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
         },
-        chromosome: {
-            handler: function () {
-                this.drawPlot();
-            },
-            deep: true
-        },
-        chromosomeLocation: {
-            handler: function () {
+        selectedChromosome: {
+            handler: function() {
                 this.drawPlot();
             },
             deep: true
@@ -116,17 +112,14 @@ export default {
         getPlotElem: function () {
             return "#" + this.plotID;
         },
-        getChromosomeLength: function (name) {
-            return this.$refs.chrSelect.getChromosomeLength(name);
-        },
         tooltip: function(donorID) {
             this.tooltipInfo.donorID = donorID;
             var projID = this.plotData[donorID]["proj_id"];
             this.tooltipInfo.projID = projID;
-            if(this.plotData[donorID]["kataegis"][this.chromosome.value] == null) {
+            if(this.plotData[donorID]["kataegis"][this.selectedChromosome.name] == null) {
                 this.tooltipInfo.kataegisCount = 0;
             } else {
-                this.tooltipInfo.kataegisCount = this.plotData[donorID]["kataegis"][this.chromosome.value].length;
+                this.tooltipInfo.kataegisCount = this.plotData[donorID]["kataegis"][this.selectedChromosome.name].length;
             }
             this.tooltipInfo.left = d3.event.x;
             this.tooltipInfo.top = this.height + this.margin.top;
@@ -179,7 +172,7 @@ export default {
 
             var sampleNames = Object.keys(vm.plotData);
             var numSamples = sampleNames.length;
-            let chrLen = vm.getChromosomeLength(vm.chromosome.value);
+            let chrLen = vm.$store.getters.chromosomeLength(vm.selectedChromosome.name);
 
             let minBarHeight = 10;
             var barHeight = Math.max(minBarHeight, vm.height / numSamples);
@@ -193,7 +186,7 @@ export default {
                 .domain(sampleNames)
                 .range([0, plotHeight]);
 
-            x.domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
+            x.domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
 
             
 
@@ -220,11 +213,19 @@ export default {
                 var s = d3.event.selection;
                 if(s) {
                     var s2 = s.map((el) => Math.floor(x.invert(el)));
-                    vm.chromosomeLocation.start = s2[0];
-                    vm.chromosomeLocation.end = s2[1];
+                    var chrOptions = {
+                        start: s2[0],
+                        end: s2[1],
+                        name: vm.selectedChromosome.name
+                    }
+                    vm.$store.commit('setSelectedChromosome', chrOptions)
                 } else {
-                    vm.chromosomeLocation.start = 0;
-                    vm.chromosomeLocation.end = chrLen;
+                    var chrOptions = {
+                        start: 0,
+                        end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
+                        name: vm.selectedChromosome.name
+                    }
+                    vm.$store.commit('setSelectedChromosome', chrOptions)
                 }
                 vm.drawPlot();
             }
@@ -274,7 +275,7 @@ export default {
 
             sampleBars.selectAll(".sample-bar-g")
                 .data(function (d) {
-                    var sampleMutations = vm.plotData[d]["kataegis"][vm.chromosome.value];
+                    var sampleMutations = vm.plotData[d]["kataegis"][vm.selectedChromosome.name];
                     if(sampleMutations == null) {
                         return [];
                     } else {

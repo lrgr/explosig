@@ -44,7 +44,7 @@ export default {
   },
   mounted: function() {
         let vm = this;
-        this.$nextTick(() => {
+        this.$nextTick(function() {
             vm.updatePlot();
         });
         DataOptionsBus.$on('updateDataOptions', function() {
@@ -52,7 +52,7 @@ export default {
         });
       
         vm.windowWidth = window.innerWidth;
-        window.addEventListener('resize', () => {
+        window.addEventListener('resize', function() {
             vm.windowWidth = window.innerWidth;
             vm.drawPlot();
         });

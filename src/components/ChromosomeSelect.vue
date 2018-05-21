@@ -2,46 +2,50 @@
     <div>
         <select v-on:change="setChromosome($event.target.value)">
             <option disabled value="">Chromosome</option>
-            <option v-for="chr in Object.keys(chromosomes)" :key="chr" v-bind:value="chr" :selected="chr == selected.value">chr{{ chr }}</option>
+            <!--<option value="*" :selected="'*' == selectedName">*</option>-->
+            <option v-for="chr in chromosomes" :key="chr" v-bind:value="chr" :selected="chr == selectedName">chr{{ chr }}</option>
         </select>
     </div>
 </template>
 
 <script>
 import API from './../api.js'
-import { globalChromosomeSelected, globalChromosomeLocation } from './../buses/data-options-bus.js';
 
 export default {
   name: 'ChromosomeSelect',
   data: function() {
       return {
-            chromosomes: {},
-            init: false,
-            selected: globalChromosomeSelected,
-            location: globalChromosomeLocation
+            init: false
       };
+  },
+  computed: {
+      chromosomes() {
+          return this.$store.getters.allChromosomes
+      },
+      selectedName() {
+          return this.$store.getters.selectedChromosome.name
+      }
   },
   mounted: function() {
     let vm = this;
-    API.fetchChromosomes().then(function(chromosomes) {
-        vm.chromosomes = chromosomes;
+    API.fetchChromosomes().then(function(chromosomeLengths) {
+        vm.$store.commit('setChromosomeLengths', chromosomeLengths);
     });
   },
   methods: {
-      getChromosomeLength: function(name) {
-          return this.chromosomes[name];
-      },
       setChromosome: function(event) {
-            this.selected.value = event;
-            this.location.start = 0;
-            this.location.end = this.getChromosomeLength(event);
-         
+          let chrLen = this.$store.getters.chromosomeLength(event);
+          let chrOptions = {
+              'name': event,
+              'start': 0,
+              'end': chrLen
+          }
+          this.$store.commit('setSelectedChromosome', chrOptions);
       }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 
