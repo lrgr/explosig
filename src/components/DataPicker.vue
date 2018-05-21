@@ -11,30 +11,10 @@
                             <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
                         </div>
                     </div>
-                <!-- svg here --></div>
-                <Spinner v-if="loading" class="spinner"></Spinner>
-                <!--<div class="option-group">
-                    <div v-for="signature in sortedSignatures" :key="signature.name" class="tooltip">
-                        <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
-                        <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'">{{ signature.name }}</label>
-                    </div>
-                    <Spinner v-if="loading" class="spinner"></Spinner>
-                </div>-->
-            </div>
-            <!--<div class="main-options-right">
-                <h3>Per-Cancer Presets</h3>
-                <div class="option-group">
-                    <div v-for="preset in sigPresets" :key="preset.name" class="preset-buttons">
-                        <p>{{ preset.name }}</p>
-                        <div class="preset-sub-buttons">
-                            <div v-for="cancerType in Object.keys(preset.preset)" :key="cancerType">
-                                <button v-on:click="options.signatures = preset.preset[cancerType]">{{ cancerType }}</button>
-                            </div>
-                        </div>
-                    </div>
-                    <Spinner v-if="loading" class="spinner"></Spinner>
+                    <!-- svg here -->
                 </div>
-            </div>-->
+                <Spinner v-if="loading" class="spinner"></Spinner>
+            </div>
         </div>
         <div v-show="samplesVisible" class="main-options">
             <div>
@@ -168,8 +148,6 @@ export default {
 
             let sigNames = vm.sortedSignatures.map((sig) => sig.name);
             let cancerTypes = vm.sigPresets.map((preset) => preset.name);
-            
-            
 
             // axis scales
             var x = d3.scaleBand()
@@ -181,6 +159,7 @@ export default {
 
             vm.rowHeight = y.step() * 0.75;
 
+            // append svg
             d3.select("#signaturePicker").select("svg").remove();
 
             vm.svg = d3.select("#signaturePicker")
@@ -200,8 +179,10 @@ export default {
                     .attr("height", y.step())
                     .attr("x", 0)
                     .attr("y", (d) => y(d.name))
-                    .attr("fill", "silver")
-                    .attr("fill-opacity", 0);
+                    .attr("fill", "#8acb88")
+                    .attr("fill-opacity", (d, i) => {
+                        return (i % 2 == 0 ? 0.2 : 0);
+                    });
             
             vm.svg.selectAll(".cancerTypeColumn")
                 .data(vm.sigPresets)
@@ -217,13 +198,7 @@ export default {
                     .attr("height", y.step()-2)
                     .attr("y", (d) => y(d))
                     .attr("fill", "#575761");
-            /*
-            // y Axis container
-            let yAxis = vm.svg.append("g");
-            
-            // y Axis ticks
-            yAxis.call(d3.axisLeft(y).tickSizeOuter(0));
-            */
+
             // x Axis container
             let xAxis = vm.svg.append("g");
             
@@ -237,8 +212,18 @@ export default {
                     .attr("transform", "rotate(45)")
                     .on("click", (d) => {
                         vm.options.signatures = vm.sigPresets[d].signatures;  
+                    })
+                    .on("mouseover", (d) => {
+                        vm.svg.selectAll(".perCancerTypeCell")
+                            .attr("fill-opacity", 0.3);
+                        d3.select(vm.svg.selectAll(".cancerTypeColumn").nodes()[d])
+                            .selectAll(".perCancerTypeCell")
+                            .attr("fill-opacity", 1);
+                    })
+                    .on("mouseleave", () => {
+                        vm.svg.selectAll(".perCancerTypeCell")
+                            .attr("fill-opacity", 1);
                     });
-
             
       }
   }
@@ -271,9 +256,6 @@ export default {
                 color: $color-gray;
             }
             border-collapse: collapse;
-        }
-        .main-options-left, .main-options-right {
-            flex-basis: 50%;
         }
         h3 {
             margin-right: 0.5rem;
@@ -310,22 +292,6 @@ export default {
                 margin-bottom: 0.2rem;
                 label {
                     margin-left: 0.5rem;
-                }
-            }
-            .preset-buttons {
-                p {
-                    text-transform: uppercase;
-                    margin-bottom: 0;
-                }
-                .preset-sub-buttons {
-                    padding-left: 1rem;
-                    > div {
-                        display: inline-block;
-                        margin-right: 0.2rem;
-                        button {
-                            width: 80px;
-                        }
-                    }
                 }
             }
             .spinner {

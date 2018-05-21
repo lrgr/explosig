@@ -1,6 +1,7 @@
 // initial state
 const state = {
-    selected: "1"    
+    selected: "1",
+    all: []
 }
 
 // getters

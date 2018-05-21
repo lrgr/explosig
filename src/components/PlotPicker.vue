@@ -9,7 +9,6 @@
         <h4>Coming Soon:</h4>
         <ul>
             <li>Signatures</li>
-            <li>Signatures per Cancer Type</li>
             <li>Manhattan Plot with Mutation Contexts</li>
             <li>Manhattan Plot with Mutation Types</li>
             <li>Signature Exposure Box Plots per Cancer Type</li>

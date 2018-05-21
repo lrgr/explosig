@@ -1,5 +1,6 @@
 <template>
     <div>
+        <Intro v-if="plotList.length == 0"/>
         <div class="plot-grid">
             <Plot v-for="(plot, index) in plotList" 
                 :key="index" 
@@ -30,12 +31,15 @@
 import { globalPlotList, globalLegendKeys, DataOptionsBus } from './../buses/data-options-bus.js';
 import Plot from './Plot.vue'
 import Legend from './Legend.vue'
+import Intro from './Intro.vue'
+
 
 export default {
   name: 'PlotGrid',
   components: {
     Plot,
-    Legend
+    Legend,
+    Intro
   },
   data: function() {
       return {
@@ -63,6 +67,50 @@ export default {
 <style scoped lang="scss">
 
 @import './../variables.scss';
+.intro {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    .arrow {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 10px 17px 10px;
+        border-color: transparent transparent silver transparent;
+        position: relative;
+        display: inline-block;
+        float: right;
+    }
+    #arrow1 {
+        right: 6rem;
+
+        &:before {
+            content: "";
+            width: 3px;
+            left: -1.5px;
+            height: 100px;
+            background-color: silver;
+            position: absolute;
+            z-index: 2;
+            top: 17px;
+        }
+
+    }
+    #arrow2 {
+        right: 0.8rem;
+
+        &:before {
+            content: "";
+            width: 3px;
+            left: -1.5px;
+            height: 200px;
+            background-color: silver;
+            position: absolute;
+            z-index: 2;
+            top: 17px;
+        }
+    }
+}
 .plot-grid {
     display: inline-block;
     width: 80%;
