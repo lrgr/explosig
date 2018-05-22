@@ -17,16 +17,10 @@
 </template>
 
 <script>
-import { globalPlotList } from './../buses.js';
-
-// child components
-import Spinner from './Spinner.vue'
+import { getUUID } from './../helpers.js';
 
 export default {
     name: 'PlotPicker',
-    components: {
-        Spinner
-    },
     data: function() {
         return {
             plotTypes: [{
@@ -38,14 +32,15 @@ export default {
             }, {
                 type: 'KataegisPlot',
                 title: 'Kataegis'
-            }],
-            selectedPlots: globalPlotList
+            }]
         };
     },
     methods: {
         addPlot: function(plotType, plotTitle, plotOptions = {}) {
-            this.selectedPlots.push({
+            this.$store.commit('addPlot', {
                 type: plotType,
+                id: getUUID(),
+                title: plotTitle,
                 options: plotOptions
             });
             this.$emit('closePlotPicker');

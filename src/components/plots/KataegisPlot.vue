@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div :id="this.plotID" class="plot-component"></div>
-        <Karyotype :plotIndex="this.plotIndex" />
+        <div :id="this.plotElemID" class="plot-component"></div>
+        <Karyotype :plotID="'k_' + this.plotElemID" />
 
-        <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
                 <tr>
                     <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
@@ -40,8 +40,7 @@
 import * as d3 from 'd3';
 import { mapGetters } from 'vuex';
 import API from './../../api.js';
-import { globalPlotList } from './../../buses.js';
-import { getTranslation } from './../../helpers.js';
+import { getTranslation, getUUID } from './../../helpers.js';
 import { dispatch } from './plot-link.js';
 
 // child components
@@ -51,7 +50,7 @@ import Karyotype from './../Karyotype.vue';
 
 export default {
     name: 'KataegisPlot',
-    props: ['plotIndex', 'showInfo', 'plotOptions'],
+    props: ['plotID', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
         ChromosomeSelect,
@@ -75,8 +74,7 @@ export default {
                 kataegisCount: "",
                 left: null,
                 top: null
-            },
-            plotList: globalPlotList
+            }
         };
     },
     mounted: function() {
@@ -89,8 +87,8 @@ export default {
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         },
-        plotID: function () {
-            return 'plot_' + this.plotIndex;
+        plotElemID: function () {
+            return 'plot_' + this.plotID;
         },
         tooltipPosition: function() {
             if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
@@ -118,7 +116,7 @@ export default {
     },
     methods: {
         getPlotElem: function () {
-            return "#" + this.plotID;
+            return "#" + this.plotElemID;
         },
         tooltip: function(donorID) {
             this.tooltipInfo.donorID = donorID;
@@ -144,8 +142,10 @@ export default {
             dispatch.call("link-genome-destroy");
         },
         addRainfallPlot: function(donor_id, proj_id) {
-            this.plotList.push({
+            this.$store.commit('addPlot', {
                 type: 'RainfallPlot',
+                id: getUUID(),
+                title: 'Rainfall (' + proj_id + ', ' + donor_id + ')',
                 options: { 'proj_id': proj_id, 'donor_id': donor_id }
             });
         },
@@ -307,7 +307,7 @@ export default {
                 .attr("fill", "transparent")
                 .attr("fill-opacity", "0")
                 .style("cursor", "pointer")
-                .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
+                .call(d3.drag().container(document.querySelector("#" + vm.plotElemID)).on("drag", () => {
                     var newY = getTranslation(YContainer.attr("transform"))[1] + d3.event.dy;
                     newY = Math.max(-plotHeight + vm.height, newY);
                     newY = Math.min(0, newY);
@@ -343,7 +343,7 @@ export default {
                 .attr("class", "brush")
                 .call(
                     d3.brushX()
-                        .on("end." + vm.plotID, brushendX)
+                        .on("end." + vm.plotElemID, brushendX)
                 );
             
             // text label for the x axis
@@ -354,7 +354,7 @@ export default {
                 .text("Chromosome Location");
             
             // dispatch callbacks
-            dispatch.on("link-donor." + this.plotID, function(donorID) {
+            dispatch.on("link-donor." + this.plotElemID, function(donorID) {
                 let i = sampleNames.indexOf(donorID);
                 if(i != null && i != -1) {
                     donorHighlight
@@ -365,17 +365,17 @@ export default {
                 }
             });
 
-            dispatch.on("link-donor-destroy." + this.plotID, function() {
+            dispatch.on("link-donor-destroy." + this.plotElemID, function() {
                 donorHighlight.attr("fill-opacity", 0);
             });
 
-            dispatch.on("link-genome." + this.plotID, function(location) {
+            dispatch.on("link-genome." + this.plotElemID, function(location) {
                 genomeHighlight
                     .attr("x", location)
                     .attr("fill-opacity", 1);
             });
 
-            dispatch.on("link-genome-destroy." + this.plotID, function() {
+            dispatch.on("link-genome-destroy." + this.plotElemID, function() {
                 genomeHighlight.attr("fill-opacity", 0);
             });
         }

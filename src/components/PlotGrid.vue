@@ -1,16 +1,17 @@
 <template>
     <div>
-        <Intro v-if="plotList.length == 0"/>
+        <Intro v-if="selectedPlots.length == 0"/>
         <div class="plot-grid">
-            <Plot v-for="(plot, index) in plotList" 
-                :key="index" 
+            <Plot v-for="plot in selectedPlots" 
+                :key="plot.id" 
                 :plotType="plot.type"
                 :plotOptions="plot.options"
-                v-on:removePlot="removePlot(index)"
+                :plotID="plot.id"
+                :plotTitle="plot.title"
                 class="item"
             ></Plot>
         </div>
-        <div class="legend-wrapper" v-if="plotList.length > 0">
+        <div class="legend-wrapper" v-if="selectedPlots.length > 0">
             <div class="legend">
                 <div class="options-bar">
                     <span class="title">Legend</span>
@@ -28,7 +29,7 @@
 </template>
 
 <script>
-import { globalPlotList, DataOptionsBus } from './../buses.js';
+import { mapGetters } from 'vuex';
 
 // child components
 import Plot from './Plot.vue'
@@ -45,7 +46,6 @@ export default {
   },
   data: function() {
       return {
-          plotList: globalPlotList,
           legendKeys: [
                 "projects",
                 "signatures",
@@ -55,17 +55,13 @@ export default {
           loading: false,
       };
   },
+  computed: {
+      ...mapGetters([
+          'selectedPlots'
+      ])
+  },
   methods: {
-      removePlot: function(index) {
-        let vm = this;
-        if (index !== -1) {
-            vm.plotList.splice(index, 1);
-            vm.$nextTick(() => {
-                // workaround, can't seem to get child plots to re-render after updating plotList
-                window.location.reload();
-            })
-        }
-      }
+      
   }
 }
 </script>

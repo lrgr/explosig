@@ -8,7 +8,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import API from './api.js';
-import { globalPlotList } from './buses.js';
+import { getUUID } from './helpers.js';
 
 // child components
 import PlotGrid from './components/PlotGrid.vue';
@@ -34,7 +34,10 @@ export default {
         });
         vm.$store.commit('setSelectedSignatures', params.signatures);
         vm.$store.commit('setSelectedDatasets', params.datasets);
-        vm.$store.commit('setSelectedPlots', params.plots);
+        vm.$store.commit('setSelectedPlots', params.plots.map((plotInfo) => {
+          plotInfo['id'] = getUUID();
+          return plotInfo; 
+        }));
       }
     }
     API.fetchChromosomes().then(function(chromosomeLengths) {
@@ -60,7 +63,13 @@ export default {
       let hashData = {
         'datasets': this.selectedDatasets,
         'signatures': this.selectedSignatures,
-        'plots': this.selectedPlots,
+        'plots': this.selectedPlots.map((plotInfo) => {
+          return {
+            "type": plotInfo.type,
+            "options": plotInfo.options,
+            "title": plotInfo.title
+          }; 
+        }),
         'chr': { 
           'name': this.selectedChromosome.name,
           'start': this.selectedChromosome.start,

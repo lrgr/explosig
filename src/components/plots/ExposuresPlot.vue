@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div :id="this.plotID" class="plot-component"></div>
+        <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
                 <tr>
                     <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
@@ -62,7 +62,7 @@ import Spinner from './../Spinner.vue';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['plotIndex', 'showInfo', 'plotOptions'],
+    props: ['plotID', 'showInfo', 'plotOptions'],
     components: {
         Spinner
     },
@@ -105,8 +105,8 @@ export default {
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         },
-        plotID: function () {
-            return 'plot_' + this.plotIndex;
+        plotElemID: function () {
+            return 'plot_' + this.plotID;
         },
         tooltipPosition: function() {
             if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
@@ -289,9 +289,9 @@ export default {
 
              
             // create svg elements
-            d3.select("#" + this.plotID).select("svg").remove();
+            d3.select("#" + this.plotElemID).select("svg").remove();
 
-            vm.svg = d3.select("#" + this.plotID)
+            vm.svg = d3.select("#" + this.plotElemID)
                 .append("svg")
                 .attr("width", plotWidth + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -410,7 +410,7 @@ export default {
                 .attr("fill", "transparent")
                 .attr("fill-opacity", "0")
                 .style("cursor", "pointer")
-                .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
+                .call(d3.drag().container(document.querySelector("#" + vm.plotElemID)).on("drag", () => {
                     var newX = getTranslation(XContainer.attr("transform"))[0] + d3.event.dx;
                     newX = Math.max(-plotWidth + vm.width, newX);
                     newX = Math.min(barWidth, newX);
@@ -466,7 +466,7 @@ export default {
                     .attr("transform", "rotate(-25)");
 
             // dispatch callbacks
-            dispatch.on("link-donor." + this.plotID, (donorID) => {
+            dispatch.on("link-donor." + this.plotElemID, (donorID) => {
                 let i = sampleNames.indexOf(donorID);
                 if(i != null && i != -1) {
                     donorHighlight
@@ -477,7 +477,7 @@ export default {
                 }
             });
 
-            dispatch.on("link-donor-destroy." + this.plotID, () => {
+            dispatch.on("link-donor-destroy." + this.plotElemID, () => {
                 donorHighlight.attr("fill-opacity", 0);
             });
     

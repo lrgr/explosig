@@ -11,11 +11,9 @@
             <component 
                 v-bind:is="this.plotType" 
                 ref="innerPlot" 
-                :plotIndex="this.plotIndex" 
+                :plotID="this.plotID" 
                 :plotOptions="this.plotOptions" 
                 :showInfo="this.showInfo"
-                :windowWidth="this.windowWidth"
-                v-on:titleInit="plotTitle = $event"
             ></component>
         </div>
   </div>
@@ -23,7 +21,6 @@
 
 <script>
 import { DataOptionsBus } from './../buses.js';
-import { getUUID } from './../helpers.js';
 
 // child components
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
@@ -33,13 +30,10 @@ import RainfallPlot from './plots/RainfallPlot.vue'
 
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotOptions'],
+  props: ['plotType', 'plotOptions', 'plotTitle', 'plotID'],
   data: function() { 
         return {
-            showInfo: false,
-            windowWidth: 0,
-            plotTitle: '',
-            plotIndex: ''
+            showInfo: false
         };
   },
   mounted: function() {
@@ -52,8 +46,6 @@ export default {
                 vm.updatePlot();
             });
         });
-
-        this.plotIndex = getUUID();
   }, 
   methods: {
         updatePlot() {
@@ -63,7 +55,8 @@ export default {
             this.$refs.innerPlot.drawPlot();
         },
         removePlot() {
-            this.$emit('removePlot');
+            let vm = this;
+            this.$store.commit('removePlot', vm.plotID);
         }
   },
   components: {
