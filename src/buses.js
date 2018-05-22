@@ -1,5 +1,7 @@
 import Vue from 'vue';
+
 export const DataOptionsBus = new Vue();
+export const LegendListBus = new Vue();
 
 export const globalDataOptions = {
     'sources': [],
@@ -18,6 +20,4 @@ export const globalLegendKeys = [
 export const globalMeta = {
     'signatures': []
 };
-
-export const LegendListBus = new Vue();
 

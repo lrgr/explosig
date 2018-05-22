@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { globalPlotList } from './../buses/data-options-bus.js';
+import { globalPlotList } from './../buses.js';
 
 import Spinner from './Spinner.vue'
 

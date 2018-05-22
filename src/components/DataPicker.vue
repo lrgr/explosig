@@ -6,7 +6,7 @@
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
                 <div id="signaturePicker">
                     <div id="signaturePickerCheckboxes">
-                        <div v-for="signature in sortedSignatures" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
+                        <div v-for="signature in allSignatures" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
                             <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'" :style="{ lineHeight: rowHeight + 'px'}">{{ signature.name }}</label>
                             <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
                         </div>
@@ -22,7 +22,7 @@
                 <button class="inline" v-on:click="toggleSources()">Toggle All</button>
                 <div class="option-group">
                     <table>
-                    <tr v-for="(sourceData, sourceName) in sources" :key="sourceName">
+                    <tr v-for="(sourceData, sourceName) in allDatasets" :key="sourceName">
                         <td>
                         <input type="checkbox" :value="sourceName" :id="sourceName" name="sources" v-model="options.sources">
                         <label :for="sourceName">{{ sourceName }}</label>
@@ -44,10 +44,11 @@
 </template>
 
 <script>
-import { DataOptionsBus, globalDataOptions, globalMeta } from './../buses/data-options-bus.js';
-import Spinner from './Spinner.vue'
-import API from './../api.js'
+import { DataOptionsBus } from './../buses.js';
+import Spinner from './Spinner.vue';
+import API from './../api.js';
 import * as d3 from 'd3';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'DataPicker',
@@ -59,13 +60,10 @@ export default {
           loading: true,
           signaturesVisible: true,
           samplesVisible: false,
-          options: globalDataOptions,
-          meta: globalMeta,
-          signatures: {},
-          sources: {},
-          sigPresets: [],
-          windowWidth: 0,
-          windowHeight: 0,
+          options: {
+            'sources': [],
+            'signatures': []
+          },
           rowHeight: 0,
           svg: null,
           margin: {
@@ -79,57 +77,44 @@ export default {
   mounted: function() {
         var vm = this;
         API.fetchDataListing().then(function(listing) {
-            vm.sources = listing.sources;
-            vm.signatures = listing.sigs;
-            vm.sigPresets = listing.sig_presets;
-            vm.loading = false;
+            vm.$store.commit('setAllSignatures', listing.sigs);
+            vm.$store.commit('setAllDatasets', listing.sources);
+            vm.$store.commit('setSignaturesPerCancerType', listing.sig_presets);
             
-            // Convert signatures object to array, sort by index, save to global variable
-            var sigArray = [];
-            let sigNames = Object.keys(listing.sigs);
-            for(var i = 0; i < sigNames.length; i++) {
-                var sig = listing.sigs[sigNames[i]];
-                sig['name'] = sigNames[i];
-                sigArray.push(sig);
-            }
-            sigArray = sigArray.sort((a, b) => (a.index - b.index));
-            vm.meta['signatures'] = sigArray;
+            vm.loading = false;
 
-            vm.drawPlot();
-        });
-
-        vm.windowWidth = window.innerWidth;
-        vm.windowHeight = window.innerHeight;
-        window.addEventListener('resize', () => {
-            vm.windowWidth = window.innerWidth;
-            vm.windowHeight = window.innerHeight;
             vm.drawPlot();
         });
   },
   computed: {
-      sortedSignatures: function() {
-        return this.meta['signatures'];
-      },
       height: function () {
         return 604 - this.margin.top - this.margin.bottom;
       },
       width: function() {
           return this.windowWidth*0.8 - this.margin.left - this.margin.right - 60;
-      }
+      },
+      ...mapGetters([
+        'allSignatures',
+        'allDatasets',
+        'signaturesPerCancerType',
+        'selectedSignatures',
+        'selectedDatasets',
+        'windowWidth'
+      ])
   },
   methods: {
       toggleSources: function() {
-          if(this.options.sources.length == Object.keys(this.sources).length) {
+          if(this.options.sources.length == Object.keys(this.allDatasets).length) {
               this.options.sources = [];
           } else {
-              this.options.sources = Object.keys(this.sources);
+              this.options.sources = Object.keys(this.allDatasets);
           }
       },
       toggleSignatures: function() {
-          if(this.options.signatures.length == Object.keys(this.signatures).length) {
+          if(this.options.signatures.length == this.allSignatures.length) {
               this.options.signatures = [];
           } else {
-              this.options.signatures = Object.keys(this.signatures);
+              this.options.signatures = this.allSignatures.map((x) => x.name);
           }
       },
       showSignatures: function() {
@@ -141,17 +126,19 @@ export default {
           this.samplesVisible = true;
       },
       emitUpdate: function() {
+        this.$store.commit('setSelectedSignatures', this.options.signatures);
+        this.$store.commit('setSelectedDatasets', this.options.sources);
         DataOptionsBus.$emit('updateDataOptions');
       },
       drawPlot: function () {
             var vm = this;
 
-            let sigNames = vm.sortedSignatures.map((sig) => sig.name);
-            let cancerTypes = vm.sigPresets.map((preset) => preset.name);
+            let sigNames = vm.allSignatures.map((sig) => sig.name);
+            let cancerTypes = vm.signaturesPerCancerType.map((preset) => preset.name);
 
             // axis scales
             var x = d3.scaleBand()
-                .domain(Array.from(Array(vm.sigPresets.length).keys()))
+                .domain(Array.from(Array(vm.signaturesPerCancerType.length).keys()))
                 .range([0, vm.width]);
             var y = d3.scaleBand()
                 .domain(sigNames)
@@ -171,7 +158,7 @@ export default {
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")");
             
             vm.svg.selectAll(".signatureRow")
-                .data(vm.sortedSignatures)
+                .data(vm.allSignatures)
             .enter().append("g")
                 .attr("class", "signatureRow")
                 .append("rect")
@@ -185,7 +172,7 @@ export default {
                     });
             
             vm.svg.selectAll(".cancerTypeColumn")
-                .data(vm.sigPresets)
+                .data(vm.signaturesPerCancerType)
             .enter().append("g")
                 .attr("class", "cancerTypeColumn")
                 .attr("transform", (d, i) => "translate(" + x(i) + ",0)")
@@ -211,7 +198,7 @@ export default {
                     .attr("dy", ".8em")
                     .attr("transform", "rotate(45)")
                     .on("click", (d) => {
-                        vm.options.signatures = vm.sigPresets[d].signatures;  
+                        vm.options.signatures = vm.signaturesPerCancerType[d].signatures;  
                     })
                     .on("mouseover", (d) => {
                         vm.svg.selectAll(".perCancerTypeCell")

@@ -22,13 +22,13 @@
 </template>
 
 <script>
-import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.js';
+import { DataOptionsBus } from './../buses.js';
+import { getUUID } from './../helpers.js';
 
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
-
 
 export default {
   name: 'Plot',
@@ -37,7 +37,6 @@ export default {
         return {
             showInfo: false,
             windowWidth: 0,
-            dataOptions: globalDataOptions,
             plotTitle: '',
             plotIndex: ''
         };
@@ -48,34 +47,22 @@ export default {
             vm.updatePlot();
         });
         DataOptionsBus.$on('updateDataOptions', function() {
-            vm.updatePlot();
+            this.$nextTick(function() {
+                vm.updatePlot();
+            });
         });
-      
-        vm.windowWidth = window.innerWidth;
-        window.addEventListener('resize', function() {
-            vm.windowWidth = window.innerWidth;
-            vm.drawPlot();
-        });
-        this.plotIndex = this.getUUID();
+
+        this.plotIndex = getUUID();
   }, 
   methods: {
         updatePlot() {
-            if(this.dataOptions.signatures.length > 0 && this.dataOptions.sources.length > 0) {
-                this.$refs.innerPlot.updatePlot();
-            }
+            this.$refs.innerPlot.updatePlot();
         },
         drawPlot() {
             this.$refs.innerPlot.drawPlot();
         },
         removePlot() {
             this.$emit('removePlot');
-        },
-        getUUID: function() {
-            // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
         }
   },
   components: {

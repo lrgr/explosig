@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation } from './../../buses/data-options-bus.js';
+import { globalDataOptions } from './../../buses.js'
+// TODO: update/remove all globalChromosomeSelected, globalChromosomeLocation references
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'

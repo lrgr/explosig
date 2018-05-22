@@ -1,6 +1,7 @@
 <template>
     <div>
         <div :id="this.plotID" class="plot-component"></div>
+        <Karyotype :plotIndex="this.plotIndex" />
 
         <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
@@ -36,7 +37,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalPlotList } from './../../buses.js';
 import { dispatch } from './plot-link.js';
 import { mapGetters } from 'vuex'
 import API from './../../api.js'

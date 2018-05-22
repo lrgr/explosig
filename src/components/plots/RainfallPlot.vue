@@ -16,7 +16,7 @@
             </table>
         </div>
 
-         <div class="spinner-wrapper" v-if="loading">
+        <div class="spinner-wrapper" v-if="loading">
             <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { globalDataOptions, LegendListBus } from './../../buses/data-options-bus.js';
+import { globalDataOptions, LegendListBus } from './../../buses.js';
 import { mutationCategories } from './../../constants.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'

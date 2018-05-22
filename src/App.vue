@@ -6,10 +6,11 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList } from './buses/data-options-bus.js';
+import { globalDataOptions, globalPlotList } from './buses.js';
 import { mapGetters } from 'vuex'
 import PlotGrid from './components/PlotGrid.vue'
 import NavBar from './components/NavBar.vue'
+import API from './api.js'
 
 export default {
   name: 'app',
@@ -18,61 +19,75 @@ export default {
     PlotGrid
   },
   mounted: function() {
+    let vm = this;
     // check for data in hash
     var paramStr = window.location.hash.substring(1) // remove the initial "#"
     if(paramStr.length > 0) {
       var params = JSON.parse(decodeURIComponent(paramStr));
-      if(params.data && params.data.signatures && params.data.sources && params.plots && params.chr) {
-        params.data.signatures.map((x) => { this.dataOptions.signatures.push(x); });
-        params.data.sources.map((x) => { this.dataOptions.sources.push(x); });
-        params.plots.map((x) => { this.plotList.push(x); });
-        this.$store.commit('setSelectedChromosome', {
-          'name': params.chr.value,
+      if(params.datasets && params.signatures && params.plots && params.chr) {
+        vm.$store.commit('setSelectedChromosome', {
+          'name': params.chr.name,
           'start': params.chr.start,
           'end': params.chr.end
-        })
+        });
+        vm.$store.commit('setSelectedSignatures', params.signatures);
+        vm.$store.commit('setSelectedDatasets', params.datasets);
+        vm.$store.commit('setSelectedPlots', params.plots);
       }
     }
-  },
-  data: function() {
-    return {
-      dataOptions: globalDataOptions,
-      plotList: globalPlotList
-    }
+    API.fetchChromosomes().then(function(chromosomeLengths) {
+        vm.$store.commit('setChromosomeLengths', chromosomeLengths);
+    });
+    vm.$store.commit('setWindowWidth', window.innerWidth);
+    vm.$store.commit('setWindowHeight', window.innerHeight);
+    window.addEventListener('resize', () => {
+        vm.$store.commit('setWindowWidth', window.innerWidth);
+        vm.$store.commit('setWindowHeight', window.innerHeight);
+    });
   },
   computed: {
-    ...mapGetters({
-      chromosomeSelected: 'selectedChromosome'
-    })
+    ...mapGetters([
+      'selectedChromosome',
+      'selectedSignatures',
+      'selectedPlots',
+      'selectedDatasets'
+    ])
   },
   methods: {
     setHash: function() {
       let hashData = {
-        'data': this.dataOptions,
-        'plots': this.plotList,
+        'datasets': this.selectedDatasets,
+        'signatures': this.selectedSignatures,
+        'plots': this.selectedPlots,
         'chr': { 
-          'value': this.chromosomeSelected.name,
-          'start': this.chromosomeSelected.start,
-          'end': this.chromosomeSelected.end
+          'name': this.selectedChromosome.name,
+          'start': this.selectedChromosome.start,
+          'end': this.selectedChromosome.end
         }
       };
       window.location.hash = JSON.stringify(hashData);
     }
   },
   watch: {
-    dataOptions: {
+    selectedSignatures: {
       handler: function() {
         this.setHash();
       },
       deep: true
     },
-    plotList: {
+    selectedDatasets: {
       handler: function() {
         this.setHash();
       },
       deep: true
     },
-    chromosomeSelected: {
+    selectedPlots: {
+      handler: function() {
+        this.setHash();
+      },
+      deep: true
+    },
+    selectedChromosome: {
       handler: function() {
         this.setHash();
       },

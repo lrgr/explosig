@@ -2,7 +2,7 @@
     <div>
         <select v-on:change="setChromosome($event.target.value)">
             <option disabled value="">Chromosome</option>
-            <!--<option value="*" :selected="'*' == selectedName">*</option>-->
+            <option value="*" :selected="'*' == selectedName">chr*</option>
             <option v-for="chr in chromosomes" :key="chr" v-bind:value="chr" :selected="chr == selectedName">chr{{ chr }}</option>
         </select>
     </div>
@@ -10,6 +10,8 @@
 
 <script>
 import API from './../api.js'
+import { CHROMOSOMES } from './../constants.js'
+
 
 export default {
   name: 'ChromosomeSelect',
@@ -20,22 +22,19 @@ export default {
   },
   computed: {
       chromosomes() {
-          return this.$store.getters.allChromosomes
+          return CHROMOSOMES;
       },
       selectedName() {
-          return this.$store.getters.selectedChromosome.name
+          return this.$store.getters.selectedChromosome.name;
       }
-  },
-  mounted: function() {
-    let vm = this;
-    API.fetchChromosomes().then(function(chromosomeLengths) {
-        vm.$store.commit('setChromosomeLengths', chromosomeLengths);
-    });
   },
   methods: {
       setChromosome: function(event) {
-          let chrLen = this.$store.getters.chromosomeLength(event);
-          let chrOptions = {
+          var chrLen = 0;
+          if(event != '*') {
+              chrLen = this.$store.getters.chromosomeLength(event);
+          }
+          var chrOptions = {
               'name': event,
               'start': 0,
               'end': chrLen
@@ -47,6 +46,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 
 </style>

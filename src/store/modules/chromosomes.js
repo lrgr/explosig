@@ -1,17 +1,16 @@
-import { chromosomes } from '../../constants'
 // initial state
 const state = {
     selected: {
-        name: "1",
+        name: "*",
         start: 0,
-        end: 249250621
+        end: 0
     },
     lengths: {}
 }
 
 // getters
 const getters = {
-    allChromosomes: state => chromosomes,
+    showAllChromosomes: state => (state.selected.name == "*"),
     selectedChromosome: state => state.selected,
     chromosomeLength: (state) => (name) => {
         return state.lengths[name];

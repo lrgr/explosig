@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
+import { globalDataOptions, globalChromosomeSelected } from './../../buses.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js'
 import Spinner from './../Spinner.vue'
