@@ -21,8 +21,8 @@ const actions = {
 const mutations = {
     setSelectedSignatures (state, sigNames) {
         sigNames.sort((a, b) => {
-            let a_index = state.all.findIndex((el) => el.name == a);
-            let b_index = state.all.findIndex((el) => el.name == b);
+            let a_index = state.all.findIndex((el) => (el.name === a));
+            let b_index = state.all.findIndex((el) => (el.name === b));
             return b - a;
         });
         state.selected = sigNames;

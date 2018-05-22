@@ -37,28 +37,31 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList } from './../../buses.js';
-import { dispatch } from './plot-link.js';
-import { mapGetters } from 'vuex'
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
-import ChromosomeSelect from './../ChromosomeSelect.vue'
-
 import * as d3 from 'd3';
+import { mapGetters } from 'vuex';
+import API from './../../api.js';
+import { globalPlotList } from './../../buses.js';
+import { getTranslation } from './../../helpers.js';
+import { dispatch } from './plot-link.js';
+
+// child components
+import Spinner from './../Spinner.vue';
+import ChromosomeSelect from './../ChromosomeSelect.vue';
+import Karyotype from './../Karyotype.vue';
 
 export default {
     name: 'KataegisPlot',
-    props: ['plotIndex', 'showInfo', 'windowWidth'],
+    props: ['plotIndex', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
-        ChromosomeSelect
+        ChromosomeSelect,
+        Karyotype
     },
     data: function () {
         return {
             title: 'Kataegis',
             loading: false,
             plotData: null,
-            width: 0,
             svg: null,
             margin: {
                 top: 20,
@@ -73,7 +76,6 @@ export default {
                 left: null,
                 top: null
             },
-            dataOptions: globalDataOptions,
             plotList: globalPlotList
         };
     },
@@ -83,6 +85,9 @@ export default {
     computed: {
         height: function () {
             return 400 - this.margin.top - this.margin.bottom;
+        },
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         },
         plotID: function () {
             return 'plot_' + this.plotIndex;
@@ -94,13 +99,15 @@ export default {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
             }
         },
-        ...mapGetters({
-            selectedChromosome: 'selectedChromosome'
-        })
+        ...mapGetters([
+            'selectedChromosome',
+            'selectedDatasets',
+            'windowWidth'
+        ])
     },
     watch: {
         windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
+            this.drawPlot();
         },
         selectedChromosome: {
             handler: function() {
@@ -142,22 +149,13 @@ export default {
                 options: { 'proj_id': proj_id, 'donor_id': donor_id }
             });
         },
-        getTranslation: function(transform) {
-            // Reference: https://stackoverflow.com/questions/38224875/replacing-d3-transform-in-d3-v4
-
-            // Dummy g element for calculations
-            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            // Set the transform attribute to the provided string value.
-            g.setAttributeNS(null, "transform", transform);
-            var matrix = g.transform.baseVal.consolidate().matrix;
-            // As per definition values e and f are the ones for the translation.
-            return [matrix.e, matrix.f];
-        },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-
-            API.fetchKataegis(vm.dataOptions).then(function (data) {
+            var params = {
+                "sources": vm.selectedDatasets
+            };
+            API.fetchKataegis(params).then(function (data) {
                 vm.plotData = data;
                 vm.drawPlot();
                 vm.loading = false;
@@ -310,7 +308,7 @@ export default {
                 .attr("fill-opacity", "0")
                 .style("cursor", "pointer")
                 .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
-                    var newY = vm.getTranslation(YContainer.attr("transform"))[1] + d3.event.dy;
+                    var newY = getTranslation(YContainer.attr("transform"))[1] + d3.event.dy;
                     newY = Math.max(-plotHeight + vm.height, newY);
                     newY = Math.min(0, newY);
                     YContainer.attr("transform", "translate(0," + newY + ")");
@@ -385,7 +383,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../../variables.scss';

@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import { LegendListBus } from './../buses.js'
 import * as d3 from 'd3';
+import { LegendListBus } from './../buses.js'
 
 export default {
   name: 'Legend',
@@ -23,8 +23,8 @@ export default {
       };
   },
   mounted: function() {
-      // subscribe using legendKey
       let vm = this;
+      // subscribe using legendKey
       LegendListBus.$on(vm.legendKey, function(updatedLegendInfo) {
           vm.legendInfo = updatedLegendInfo;
       });
@@ -33,7 +33,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../variables.scss';

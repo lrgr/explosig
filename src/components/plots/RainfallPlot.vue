@@ -47,20 +47,20 @@
 </template>
 
 <script>
-import { globalDataOptions, LegendListBus } from './../../buses.js';
-import { mutationCategories } from './../../constants.js';
-import { dispatch } from './plot-link.js';
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
-import ChromosomeSelect from './../ChromosomeSelect.vue'
-
 import * as d3 from 'd3';
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
+import API from './../../api.js';
+import { LegendListBus } from './../../buses.js';
+import { MUTATION_CATEGORIES } from './../../constants.js';
+import { dispatch } from './plot-link.js';
 
+// child components
+import Spinner from './../Spinner.vue';
+import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'RainfallPlot',
-    props: ['plotIndex', 'showInfo', 'windowWidth', 'plotOptions'],
+    props: ['plotIndex', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -70,7 +70,6 @@ export default {
             title: 'Rainfall',
             loading: false,
             plotData: null,
-            width: 0,
             svg: null,
             margin: {
                 top: 20,
@@ -85,7 +84,6 @@ export default {
                 left: null,
                 top: null
             },
-            dataOptions: globalDataOptions,
             highlightKataegis: true,
             logScale: true
         };
@@ -97,6 +95,9 @@ export default {
         height: function () {
             return 400 - this.margin.top - this.margin.bottom;
         },
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
+        },
         plotID: function () {
             return 'plot_' + this.plotIndex;
         },
@@ -107,13 +108,14 @@ export default {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
             }
         },
-        ...mapGetters({
-            selectedChromosome: 'selectedChromosome'
-        })
+        ...mapGetters([
+            'selectedChromosome',
+            'windowWidth'
+        ])
     },
     watch: {
         windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
+            this.drawPlot();
         },
         highlightKataegis: function() {
             this.drawPlot();
@@ -252,12 +254,12 @@ export default {
                 "meta": {
                     "title": "Contexts"
                 },
-                "data": {}
+                "data": []
             };
 
-            let catNames = Object.keys(mutationCategories);
+            let catNames = Object.keys(MUTATION_CATEGORIES);
             for(var i = 0; i < catNames.length; i++) {
-                legendInfo["data"][catNames[i]] = d3.interpolateRainbow(mutationCategories[catNames[i]] / 96);
+                legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(MUTATION_CATEGORIES[catNames[i]] / 96) });
             }
             LegendListBus.$emit("contexts", legendInfo); 
             
@@ -276,16 +278,17 @@ export default {
             //create brush function redraw scatterplot with x selection
             function brushend() {
                 var s = d3.event.selection;
+                var chrOptions;
                 if(s) {
                     var s2 = s.map((el) => Math.floor(x.invert(el)));
-                    var chrOptions = {
+                    chrOptions = {
                         start: s2[0],
                         end: s2[1],
                         name: vm.selectedChromosome.name
                     }
                     vm.$store.commit('setSelectedChromosome', chrOptions)
                 } else {
-                    var chrOptions = {
+                    chrOptions = {
                         start: 0,
                         end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
                         name: vm.selectedChromosome.name

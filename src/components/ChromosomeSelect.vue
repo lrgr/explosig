@@ -12,7 +12,6 @@
 import API from './../api.js'
 import { CHROMOSOMES } from './../constants.js'
 
-
 export default {
   name: 'ChromosomeSelect',
   data: function() {

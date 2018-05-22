@@ -50,17 +50,19 @@
 </template>
 
 <script>
+import * as d3 from 'd3';
+import { mapGetters } from 'vuex';
+import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
 import { getTranslation } from './../../helpers.js';
 import { dispatch } from './plot-link.js';
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
-import * as d3 from 'd3';
-import { mapGetters } from 'vuex';
+
+// child components
+import Spinner from './../Spinner.vue';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['plotIndex', 'showInfo'],
+    props: ['plotIndex', 'showInfo', 'plotOptions'],
     components: {
         Spinner
     },
@@ -70,7 +72,6 @@ export default {
             loading: false,
             plotData: null,
             svg: null,
-            width: 0,
             margin: {
                 top: 20,
                 right: 30,
@@ -101,6 +102,9 @@ export default {
         height: function () {
             return 450 - this.margin.top - this.margin.bottom;
         },
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
+        },
         plotID: function () {
             return 'plot_' + this.plotIndex;
         },
@@ -120,7 +124,6 @@ export default {
     },
     watch: {
         windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
             this.drawPlot();
         },
         options: {
@@ -318,7 +321,7 @@ export default {
                 "data": vm.selectedSignatures.map((d, i) => {
                     return {
                         "name": d,
-                        "color": colorScale(i / parseFloat(vm.selectedSignatures.length)) 
+                        "color": colorScale((vm.selectedSignatures.length - i - 1) / parseFloat(vm.selectedSignatures.length))
                     };
                 })
             }
@@ -483,7 +486,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../../variables.scss';

@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import API from './../api.js'
 import * as d3 from 'd3';
-import { karyotypeColors } from '../constants'
+import API from './../api.js';
+import { KARYOTYPE_COLORS } from '../constants';
 
 export default {
   name: 'Karyotype',

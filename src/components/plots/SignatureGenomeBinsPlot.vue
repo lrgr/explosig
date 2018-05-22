@@ -16,17 +16,18 @@
 </template>
 
 <script>
-import { globalDataOptions } from './../../buses.js'
-// TODO: update/remove all globalChromosomeSelected, globalChromosomeLocation references
-import { dispatch } from './plot-link.js';
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
-import ChromosomeSelect from './../ChromosomeSelect.vue'
 import * as d3 from 'd3';
+import { mapGetters } from 'vuex';
+import API from './../../api.js';
+import { dispatch } from './plot-link.js';
+ 
+// child components
+import Spinner from './../Spinner.vue';
+import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'SignatureGenomeBinsPlot',
-    props: ['plotIndex', 'showInfo', 'windowWidth'],
+    props: ['plotIndex', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -36,17 +37,14 @@ export default {
             title: 'Manhattan Plot with Signatures',
             loading: false,
             plotData: null,
-            width: 0,
             svg: null,
+            width: 0,
             margin: {
                 top: 20,
                 right: 30,
                 bottom: 50,
                 left: 90
-            },
-            dataOptions: globalDataOptions,
-            chromosome: globalChromosomeSelected,
-            chromosomeLocation: globalChromosomeLocation
+            }
         };
     },
     mounted: function() {
@@ -58,19 +56,20 @@ export default {
         },
         plotID: function() {
             return 'plot_' + this.plotIndex;
-        }
+        },
+        ...mapGetters([
+            'selectedChromosome',
+            'selectedSignatures',
+            'selectedDatasets',
+            'windowWidth'
+        ])
     },
     watch: {
         windowWidth: function (val) {
             this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
+            this.drawPlot();
         },
-        chromosome: {
-            handler: function () {
-                this.updatePlot();
-            },
-            deep: true
-        },
-        chromosomeLocation: {
+        selectedChromosome: {
             handler: function () {
                 this.drawPlot();
             },
@@ -81,15 +80,17 @@ export default {
         tooltipDestroy: function() {
             dispatch.call("link-donor-destroy");
         },
-        getChromosomeLength: function (name) {
-            return this.$refs.chrSelect.getChromosomeLength(name);
-        },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            vm.dataOptions['chromosome'] = vm.chromosome.value;
-            API.fetchGenomeSignatureBins(vm.dataOptions).then(function (data) {
+            var params = {
+                "sources": vm.selectedDatasets,
+                "signatures": vm.selectedSignatures,
+                "chromosome": vm.selectedChromosome.name
+            };
+            API.fetchGenomeSignatureBins(params).then(function (data) {
                 vm.plotData = data;
+
                 vm.drawPlot();
                 vm.loading = false;
             });
@@ -105,10 +106,10 @@ export default {
             var y = d3.scaleLinear().range([this.height, 0]);
             var c20 = d3.scaleOrdinal(d3.schemeDark2);
 
-            let chrLen = vm.getChromosomeLength(vm.chromosome.value);
+            let chrLen = vm.$store.getters.chromosomeLength(vm.selectedChromosome.name);
             let yMax = d3.max(this.plotData.map(row => d3.max(Object.values(row.vals).map(val => parseInt(val)))));
            
-            x.domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
+            x.domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
             y.domain([0, yMax]);
 
             var barWidth = 0;
@@ -117,7 +118,7 @@ export default {
                 barWidth = (vm.width) / numBars;
             }
 
-            let windowSize = (vm.chromosomeLocation.end - vm.chromosomeLocation.start) / chrLen;
+            let windowSize = (vm.selectedChromosome.end - vm.selectedChromosome.start) / chrLen;
 
             d3.select("#" + this.plotID).select("svg").remove();
 
@@ -143,7 +144,7 @@ export default {
 
             vm.svg.selectAll(".bar-wrap")
                 .data(this.plotData.filter((el) => {
-                    return (+el.name >= vm.chromosomeLocation.start && +el.name <= vm.chromosomeLocation.end);
+                    return (+el.name >= vm.selectedChromosome.start && +el.name <= vm.selectedChromosome.end);
                 }))
                 .enter().append("g")
                 .attr("transform", function (d) {

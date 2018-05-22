@@ -25,6 +25,7 @@
 import { DataOptionsBus } from './../buses.js';
 import { getUUID } from './../helpers.js';
 
+// child components
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'

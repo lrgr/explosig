@@ -6,11 +6,13 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList } from './buses.js';
-import { mapGetters } from 'vuex'
-import PlotGrid from './components/PlotGrid.vue'
-import NavBar from './components/NavBar.vue'
-import API from './api.js'
+import { mapGetters } from 'vuex';
+import API from './api.js';
+import { globalPlotList } from './buses.js';
+
+// child components
+import PlotGrid from './components/PlotGrid.vue';
+import NavBar from './components/NavBar.vue';
 
 export default {
   name: 'app',

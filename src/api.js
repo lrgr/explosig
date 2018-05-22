@@ -50,4 +50,9 @@ export default class API {
             return response.json();
         });
     }
+
+    static fetchKaryotype() {
+        var url = API.api_base + "karyotype";
+        return d3.csv(url, { method: "POST" });
+    }
 }

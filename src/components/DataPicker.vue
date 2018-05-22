@@ -44,11 +44,13 @@
 </template>
 
 <script>
-import { DataOptionsBus } from './../buses.js';
-import Spinner from './Spinner.vue';
-import API from './../api.js';
 import * as d3 from 'd3';
 import { mapGetters } from 'vuex';
+import { DataOptionsBus } from './../buses.js';
+import API from './../api.js';
+
+// child components
+import Spinner from './Spinner.vue';
 
 export default {
   name: 'DataPicker',
@@ -217,7 +219,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../variables.scss';
