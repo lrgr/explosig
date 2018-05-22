@@ -1,9 +1,9 @@
 <template>
     <div class="legend-wrapper">
-        <div class="legend" v-if="legendInfo != null && Object.keys(legendInfo.data).length > 0">
+        <div class="legend" v-if="legendInfo != null && legendInfo.data.length > 0">
             <span class="legend-key">{{ legendInfo.meta.title }}</span>
-            <div v-for="(itemColor, itemName) in legendInfo.data" :key="itemName">
-                <span class="item-color" :style="{ backgroundColor: itemColor }"></span><span class="item-name">{{ itemName }}</span>
+            <div v-for="item in legendInfo.data" :key="item.name">
+                <span class="item-color" :style="{ backgroundColor: item.color }"></span><span class="item-name">{{ item.name }}</span>
             </div>
         </div>
         
@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import { LegendListBus } from './../buses/data-options-bus.js'
 import * as d3 from 'd3';
+import { LegendListBus } from './../buses.js'
 
 export default {
   name: 'Legend',
@@ -23,8 +23,8 @@ export default {
       };
   },
   mounted: function() {
-      // subscribe using legendKey
       let vm = this;
+      // subscribe using legendKey
       LegendListBus.$on(vm.legendKey, function(updatedLegendInfo) {
           vm.legendInfo = updatedLegendInfo;
       });
@@ -33,7 +33,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../variables.scss';

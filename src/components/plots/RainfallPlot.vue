@@ -16,11 +16,11 @@
             </table>
         </div>
 
-         <div class="spinner-wrapper" v-if="loading">
+        <div class="spinner-wrapper" v-if="loading">
             <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            <ChromosomeSelect ref="chrSelect" class="option-control" />
+            <ChromosomeSelect class="option-control" />
             <div class="option-control">
                 <input type="checkbox" v-model="logScale" :id="this.plotID + '_log_scale'" />
                 <label :for="this.plotID + '_log_scale'">Log Scale</label>
@@ -47,17 +47,20 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected, globalChromosomeLocation, LegendListBus, mutationCategories } from './../../buses/data-options-bus.js';
-import { dispatch } from './plot-link.js';
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
-import ChromosomeSelect from './../ChromosomeSelect.vue'
-
 import * as d3 from 'd3';
+import { mapGetters } from 'vuex';
+import API from './../../api.js';
+import { LegendListBus } from './../../buses.js';
+import { MUTATION_CATEGORIES } from './../../constants.js';
+import { dispatch } from './plot-link.js';
+
+// child components
+import Spinner from './../Spinner.vue';
+import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'RainfallPlot',
-    props: ['plotIndex', 'showInfo', 'windowWidth', 'plotOptions'],
+    props: ['plotIndex', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -67,7 +70,6 @@ export default {
             title: 'Rainfall',
             loading: false,
             plotData: null,
-            width: 0,
             svg: null,
             margin: {
                 top: 20,
@@ -82,9 +84,6 @@ export default {
                 left: null,
                 top: null
             },
-            dataOptions: globalDataOptions,
-            chromosome: globalChromosomeSelected,
-            chromosomeLocation: globalChromosomeLocation,
             highlightKataegis: true,
             logScale: true
         };
@@ -96,6 +95,9 @@ export default {
         height: function () {
             return 400 - this.margin.top - this.margin.bottom;
         },
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
+        },
         plotID: function () {
             return 'plot_' + this.plotIndex;
         },
@@ -105,37 +107,32 @@ export default {
             } else {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
             }
-        }
+        },
+        ...mapGetters([
+            'selectedChromosome',
+            'windowWidth'
+        ])
     },
     watch: {
         windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
-        },
-        chromosome: {
-            handler: function () {
-                this.updatePlot();
-            },
-            deep: true
-        },
-        chromosomeLocation: {
-            handler: function () {
-                this.drawPlot();
-            },
-            deep: true
+            this.drawPlot();
         },
         highlightKataegis: function() {
             this.drawPlot();
         },
         logScale: function() {
             this.drawPlot();
+        },
+        selectedChromosome: {
+            handler: function() {
+                this.drawPlot();
+            },
+            deep: true
         }
     },
     methods: {
         getPlotElem: function () {
             return "#" + this.plotID;
-        },
-        getChromosomeLength: function (name) {
-            return this.$refs.chrSelect.getChromosomeLength(name);
         },
         tooltip: function(category, position, mutDist) {
             this.tooltipInfo.category = category;
@@ -158,7 +155,7 @@ export default {
             let rainfallOptions = {
                 'proj_id': vm.plotOptions.proj_id,
                 'donor_id': vm.plotOptions.donor_id,
-                'chromosome': vm.chromosome.value
+                'chromosome': vm.selectedChromosome.name
             }
 
             API.fetchRainfall(rainfallOptions).then(function (data) {
@@ -175,7 +172,7 @@ export default {
                 return;
             }
 
-            let chrLen = vm.getChromosomeLength(vm.chromosome.value);
+            let chrLen = this.$store.getters.chromosomeLength(vm.selectedChromosome.name);
             let maxDist = d3.max( vm.plotData.map((el) => +el.mut_dist) );
 
             let kataegisPoints = vm.plotData.filter((el) => (+el.kataegis == 1));
@@ -183,7 +180,7 @@ export default {
             // scales
             let x = d3.scaleLinear()
                 .range([0, vm.width])
-                .domain([vm.chromosomeLocation.start, vm.chromosomeLocation.end]);
+                .domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
 
             var y = d3.scaleLinear();
             if(vm.logScale) {
@@ -257,12 +254,12 @@ export default {
                 "meta": {
                     "title": "Contexts"
                 },
-                "data": {}
+                "data": []
             };
 
-            let catNames = Object.keys(mutationCategories);
+            let catNames = Object.keys(MUTATION_CATEGORIES);
             for(var i = 0; i < catNames.length; i++) {
-                legendInfo["data"][catNames[i]] = d3.interpolateRainbow(mutationCategories[catNames[i]] / 96);
+                legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(MUTATION_CATEGORIES[catNames[i]] / 96) });
             }
             LegendListBus.$emit("contexts", legendInfo); 
             
@@ -281,13 +278,22 @@ export default {
             //create brush function redraw scatterplot with x selection
             function brushend() {
                 var s = d3.event.selection;
+                var chrOptions;
                 if(s) {
                     var s2 = s.map((el) => Math.floor(x.invert(el)));
-                    vm.chromosomeLocation.start = s2[0];
-                    vm.chromosomeLocation.end = s2[1];
+                    chrOptions = {
+                        start: s2[0],
+                        end: s2[1],
+                        name: vm.selectedChromosome.name
+                    }
+                    vm.$store.commit('setSelectedChromosome', chrOptions)
                 } else {
-                    vm.chromosomeLocation.start = 0;
-                    vm.chromosomeLocation.end = chrLen;
+                    chrOptions = {
+                        start: 0,
+                        end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
+                        name: vm.selectedChromosome.name
+                    }
+                    vm.$store.commit('setSelectedChromosome', chrOptions)
                 }
                 vm.drawPlot();
             }

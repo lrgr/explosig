@@ -2,47 +2,48 @@
     <div>
         <select v-on:change="setChromosome($event.target.value)">
             <option disabled value="">Chromosome</option>
-            <option v-for="chr in Object.keys(chromosomes)" :key="chr" v-bind:value="chr" :selected="chr == selected.value">chr{{ chr }}</option>
+            <option value="*" :selected="'*' == selectedName">chr*</option>
+            <option v-for="chr in chromosomes" :key="chr" v-bind:value="chr" :selected="chr == selectedName">chr{{ chr }}</option>
         </select>
     </div>
 </template>
 
 <script>
 import API from './../api.js'
-import { globalChromosomeSelected, globalChromosomeLocation } from './../buses/data-options-bus.js';
+import { CHROMOSOMES } from './../constants.js'
 
 export default {
   name: 'ChromosomeSelect',
   data: function() {
       return {
-            chromosomes: {},
-            init: false,
-            selected: globalChromosomeSelected,
-            location: globalChromosomeLocation
+            init: false
       };
   },
-  mounted: function() {
-    let vm = this;
-    API.fetchChromosomes().then(function(chromosomes) {
-        vm.chromosomes = chromosomes;
-    });
+  computed: {
+      chromosomes() {
+          return CHROMOSOMES;
+      },
+      selectedName() {
+          return this.$store.getters.selectedChromosome.name;
+      }
   },
   methods: {
-      getChromosomeLength: function(name) {
-          return this.chromosomes[name];
-      },
       setChromosome: function(event) {
-            this.selected.value = event;
-            this.location.start = 0;
-            this.location.end = this.getChromosomeLength(event);
-         
+          var chrLen = 0;
+          if(event != '*') {
+              chrLen = this.$store.getters.chromosomeLength(event);
+          }
+          var chrOptions = {
+              'name': event,
+              'start': 0,
+              'end': chrLen
+          }
+          this.$store.commit('setSelectedChromosome', chrOptions);
       }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 
 </style>

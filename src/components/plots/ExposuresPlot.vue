@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div :id="this.plotID" class="plot-component"></div>
+        <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
                 <tr>
                     <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
@@ -50,15 +50,19 @@
 </template>
 
 <script>
-import { globalDataOptions, LegendListBus } from './../../buses/data-options-bus.js';
-import { dispatch } from './plot-link.js';
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
 import * as d3 from 'd3';
+import { mapGetters } from 'vuex';
+import API from './../../api.js';
+import { LegendListBus } from './../../buses.js';
+import { getTranslation } from './../../helpers.js';
+import { dispatch } from './plot-link.js';
+
+// child components
+import Spinner from './../Spinner.vue';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['plotIndex', 'showInfo', 'windowWidth'],
+    props: ['plotID', 'showInfo', 'plotOptions'],
     components: {
         Spinner
     },
@@ -67,7 +71,6 @@ export default {
             title: 'Signature Exposures with Clinical Data',
             loading: false,
             plotData: null,
-            width: 0,
             svg: null,
             margin: {
                 top: 20,
@@ -83,26 +86,27 @@ export default {
                 left: null,
                 top: null
             },
-            dataOptions: globalDataOptions,
             options: {
                 normalizeExposures: false,
                 sortBy: null
             },
             sortByCategory: null,
-            sortByList: [],
-            sigNames: [],
-            clinicalNames: []
+            sortByList: []
         };
     },
     mounted: function() {
         this.$emit('titleInit', this.title);
+        this.updatePlot();
     },
     computed: {
         height: function () {
             return 450 - this.margin.top - this.margin.bottom;
         },
-        plotID: function () {
-            return 'plot_' + this.plotIndex;
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
+        },
+        plotElemID: function () {
+            return 'plot_' + this.plotID;
         },
         tooltipPosition: function() {
             if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
@@ -110,11 +114,17 @@ export default {
             } else {
                 return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
             }
-        }
+        },
+        ...mapGetters([
+            'windowWidth',
+            'selectedDatasets',
+            'selectedSignatures',
+            'selectedClinicalVariables'
+        ])
     },
     watch: {
         windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
+            this.drawPlot();
         },
         options: {
             handler: function () {
@@ -124,9 +134,9 @@ export default {
         },
         sortByCategory: function(val) {
             if(val == "exposures") {
-                this.sortByList = this.sigNames;
+                this.sortByList = this.selectedSignatures;
             } else if(val == "clinical") {
-                this.sortByList = this.clinicalNames;
+                this.sortByList = this.selectedClinicalVariables;
             }
         }
     },
@@ -142,8 +152,7 @@ export default {
                     var dataUrl = evt.target.result;
                     d3.csv(dataUrl, vm.rowOp).then((data) => {
                         vm.plotData = data;
-                        vm.sigNames = Object.keys(vm.plotData[0]["exposures"]).sort();
-                        vm.clinicalNames = Object.keys(vm.plotData[0]["clinical"]);
+
                         vm.drawPlot();
                         vm.loading = false;
                         vm.showInfo = false;
@@ -173,10 +182,13 @@ export default {
         updatePlot: function () {
             let vm = this;
             vm.loading = true;
-            API.fetchExposures(vm.dataOptions, vm.rowOp).then((data) => {
+            let params = {
+                "sources": vm.selectedDatasets,
+                "signatures": vm.selectedSignatures
+            };
+            API.fetchExposures(params, vm.rowOp).then((data) => {
                 vm.plotData = data;
-                vm.sigNames = Object.keys(vm.plotData[0]["exposures"]).sort();
-                vm.clinicalNames = Object.keys(vm.plotData[0]["clinical"]);
+
                 vm.drawPlot();
                 vm.loading = false;
             });
@@ -200,23 +212,13 @@ export default {
 
             dispatch.call("link-donor-destroy");
         },
-        getTranslation: function(transform) {
-            // Reference: https://stackoverflow.com/questions/38224875/replacing-d3-transform-in-d3-v4
-
-            // Dummy g element for calculations
-            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            // Set the transform attribute to the provided string value.
-            g.setAttributeNS(null, "transform", transform);
-            var matrix = g.transform.baseVal.consolidate().matrix;
-            // As per definition values e and f are the ones for the translation.
-            return [matrix.e, matrix.f];
-        },
         drawPlot: function () {
             var vm = this;
 
             if(vm.plotData == null) {
                 return;
             }
+
 
             let minBarWidth = 20;
             let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
@@ -256,6 +258,7 @@ export default {
             let cMargin = 3;
 
             var sampleNames = normalizedData.map((d) => { return d["donor_id"]; });
+   
 
             // axis scales
             var x = d3.scaleBand()
@@ -266,10 +269,7 @@ export default {
                 .range([this.height - 2*(cHeight + cMargin), 0]);
             // stacked bar values
             var stack = d3.stack()
-                .keys((d) => { 
-                    var sigNames = Object.keys(d[Object.keys(d)[0]]["exposures"]); 
-                    return sigNames;
-                })
+                .keys(vm.selectedSignatures.slice().reverse())
                 .value((d, key) => { return d["exposures"][key]; })
                 .order(d3.stackOrderNone)
                 .offset(d3.stackOffsetNone);
@@ -289,9 +289,9 @@ export default {
 
              
             // create svg elements
-            d3.select("#" + this.plotID).select("svg").remove();
+            d3.select("#" + this.plotElemID).select("svg").remove();
 
-            vm.svg = d3.select("#" + this.plotID)
+            vm.svg = d3.select("#" + this.plotElemID)
                 .append("svg")
                 .attr("width", plotWidth + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -318,11 +318,13 @@ export default {
                 "meta": {
                     "title": "Signatures"
                 },
-                "data": {}
+                "data": vm.selectedSignatures.map((d, i) => {
+                    return {
+                        "name": d,
+                        "color": colorScale((vm.selectedSignatures.length - i - 1) / parseFloat(vm.selectedSignatures.length))
+                    };
+                })
             }
-            series.map((d, i) => { 
-                legendInfo.data[d["key"]] = colorScale(i / parseFloat(vm.sigNames.length)); 
-            });
             LegendListBus.$emit("signatures", legendInfo);
             
             let layer = XContainer.selectAll(".layer")
@@ -330,7 +332,7 @@ export default {
             .enter().append("g")
                 .attr("class", "layer")
                 .style("fill", (d, i) => { 
-                    return colorScale(i / parseFloat(vm.sigNames.length)); 
+                    return colorScale(i / parseFloat(vm.selectedSignatures.length)); 
                 })
                 .on('mousemove', (d) => {
                     vm.tooltip(null, null, d["key"], null); 
@@ -408,8 +410,8 @@ export default {
                 .attr("fill", "transparent")
                 .attr("fill-opacity", "0")
                 .style("cursor", "pointer")
-                .call(d3.drag().container(document.querySelector("#" + vm.plotID)).on("drag", () => {
-                    var newX = vm.getTranslation(XContainer.attr("transform"))[0] + d3.event.dx;
+                .call(d3.drag().container(document.querySelector("#" + vm.plotElemID)).on("drag", () => {
+                    var newX = getTranslation(XContainer.attr("transform"))[0] + d3.event.dx;
                     newX = Math.max(-plotWidth + vm.width, newX);
                     newX = Math.min(barWidth, newX);
                     XContainer.attr("transform", "translate(" + newX + ",0)");
@@ -464,7 +466,7 @@ export default {
                     .attr("transform", "rotate(-25)");
 
             // dispatch callbacks
-            dispatch.on("link-donor." + this.plotID, (donorID) => {
+            dispatch.on("link-donor." + this.plotElemID, (donorID) => {
                 let i = sampleNames.indexOf(donorID);
                 if(i != null && i != -1) {
                     donorHighlight
@@ -475,7 +477,7 @@ export default {
                 }
             });
 
-            dispatch.on("link-donor-destroy." + this.plotID, () => {
+            dispatch.on("link-donor-destroy." + this.plotElemID, () => {
                 donorHighlight.attr("fill-opacity", 0);
             });
     
@@ -484,7 +486,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../../variables.scss';

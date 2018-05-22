@@ -11,71 +11,52 @@
             <component 
                 v-bind:is="this.plotType" 
                 ref="innerPlot" 
-                :plotIndex="this.plotIndex" 
+                :plotID="this.plotID" 
                 :plotOptions="this.plotOptions" 
                 :showInfo="this.showInfo"
-                :windowWidth="this.windowWidth"
-                v-on:titleInit="plotTitle = $event"
             ></component>
         </div>
   </div>
 </template>
 
 <script>
-import { DataOptionsBus, globalDataOptions } from './../buses/data-options-bus.js';
+import { DataOptionsBus } from './../buses.js';
 
+// child components
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
 
-
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotOptions'],
+  props: ['plotType', 'plotOptions', 'plotTitle', 'plotID'],
   data: function() { 
         return {
-            showInfo: false,
-            windowWidth: 0,
-            dataOptions: globalDataOptions,
-            plotTitle: '',
-            plotIndex: ''
+            showInfo: false
         };
   },
   mounted: function() {
         let vm = this;
-        this.$nextTick(() => {
+        this.$nextTick(function() {
             vm.updatePlot();
         });
         DataOptionsBus.$on('updateDataOptions', function() {
-            vm.updatePlot();
+            this.$nextTick(function() {
+                vm.updatePlot();
+            });
         });
-      
-        vm.windowWidth = window.innerWidth;
-        window.addEventListener('resize', () => {
-            vm.windowWidth = window.innerWidth;
-            vm.drawPlot();
-        });
-        this.plotIndex = this.getUUID();
   }, 
   methods: {
         updatePlot() {
-            if(this.dataOptions.signatures.length > 0 && this.dataOptions.sources.length > 0) {
-                this.$refs.innerPlot.updatePlot();
-            }
+            this.$refs.innerPlot.updatePlot();
         },
         drawPlot() {
             this.$refs.innerPlot.drawPlot();
         },
         removePlot() {
-            this.$emit('removePlot');
-        },
-        getUUID: function() {
-            // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
+            let vm = this;
+            this.$store.commit('removePlot', vm.plotID);
         }
   },
   components: {

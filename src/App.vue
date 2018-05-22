@@ -6,10 +6,13 @@
 </template>
 
 <script>
-import { globalDataOptions, globalPlotList, globalChromosomeSelected, globalChromosomeLocation } from './buses/data-options-bus.js';
+import { mapGetters } from 'vuex';
+import API from './api.js';
+import { getUUID } from './helpers.js';
 
-import PlotGrid from './components/PlotGrid.vue'
-import NavBar from './components/NavBar.vue'
+// child components
+import PlotGrid from './components/PlotGrid.vue';
+import NavBar from './components/NavBar.vue';
 
 export default {
   name: 'app',
@@ -18,56 +21,84 @@ export default {
     PlotGrid
   },
   mounted: function() {
+    let vm = this;
     // check for data in hash
     var paramStr = window.location.hash.substring(1) // remove the initial "#"
     if(paramStr.length > 0) {
       var params = JSON.parse(decodeURIComponent(paramStr));
-      if(params.data && params.data.signatures && params.data.sources && params.plots && params.chr) {
-        params.data.signatures.map((x) => { this.dataOptions.signatures.push(x); });
-        params.data.sources.map((x) => { this.dataOptions.sources.push(x); });
-        params.plots.map((x) => { this.plotList.push(x); });
-        this.chromosomeSelected.value = params.chr.value;
-        this.chromosomeLocation.start = params.chr.start;
-        this.chromosomeLocation.end = params.chr.end;
+      if(params.datasets && params.signatures && params.plots && params.chr) {
+        vm.$store.commit('setSelectedChromosome', {
+          'name': params.chr.name,
+          'start': params.chr.start,
+          'end': params.chr.end
+        });
+        vm.$store.commit('setSelectedSignatures', params.signatures);
+        vm.$store.commit('setSelectedDatasets', params.datasets);
+        vm.$store.commit('setSelectedPlots', params.plots.map((plotInfo) => {
+          plotInfo['id'] = getUUID();
+          return plotInfo; 
+        }));
       }
     }
+    API.fetchChromosomes().then(function(chromosomeLengths) {
+        vm.$store.commit('setChromosomeLengths', chromosomeLengths);
+    });
+    vm.$store.commit('setWindowWidth', window.innerWidth);
+    vm.$store.commit('setWindowHeight', window.innerHeight);
+    window.addEventListener('resize', () => {
+        vm.$store.commit('setWindowWidth', window.innerWidth);
+        vm.$store.commit('setWindowHeight', window.innerHeight);
+    });
   },
-  data: function() {
-    return {
-      dataOptions: globalDataOptions,
-      plotList: globalPlotList,
-      chromosomeSelected: globalChromosomeSelected,
-      chromosomeLocation: globalChromosomeLocation
-    }
+  computed: {
+    ...mapGetters([
+      'selectedChromosome',
+      'selectedSignatures',
+      'selectedPlots',
+      'selectedDatasets'
+    ])
   },
   methods: {
     setHash: function() {
       let hashData = {
-        'data': this.dataOptions,
-        'plots': this.plotList,
+        'datasets': this.selectedDatasets,
+        'signatures': this.selectedSignatures,
+        'plots': this.selectedPlots.map((plotInfo) => {
+          return {
+            "type": plotInfo.type,
+            "options": plotInfo.options,
+            "title": plotInfo.title
+          }; 
+        }),
         'chr': { 
-          'value': this.chromosomeSelected.value,
-          'start': this.chromosomeLocation.start,
-          'end': this.chromosomeLocation.end
+          'name': this.selectedChromosome.name,
+          'start': this.selectedChromosome.start,
+          'end': this.selectedChromosome.end
         }
       };
       window.location.hash = JSON.stringify(hashData);
     }
   },
   watch: {
-    dataOptions: {
+    selectedSignatures: {
       handler: function() {
         this.setHash();
       },
       deep: true
     },
-    plotList: {
+    selectedDatasets: {
       handler: function() {
         this.setHash();
       },
       deep: true
     },
-    chromosomeSelected: {
+    selectedPlots: {
+      handler: function() {
+        this.setHash();
+      },
+      deep: true
+    },
+    selectedChromosome: {
       handler: function() {
         this.setHash();
       },

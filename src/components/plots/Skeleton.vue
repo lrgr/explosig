@@ -25,13 +25,13 @@
 </template>
 
 <script>
-import { globalDataOptions, globalChromosomeSelected } from './../../buses/data-options-bus.js';
-import { dispatch } from './plot-link.js';
-import API from './../../api.js'
-import Spinner from './../Spinner.vue'
-import ChromosomeSelect from './../ChromosomeSelect.vue'
-
 import * as d3 from 'd3';
+import { dispatch } from './plot-link.js';
+import API from './../../api.js';
+
+// child components
+import Spinner from './../Spinner.vue';
+import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'RainfallPlot',
@@ -57,9 +57,7 @@ export default {
                 var: '',
                 left: null,
                 top: null
-            },
-            dataOptions: globalDataOptions,
-            chromosome: globalChromosomeSelected
+            }
         };
     },
     mounted: function() {
@@ -95,9 +93,6 @@ export default {
         getPlotElem: function () {
             return "#" + this.plotID;
         },
-        getChromosomeLength: function (name) {
-            return this.$refs.chrSelect.getChromosomeLength(name);
-        },
         tooltip: function(donorID, y) {
             this.tooltipInfo.var = donorID;
             
@@ -117,9 +112,12 @@ export default {
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-
-            API.fetchRainfall(vm.dataOptions).then(function (data) {
+            let params = {
+                // request params here
+            };
+            API.fetchRainfall(params).then(function (data) {
                 vm.plotData = data;
+                
                 vm.drawPlot();
                 vm.loading = false;
             });
@@ -138,7 +136,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../../variables.scss';

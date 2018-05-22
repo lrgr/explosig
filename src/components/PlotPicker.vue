@@ -9,7 +9,6 @@
         <h4>Coming Soon:</h4>
         <ul>
             <li>Signatures</li>
-            <li>Signatures per Cancer Type</li>
             <li>Manhattan Plot with Mutation Contexts</li>
             <li>Manhattan Plot with Mutation Types</li>
             <li>Signature Exposure Box Plots per Cancer Type</li>
@@ -18,15 +17,10 @@
 </template>
 
 <script>
-import { globalPlotList } from './../buses/data-options-bus.js';
-
-import Spinner from './Spinner.vue'
+import { getUUID } from './../helpers.js';
 
 export default {
     name: 'PlotPicker',
-    components: {
-        Spinner
-    },
     data: function() {
         return {
             plotTypes: [{
@@ -38,14 +32,15 @@ export default {
             }, {
                 type: 'KataegisPlot',
                 title: 'Kataegis'
-            }],
-            selectedPlots: globalPlotList
+            }]
         };
     },
     methods: {
         addPlot: function(plotType, plotTitle, plotOptions = {}) {
-            this.selectedPlots.push({
+            this.$store.commit('addPlot', {
                 type: plotType,
+                id: getUUID(),
+                title: plotTitle,
                 options: plotOptions
             });
             this.$emit('closePlotPicker');
@@ -55,7 +50,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../variables.scss';

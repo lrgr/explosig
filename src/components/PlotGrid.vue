@@ -1,15 +1,17 @@
 <template>
     <div>
+        <Intro v-if="selectedPlots.length == 0"/>
         <div class="plot-grid">
-            <Plot v-for="(plot, index) in plotList" 
-                :key="index" 
+            <Plot v-for="plot in selectedPlots" 
+                :key="plot.id" 
                 :plotType="plot.type"
                 :plotOptions="plot.options"
-                v-on:removePlot="removePlot(index)"
+                :plotID="plot.id"
+                :plotTitle="plot.title"
                 class="item"
             ></Plot>
         </div>
-        <div class="legend-wrapper" v-if="plotList.length > 0">
+        <div class="legend-wrapper" v-if="selectedPlots.length > 0">
             <div class="legend">
                 <div class="options-bar">
                     <span class="title">Legend</span>
@@ -27,39 +29,43 @@
 </template>
 
 <script>
-import { globalPlotList, globalLegendKeys, DataOptionsBus } from './../buses/data-options-bus.js';
+import { mapGetters } from 'vuex';
+
+// child components
 import Plot from './Plot.vue'
 import Legend from './Legend.vue'
+import Intro from './Intro.vue'
+
 
 export default {
   name: 'PlotGrid',
   components: {
     Plot,
-    Legend
+    Legend,
+    Intro
   },
   data: function() {
       return {
-          plotList: globalPlotList,
-          legendKeys: globalLegendKeys,
+          legendKeys: [
+                "projects",
+                "signatures",
+                "clinical",
+                "contexts"
+          ],
           loading: false,
       };
   },
+  computed: {
+      ...mapGetters([
+          'selectedPlots'
+      ])
+  },
   methods: {
-      removePlot: function(index) {
-        let vm = this;
-        if (index !== -1) {
-            vm.plotList.splice(index, 1);
-            vm.$nextTick(() => {
-                // workaround, can't seem to get child plots to re-render after updating plotList
-                window.location.reload();
-            })
-        }
-      }
+      
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
 @import './../variables.scss';
