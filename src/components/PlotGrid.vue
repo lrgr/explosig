@@ -12,11 +12,11 @@
             ></Plot>
         </div>
         <div class="legend-wrapper" v-if="selectedPlots.length > 0">
-            <div class="legend">
+            <div class="legend" :style="{ marginTop: legendMarginTop }">
                 <div class="options-bar">
                     <span class="title">Legend</span>
                 </div>
-                <div class="legend-list">
+                <div class="legend-list" :style="{ height: legendHeight }">
                     <Legend v-for="(legendKey, index) in legendKeys"
                         :key="index"
                         :legendKey="legendKey"
@@ -53,15 +53,28 @@ export default {
                 "contexts"
           ],
           loading: false,
+          pageY: 0
       };
   },
+  mounted: function() {
+      window.addEventListener('scroll', this.scrollLegend);
+  },
   computed: {
+      legendHeight: function() {
+          return (this.windowHeight - 40 - 69 - 24 + Math.min(49, this.pageY)) + "px";
+      },
+      legendMarginTop: function() {
+          return 20 - Math.min(this.pageY, 49) + "px";
+      },
       ...mapGetters([
-          'selectedPlots'
+          'selectedPlots',
+          'windowHeight'
       ])
   },
   methods: {
-      
+      scrollLegend: function(event) {
+          this.pageY = event.pageY;
+      }
   }
 }
 </script>
@@ -86,7 +99,6 @@ export default {
     
     
     .legend {
-        margin-top: 20px;
         margin-right: 20px;
         
         .options-bar {
@@ -103,7 +115,6 @@ export default {
             }
         }
         .legend-list {
-            height: 85vh;
             width: 100%;
             border: 1px solid $color-lgray;
             box-sizing: border-box;
