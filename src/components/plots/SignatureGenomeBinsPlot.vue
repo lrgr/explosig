@@ -1,11 +1,15 @@
 <template>
     <div>
-        <div :id="this.plotID" class="plot-component"></div>
+        <div :id="this.plotElemID" class="plot-component"></div>
          <div class="spinner-wrapper" v-if="loading">
             <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" />
+            <div class="option-control">
+                <input type="checkbox" v-model="stackBars" :id="this.plotID + '_stack_bars'" />
+                <label :for="this.plotID + '_stack_bars'">Stack Bars</label>
+            </div>
         </div>
         
         <div class="plot-info" v-if="showInfo">
@@ -27,7 +31,7 @@ import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'SignatureGenomeBinsPlot',
-    props: ['plotIndex', 'showInfo', 'plotOptions'],
+    props: ['plotID', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -38,13 +42,13 @@ export default {
             loading: false,
             plotData: null,
             svg: null,
-            width: 0,
             margin: {
                 top: 20,
                 right: 30,
                 bottom: 50,
                 left: 90
-            }
+            },
+            stackBars: false
         };
     },
     mounted: function() {
@@ -54,8 +58,11 @@ export default {
         height: function() {
             return 400 - this.margin.top - this.margin.bottom;
         },
-        plotID: function() {
-            return 'plot_' + this.plotIndex;
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
+        },
+        plotElemID: function() {
+            return 'plot_' + this.plotID;
         },
         ...mapGetters([
             'selectedChromosome',
@@ -66,7 +73,6 @@ export default {
     },
     watch: {
         windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
             this.drawPlot();
         },
         selectedChromosome: {
@@ -74,6 +80,9 @@ export default {
                 this.drawPlot();
             },
             deep: true
+        },
+        stackBars: function(val) {
+            this.drawPlot();
         }
     },
     methods: {
@@ -112,6 +121,19 @@ export default {
             x.domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
             y.domain([0, yMax]);
 
+            //console.log(vm.plotData[0].name);
+            //console.log(vm.plotData[0].vals);
+
+            if(vm.stackBars) {
+                let stack = d3.stack()
+                    .keys(vm.selectedSignatures.slice().reverse())
+                    .value((d, key) => { return d["vals"][key]; })
+                    .order(d3.stackOrderNone)
+                    .offset(d3.stackOffsetNone);
+
+                let series = stack(vm.plotData);
+            }
+
             var barWidth = 0;
             if (this.plotData.length >= 1) {
                 var numBars = this.plotData.length;
@@ -120,9 +142,9 @@ export default {
 
             let windowSize = (vm.selectedChromosome.end - vm.selectedChromosome.start) / chrLen;
 
-            d3.select("#" + this.plotID).select("svg").remove();
+            d3.select("#" + this.plotElemID).select("svg").remove();
 
-            vm.svg = d3.select("#" + this.plotID)
+            vm.svg = d3.select("#" + this.plotElemID)
                 .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -195,13 +217,13 @@ export default {
                 .text("Number of Mutations in Signature Bin");  
             
             // dispatch callbacks
-            dispatch.on("link-genome." + this.plotID, function(location) {
+            dispatch.on("link-genome." + this.plotElemID, function(location) {
                 genomeHighlight
                     .attr("x", location)
                     .attr("fill-opacity", 1);
             });
 
-            dispatch.on("link-genome-destroy." + this.plotID, function() {
+            dispatch.on("link-genome-destroy." + this.plotElemID, function() {
                 genomeHighlight.attr("fill-opacity", 0);
             });
         }

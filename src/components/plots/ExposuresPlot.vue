@@ -215,7 +215,7 @@ export default {
         drawPlot: function () {
             var vm = this;
 
-            if(vm.plotData == null) {
+            if(vm.plotData === null) {
                 return;
             }
 

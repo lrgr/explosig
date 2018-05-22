@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="chromosome-select">
         <select v-on:change="setChromosome($event.target.value)">
             <option disabled value="">Chromosome</option>
             <option value="*" :selected="'*' == selectedName">chr*</option>
@@ -45,5 +45,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.chromosome-select {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
 </style>
