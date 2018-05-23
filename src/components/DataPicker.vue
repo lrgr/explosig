@@ -88,6 +88,11 @@ export default {
             vm.drawPlot();
         });
   },
+  watch: {
+      windowWidth: function (val) {
+        this.drawPlot();
+      }
+  },
   computed: {
       height: function () {
         return 604 - this.margin.top - this.margin.bottom;
@@ -192,12 +197,12 @@ export default {
             let xAxis = vm.svg.append("g");
             
             // x Axis ticks
-            xAxis.call(d3.axisTop(x).tickSizeOuter(0).tickFormat((d) => cancerTypes[d]))
+            xAxis.call(d3.axisTop(x).tickSizeOuter(0).tickSizeInner(4).tickFormat((d) => cancerTypes[d]))
                 .selectAll("text")	
                     .style("text-anchor", "end")
                     .style("cursor", "pointer")
-                    .attr("dx", "-.5em")
-                    .attr("dy", ".8em")
+                    .attr("dx", "-0.6em")
+                    .attr("dy", "0.3em")
                     .attr("transform", "rotate(45)")
                     .on("click", (d) => {
                         vm.options.signatures = vm.signaturesPerCancerType[d].signatures;  

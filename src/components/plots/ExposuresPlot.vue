@@ -344,6 +344,7 @@ export default {
             XContainer.selectAll(".clinical-alcohol")
                 .data(sampleNames)
             .enter().append("rect")
+                .attr("class", (d, i) => normalizedData[i]["donor_id"])
                 .attr("x", (d, i) => { return x(d) + 1; })
                 .attr("y", vm.height - 2*(cHeight) - cMargin)
                 .attr("height", cHeight)
@@ -363,6 +364,7 @@ export default {
             XContainer.selectAll(".clinical-tobacco")
                 .data(sampleNames)
             .enter().append("rect")
+                .attr("class", (d, i) => normalizedData[i]["donor_id"])
                 .attr("x", (d, i) => { return x(d) + 1; })
                 .attr("y", vm.height - cHeight + 1)
                 .attr("height", cHeight)
@@ -460,23 +462,33 @@ export default {
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
                 let i = sampleNames.indexOf(donorID);
                 if(i != null && i != -1) {
+                    // clinical opacities
+                    XContainer.selectAll("rect")
+                        .attr("fill-opacity", 0.4)
+                        .attr("stroke-opacity", 0.4);
+                    XContainer.selectAll("rect." + donorID)
+                        .attr("fill-opacity", 1)
+                        .attr("stroke-opacity", 1);
+                    // signature opacities
                     vm.svg.selectAll(".layer > rect")
-                        .transition()
-                            .attr("fill-opacity", 0.4);
+                        .attr("fill-opacity", 0.4);
                     vm.svg.selectAll(".layer > rect." + donorID)
-                        .transition()
-                            .attr("fill-opacity", 1);
+                        .attr("fill-opacity", 1);
                 } else {
                     vm.svg.selectAll(".layer > rect")
-                        .transition()
-                            .attr("fill-opacity", 1);
+                        .attr("fill-opacity", 1);
+                    XContainer.selectAll("rect")
+                        .attr("fill-opacity", 1)
+                        .attr("stroke-opacity", 1);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, () => {
                 vm.svg.selectAll(".layer > rect")
-                    .transition()
-                        .attr("fill-opacity", 1);
+                    .attr("fill-opacity", 1);
+                XContainer.selectAll("rect")
+                    .attr("fill-opacity", 1)
+                    .attr("stroke-opacity", 1);
             });
     
         }
