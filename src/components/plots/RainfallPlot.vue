@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div :id="this.plotID" class="plot-component"></div>
+        <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
                 <tr>
                     <th>Position</th><td>{{ this.tooltipInfo.position }}</td>
@@ -32,7 +32,7 @@
             <div class="option-control">
                 <label>Color by&nbsp;</label>
                 <select>
-                    <option>Mutation Context</option>
+                    <option>Mutation Category</option>
                     <!--<option>Assigned Signature</option>-->
                 </select>
             </div>
@@ -60,7 +60,7 @@ import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'RainfallPlot',
-    props: ['plotIndex', 'showInfo', 'plotOptions'],
+    props: ['plotID', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
         ChromosomeSelect
@@ -98,8 +98,8 @@ export default {
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         },
-        plotID: function () {
-            return 'plot_' + this.plotIndex;
+        plotElemID: function () {
+            return 'plot_' + this.plotID;
         },
         tooltipPosition: function() {
             if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
@@ -132,7 +132,7 @@ export default {
     },
     methods: {
         getPlotElem: function () {
-            return "#" + this.plotID;
+            return "#" + this.plotElemID;
         },
         tooltip: function(category, position, mutDist) {
             this.tooltipInfo.category = category;
@@ -252,7 +252,7 @@ export default {
             
             var legendInfo = {
                 "meta": {
-                    "title": "Contexts"
+                    "title": "Mutation Categories"
                 },
                 "data": []
             };
@@ -273,7 +273,7 @@ export default {
                 .attr("class", "brush")
                 .call(
                     d3.brushX()
-                        .on("end." + vm.plotID, brushend)
+                        .on("end." + vm.plotElemID, brushend)
                 );
             //create brush function redraw scatterplot with x selection
             function brushend() {
@@ -319,7 +319,7 @@ export default {
                 .text("Distance to Previous Mutation");  
             
             // dispatch callbacks
-            dispatch.on("link-donor." + this.plotID, function(donorID) {
+            dispatch.on("link-donor." + this.plotElemID, function(donorID) {
                 if(donorID == vm.plotOptions.donor_id) {
                     donorHighlight.attr("fill-opacity", 0.5);
                 } else {
@@ -327,17 +327,17 @@ export default {
                 }
             });
 
-            dispatch.on("link-donor-destroy." + this.plotID, function() {
+            dispatch.on("link-donor-destroy." + this.plotElemID, function() {
                 donorHighlight.attr("fill-opacity", 0);
             });
 
-            dispatch.on("link-genome." + this.plotID, function(location) {
+            dispatch.on("link-genome." + this.plotElemID, function(location) {
                 genomeHighlight
                     .attr("x", location)
                     .attr("fill-opacity", 1);
             });
 
-            dispatch.on("link-genome-destroy." + this.plotID, function() {
+            dispatch.on("link-genome-destroy." + this.plotElemID, function() {
                 genomeHighlight.attr("fill-opacity", 0);
             });
         }

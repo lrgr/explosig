@@ -117,7 +117,7 @@ span.button {
     opacity: 0.4;
 }
 .modal {
-    z-index: 2;
+    z-index: 5;
     top: 10vh;
     left: 10%;
     height: 80vh;

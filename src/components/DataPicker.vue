@@ -25,7 +25,7 @@
                     <tr v-for="(sourceData, sourceName) in allDatasets" :key="sourceName">
                         <td>
                         <input type="checkbox" :value="sourceName" :id="sourceName" name="sources" v-model="options.sources">
-                        <label :for="sourceName">{{ sourceName }}</label>
+                        <label :for="sourceName" class="sample-label">{{ sourceName }}</label>
                         </td>
                         <td class="cell-gray">{{ sourceData.name }}</td>
                         <td class="cell-gray">({{ sourceData.num_donors }} donors)</td>
@@ -204,14 +204,17 @@ export default {
                     })
                     .on("mouseover", (d) => {
                         vm.svg.selectAll(".perCancerTypeCell")
-                            .attr("fill-opacity", 0.3);
+                            .transition()
+                                .attr("fill-opacity", 0.4);
                         d3.select(vm.svg.selectAll(".cancerTypeColumn").nodes()[d])
                             .selectAll(".perCancerTypeCell")
-                            .attr("fill-opacity", 1);
+                            .transition()
+                                .attr("fill-opacity", 1);
                     })
                     .on("mouseleave", () => {
                         vm.svg.selectAll(".perCancerTypeCell")
-                            .attr("fill-opacity", 1);
+                            .transition()
+                                .attr("fill-opacity", 1);
                     });
             
       }
@@ -233,6 +236,9 @@ export default {
         padding: 1rem;
         display: flex;
         flex-direction: row;
+        .sample-label {
+            cursor: pointer;
+        }
         table, th, td {
             border: 0px solid black;
         }

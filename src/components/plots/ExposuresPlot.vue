@@ -302,17 +302,6 @@ export default {
             
             let XContainer = vm.svg.append("g")
                 .attr("transform", "translate(0,0)");
-            
-             // dispatch elements
-            let donorHighlight = XContainer.append("g")
-                .append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", barWidth + xMargin)
-                .attr("height", (vm.height + vm.margin.top + 60))
-                .attr("transform", "translate(" + (-xMargin) + "," + (-vm.margin.top) + ")")
-                .attr("fill-opacity", 0)
-                .attr("fill", "silver");
 
             var legendInfo = {
                 "meta": {
@@ -341,10 +330,12 @@ export default {
             layer.selectAll("rect")
                 .data((d) => { return d; })
             .enter().append("rect")
+                .attr("class", (d, i) => normalizedData[i]["donor_id"])
                 .attr("x", (d, i) => { return x(normalizedData[i]["donor_id"]); })
                 .attr("y", (d) => { return y(d[1]); })
                 .attr("height", (d) => { return y(d[0]) - y(d[1]); })
                 .attr("width", barWidth - xMargin)
+                .style("cursor", "pointer")
                 .on('mouseover', (d, i) => { 
                     vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0])); 
                 });
@@ -469,16 +460,23 @@ export default {
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
                 let i = sampleNames.indexOf(donorID);
                 if(i != null && i != -1) {
-                    donorHighlight
-                        .attr("x", x(donorID))
-                        .attr("fill-opacity", 1);
+                    vm.svg.selectAll(".layer > rect")
+                        .transition()
+                            .attr("fill-opacity", 0.4);
+                    vm.svg.selectAll(".layer > rect." + donorID)
+                        .transition()
+                            .attr("fill-opacity", 1);
                 } else {
-                    donorHighlight.attr("fill-opacity", 0);
+                    vm.svg.selectAll(".layer > rect")
+                        .transition()
+                            .attr("fill-opacity", 1);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, () => {
-                donorHighlight.attr("fill-opacity", 0);
+                vm.svg.selectAll(".layer > rect")
+                    .transition()
+                        .attr("fill-opacity", 1);
             });
     
         }

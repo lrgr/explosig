@@ -23,7 +23,7 @@ const mutations = {
         sigNames.sort((a, b) => {
             let a_index = state.all.findIndex((el) => (el.name === a));
             let b_index = state.all.findIndex((el) => (el.name === b));
-            return b - a;
+            return a_index - b_index;
         });
         state.selected = sigNames;
     },
