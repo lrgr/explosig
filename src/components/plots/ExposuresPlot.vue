@@ -317,7 +317,7 @@ export default {
             layer.selectAll("rect")
                 .data((d) => { return d; })
             .enter().append("rect")
-                .attr("class", (d, i) => normalizedData[i]["donor_id"])
+                .attr("class", "exposure-bar")
                 .attr("x", (d, i) => { return x(normalizedData[i]["donor_id"]); })
                 .attr("y", (d) => { return y(d[1]); })
                 .attr("height", (d) => { return y(d[0]) - y(d[1]); })
@@ -331,7 +331,7 @@ export default {
             XContainer.selectAll(".clinical-alcohol")
                 .data(sampleNames)
             .enter().append("rect")
-                .attr("class", (d, i) => normalizedData[i]["donor_id"])
+                .attr("class", "clinical-alcohol")
                 .attr("x", (d, i) => { return x(d) + 1; })
                 .attr("y", vm.height - 2*(cHeight) - cMargin)
                 .attr("height", cHeight)
@@ -352,7 +352,7 @@ export default {
             XContainer.selectAll(".clinical-tobacco")
                 .data(sampleNames)
             .enter().append("rect")
-                .attr("class", (d, i) => normalizedData[i]["donor_id"])
+                .attr("class", "clinical-tobacco")
                 .attr("x", (d, i) => { return x(d) + 1; })
                 .attr("y", vm.height - cHeight + 1)
                 .attr("height", cHeight)
@@ -449,33 +449,36 @@ export default {
 
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
-                let i = sampleNames.indexOf(donorID);
-                if(i != null && i != -1) {
+                if(donorID != null) {
                     // clinical opacities
-                    XContainer.selectAll("rect")
-                        .attr("fill-opacity", 0.4)
-                        .attr("stroke-opacity", 0.4);
-                    XContainer.selectAll("rect." + donorID)
+                    XContainer.selectAll(".clinical-alcohol")
+                        .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4))
+                        .attr("stroke-opacity", (d) => (d == donorID ? 1 : 0.4));
+                    XContainer.selectAll(".clinical-tobacco")
+                        .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4))
+                        .attr("stroke-opacity", (d) => (d == donorID ? 1 : 0.4));
+                    // signature opacities
+                    vm.svg.selectAll(".layer").selectAll(".exposure-bar")
+                        .attr("fill-opacity", (d, i) => ((normalizedData[i] && normalizedData[i]["donor_id"] == donorID) ? 1 : 0.4));
+                } else {
+                    vm.svg.selectAll(".exposure-bar")
+                        .attr("fill-opacity", 1);
+                    XContainer.selectAll(".clinical-alcohol")
                         .attr("fill-opacity", 1)
                         .attr("stroke-opacity", 1);
-                    // signature opacities
-                    vm.svg.selectAll(".layer > rect")
-                        .attr("fill-opacity", 0.4);
-                    vm.svg.selectAll(".layer > rect." + donorID)
-                        .attr("fill-opacity", 1);
-                } else {
-                    vm.svg.selectAll(".layer > rect")
-                        .attr("fill-opacity", 1);
-                    XContainer.selectAll("rect")
+                    XContainer.selectAll(".clinical-tobacco")
                         .attr("fill-opacity", 1)
                         .attr("stroke-opacity", 1);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, () => {
-                vm.svg.selectAll(".layer > rect")
+                vm.svg.selectAll(".exposure-bar")
                     .attr("fill-opacity", 1);
-                XContainer.selectAll("rect")
+                XContainer.selectAll(".clinical-alcohol")
+                    .attr("fill-opacity", 1)
+                    .attr("stroke-opacity", 1);
+                XContainer.selectAll(".clinical-tobacco")
                     .attr("fill-opacity", 1)
                     .attr("stroke-opacity", 1);
             });

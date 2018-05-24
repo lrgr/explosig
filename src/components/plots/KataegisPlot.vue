@@ -248,7 +248,7 @@ export default {
                 });
 
             sampleBars.append("rect")
-                .attr("class", (d) => d)
+                .attr("class", "sample-bar")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", vm.width)
@@ -344,18 +344,16 @@ export default {
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, function(donorID) {
                 if(donorID != null) {
-                    vm.svg.selectAll(".sample-bar-g > rect")
-                        .attr("fill-opacity", 0.4);
-                    vm.svg.select("." + donorID)
-                        .attr("fill-opacity", 1);
+                    vm.svg.selectAll(".sample-bar")
+                        .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4));
                 } else {
-                    vm.svg.selectAll(".sample-bar-g > rect")
+                    vm.svg.selectAll(".sample-bar")
                         .attr("fill-opacity", 1);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, function() {
-                vm.svg.selectAll(".sample-bar-g > rect")
+                vm.svg.selectAll(".sample-bar")
                         .attr("fill-opacity", 1);
             });
 
