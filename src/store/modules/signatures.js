@@ -1,20 +1,22 @@
+import * as d3 from 'd3';
+import { LegendListBus } from '../../buses.js';
+
 // initial state
 const state = {
     selected: [],
     all: [],
-    perCancerType: []
+    perCancerType: [],
+    colorScale: d3.interpolateRainbow
 }
 
 // getters
 const getters = {
     allSignatures: state => state.all,
     selectedSignatures: state => state.selected,
-    signaturesPerCancerType: state => state.perCancerType
-}
-
-// actions
-const actions = {
-
+    signaturesPerCancerType: state => state.perCancerType,
+    signatureColor: (state) => (name) => state.colorScale(
+        state.selected.findIndex((el) => (el === name)) / parseFloat(state.selected.length)
+    )
 }
 
 // mutations
@@ -35,9 +37,26 @@ const mutations = {
     }
 }
 
+// actions
+const actions = {
+    emitSignaturesLegend ({ state }) {
+        LegendListBus.$emit("signatures", {
+            "meta": {
+                "title": "Signatures"
+            },
+            "data": state.selected.map((name) => {
+                return {
+                    "name": name,
+                    "color": (getters.signatureColor(state))(name)
+                };
+            })
+        });
+    }
+}
+
 export default {
     state,
     getters,
-    actions,
-    mutations
+    mutations,
+    actions
 }

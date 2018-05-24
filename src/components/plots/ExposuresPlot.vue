@@ -276,7 +276,6 @@ export default {
 
             var series = stack(normalizedData);
 
-            var colorScale = d3.interpolateRainbow;
             var xMargin = 2;
 
             var yClinicalAlcohol = d3.scaleBand()
@@ -303,25 +302,13 @@ export default {
             let XContainer = vm.svg.append("g")
                 .attr("transform", "translate(0,0)");
 
-            var legendInfo = {
-                "meta": {
-                    "title": "Signatures"
-                },
-                "data": vm.selectedSignatures.map((d, i) => {
-                    return {
-                        "name": d,
-                        "color": colorScale((vm.selectedSignatures.length - i - 1) / parseFloat(vm.selectedSignatures.length))
-                    };
-                })
-            }
-            LegendListBus.$emit("signatures", legendInfo);
             
             let layer = XContainer.selectAll(".layer")
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
                 .style("fill", (d, i) => { 
-                    return colorScale(i / parseFloat(vm.selectedSignatures.length)); 
+                    return vm.$store.getters.signatureColor(d["key"]); 
                 })
                 .on('mousemove', (d) => {
                     vm.tooltip(null, null, d["key"], null); 
@@ -349,6 +336,7 @@ export default {
                 .attr("y", vm.height - 2*(cHeight) - cMargin)
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
+                .style("cursor", "pointer")
                 .attr("stroke", "black")
                 .attr("stroke-width", (d, i) => {
                     return ((normalizedData[i]["clinical"]["alcohol_binary"] == "") ? 0 : 2)
@@ -369,6 +357,7 @@ export default {
                 .attr("y", vm.height - cHeight + 1)
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
+                .style("cursor", "pointer")
                 .attr("stroke", "black")
                 .attr("stroke-width", (d, i) => {
                     return ((normalizedData[i]["clinical"]["tobacco_binary"] == "") ? 0 : 2)
@@ -490,7 +479,9 @@ export default {
                     .attr("fill-opacity", 1)
                     .attr("stroke-opacity", 1);
             });
-    
+
+            vm.$store.dispatch('emitSignaturesLegend');
+            vm.$store.dispatch('emitClinicalVariablesLegend');
         }
     }
 }

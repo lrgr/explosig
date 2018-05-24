@@ -47,9 +47,9 @@ export default {
   data: function() {
       return {
           legendKeys: [
-                "projects",
+                "datasets",
                 "signatures",
-                "clinical",
+                "clinicalVariables",
                 "contexts"
           ],
           loading: false,

@@ -3,7 +3,7 @@
         <div class="legend" v-if="legendInfo != null && legendInfo.data.length > 0">
             <span class="legend-key">{{ legendInfo.meta.title }}</span>
             <div v-for="item in legendInfo.data" :key="item.name">
-                <span class="item-color" :style="{ backgroundColor: item.color }"></span><span class="item-name">{{ item.name }}</span>
+                <span class="item-color" :style="{ backgroundColor: item.color, border: border(item.color) }"></span><span class="item-name">{{ item.name }}</span>
             </div>
         </div>
         
@@ -21,6 +21,15 @@ export default {
       return {
           legendInfo: null
       };
+  },
+  methods: {
+      border(itemColor) {
+          if(this.legendKey == "clinicalVariables" && itemColor == "#FFF") {
+              return '2px solid #000000';
+          } else {
+              return 'none';
+          }
+      }
   },
   mounted: function() {
       let vm = this;
@@ -51,6 +60,7 @@ export default {
             width: 1rem;
             height: 0.5rem;
             display: inline-block;
+            box-sizing: border-box;
         }
         .item-name {
             font-size: 0.8rem;

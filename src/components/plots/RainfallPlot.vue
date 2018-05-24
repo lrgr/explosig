@@ -215,7 +215,7 @@ export default {
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", 20)
+                .attr("width", 1)
                 .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
                 .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
                 .attr("fill-opacity", 0)

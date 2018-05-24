@@ -7,7 +7,6 @@ import datasets from './modules/datasets'
 import plots from './modules/plots'
 import clinicalVariables from './modules/clinical-variables'
 
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({

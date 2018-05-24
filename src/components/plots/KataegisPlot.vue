@@ -187,9 +187,6 @@ export default {
 
             x.domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
 
-            
-
-            var colorScale = d3.scaleOrdinal(d3.schemePastel1);
 
             var plotElemID = vm.getPlotElem();
             d3.select(plotElemID).select("svg").remove();
@@ -231,21 +228,11 @@ export default {
             
 
             // dispatch elements
-            let donorHighlight = YContainer.append("g")
-                .append("rect")
-                .attr("x", -vm.margin.left)
-                .attr("y", 0)
-                .attr("width", (vm.width + vm.margin.left + 10))
-                .attr("height", barHeight + yMargin)
-                .attr("transform", "translate(0," + (-yMargin) + ")")
-                .attr("fill-opacity", 0)
-                .attr("fill", "silver");
-            
             let genomeHighlight = YContainer.append("g")
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", 20)
+                .attr("width", 1)
                 .attr("height", plotHeight + vm.margin.top + vm.margin.bottom)
                 .attr("transform", "translate(" + (-vm.margin.left - vm.margin.right) + "," + (-vm.margin.top) + ")")
                 .attr("fill-opacity", 0)
@@ -261,12 +248,13 @@ export default {
                 });
 
             sampleBars.append("rect")
-                .attr("class", "sample-bar")
+                .attr("class", (d) => d)
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("width", vm.width)
                 .attr("height", barHeight - yMargin)
-                .attr("fill", function(d) { return colorScale(vm.plotData[d]["proj_id"]); })
+                .attr("fill", function(d) { return vm.$store.getters.datasetColor(vm.plotData[d]["proj_id"]); })
+                .style("cursor", "pointer")
                 .on('mousemove', function(d, i) { vm.tooltip(d) })
                 .on('click', (d) => {
                     vm.addRainfallPlot(d, vm.plotData[d]["proj_id"]);
@@ -355,18 +343,20 @@ export default {
             
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, function(donorID) {
-                let i = sampleNames.indexOf(donorID);
-                if(i != null && i != -1) {
-                    donorHighlight
-                        .attr("y", barHeight * i)
+                if(donorID != null) {
+                    vm.svg.selectAll(".sample-bar-g > rect")
+                        .attr("fill-opacity", 0.4);
+                    vm.svg.select("." + donorID)
                         .attr("fill-opacity", 1);
                 } else {
-                    donorHighlight.attr("fill-opacity", 0);
+                    vm.svg.selectAll(".sample-bar-g > rect")
+                        .attr("fill-opacity", 1);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, function() {
-                donorHighlight.attr("fill-opacity", 0);
+                vm.svg.selectAll(".sample-bar-g > rect")
+                        .attr("fill-opacity", 1);
             });
 
             dispatch.on("link-genome." + this.plotElemID, function(location) {
@@ -378,6 +368,8 @@ export default {
             dispatch.on("link-genome-destroy." + this.plotElemID, function() {
                 genomeHighlight.attr("fill-opacity", 0);
             });
+
+            vm.$store.dispatch('emitDatasetsLegend');
         }
     }
 }
