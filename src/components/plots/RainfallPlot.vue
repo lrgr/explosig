@@ -5,6 +5,9 @@
         <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
                 <tr>
+                    <th>Chromosome</th><td>{{ this.tooltipInfo.chromosome }}</td>
+                </tr>
+                <tr>
                     <th>Position</th><td>{{ this.tooltipInfo.position }}</td>
                 </tr>
                 <tr>
@@ -51,7 +54,7 @@ import * as d3 from 'd3';
 import { mapGetters } from 'vuex';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
-import { MUTATION_CATEGORIES } from './../../constants.js';
+import { MUTATION_CATEGORIES, CHROMOSOMES } from './../../constants.js';
 import { dispatch } from './plot-link.js';
 
 // child components
@@ -81,6 +84,7 @@ export default {
                 category: '',
                 position: '',
                 mutDist: '',
+                chromosome: '',
                 left: null,
                 top: null
             },
@@ -110,7 +114,8 @@ export default {
         },
         ...mapGetters([
             'selectedChromosome',
-            'windowWidth'
+            'windowWidth',
+            'showAllChromosomes'
         ])
     },
     watch: {
@@ -131,13 +136,14 @@ export default {
         }
     },
     methods: {
-        getPlotElem: function () {
+        getPlotSelector: function () {
             return "#" + this.plotElemID;
         },
-        tooltip: function(category, position, mutDist) {
+        tooltip: function(category, position, mutDist, chromosome) {
             this.tooltipInfo.category = category;
             this.tooltipInfo.position = position;
             this.tooltipInfo.mutDist = mutDist;
+            this.tooltipInfo.chromosome = chromosome;
             
             this.tooltipInfo.left = d3.event.x;
             this.tooltipInfo.top = this.height + this.margin.top;
@@ -147,6 +153,7 @@ export default {
             this.tooltipInfo.top = null;
             this.tooltipInfo.left = null;
 
+            dispatch.call("link-genome-destroy");
         },
         updatePlot: function () {
             let vm = this;
@@ -172,16 +179,11 @@ export default {
                 return;
             }
 
-            let chrLen = this.$store.getters.chromosomeLength(vm.selectedChromosome.name);
             let maxDist = d3.max( vm.plotData.map((el) => +el.mut_dist) );
-
-            let kataegisPoints = vm.plotData.filter((el) => (+el.kataegis == 1));
+            let filteredData = vm.plotData.filter((el) => (vm.showAllChromosomes ? true : (vm.selectedChromosome.name == el.chr)));
+            let kataegisPoints = filteredData.filter((el) => (+el.kataegis == 1));
 
             // scales
-            let x = d3.scaleLinear()
-                .range([0, vm.width])
-                .domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
-
             var y = d3.scaleLinear();
             if(vm.logScale) {
                 y = d3.scaleLog();
@@ -190,16 +192,20 @@ export default {
             y.domain([1, maxDist]);
             
             // svg
-            let plotElemID = vm.getPlotElem();
-            d3.select(plotElemID).select("svg").remove();
+            let plotSelector = vm.getPlotSelector();
+            d3.select(plotSelector).select("svg").remove();
 
-            vm.svg = d3.select(plotElemID)
+            vm.svg = d3.select(plotSelector)
                 .append("svg")
                 .attr("width", vm.width + vm.margin.left + vm.margin.right)
                 .attr("height", vm.height + vm.margin.top + vm.margin.bottom)
                 .append("g")
                 .attr("transform",
-                    "translate(" + vm.margin.left + "," + vm.margin.top + ")");
+                    "translate(" + vm.margin.left + "," + vm.margin.top + ")")
+                .on('mousemove', function() { dispatch.call("link-genome", null, d3.event.x); })
+                .on("mouseleave", () => {
+                    vm.tooltipDestroy();
+                });
             
             // dispatch elements
             let donorHighlight = vm.svg.append("g")
@@ -221,24 +227,50 @@ export default {
                 .attr("fill-opacity", 0)
                 .attr("fill", "silver");
             
+            var chr_x = {};
+            var chrLen, chrName;
+            
+            if(vm.showAllChromosomes) {
+                let genomeLength = CHROMOSOMES.map((name) => vm.$store.getters.chromosomeLength(name)).reduce((a, h) => a + h);
+                var cumulativeLength = 0;
+                for(var chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
+                    chrName = CHROMOSOMES[chr_i];
+                    chrLen = vm.$store.getters.chromosomeLength(chrName);
+                    chr_x[chrName] = d3.scaleLinear()
+                        .domain([0, chrLen])
+                        .range([vm.width*(cumulativeLength / genomeLength), vm.width*((cumulativeLength + chrLen) / genomeLength)]);
+
+                    cumulativeLength += chrLen;
+                }
+            } else {
+                // SINGLE CHROMOSOME
+                chrName = vm.selectedChromosome.name;
+                chrLen = vm.$store.getters.chromosomeLength(chrName);
+                chr_x[chrName] = d3.scaleLinear()
+                    .range([0, vm.width])
+                    .domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
+            }
+
             // kataegis highlights
             let kataegisBars = vm.svg.selectAll('.kataegis-bar')
-			    .data(kataegisPoints)
-			.enter().append('rect')
+                .data(kataegisPoints)
+            .enter().append('rect')
                 .attr('class', 'kataegis-bar')
-                .attr('x', function(d){ return x(+d.pos); })
+                .attr('x', function(d){ return chr_x[d.chr](+d.pos); })
                 .attr('y', 0)
                 .attr('width', 3)
                 .attr('height', vm.height)
                 .attr('fill-opacity', (vm.highlightKataegis ? 1 : 0))
                 .attr('fill', "#FFC4C4");
             
+            
+            
             // point for each mutation, colored by mutation context
             let points = vm.svg.selectAll('.point')
-			    .data(vm.plotData)
+			    .data(filteredData)
 		    .enter().append('circle')
                 .attr('class', 'point')
-                .attr('cx', function(d){return x(+d.pos);})
+                .attr('cx', function(d){return chr_x[d.chr](+d.pos);})
                 .attr('cy', function(d){ return y(+d.mut_dist); })
                 .attr('r', 3)
                 .style('fill', function(d){
@@ -246,7 +278,7 @@ export default {
                     return d3.interpolateRainbow(+d.cat_index / 96); 
                 })
                 .on("mouseover", function(d) {
-                    vm.tooltip(d.cat, d.pos, d.mut_dist);
+                    vm.tooltip(d.cat, d.pos, d.mut_dist, d.chr);
                 });
             
             
@@ -264,38 +296,50 @@ export default {
             LegendListBus.$emit("contexts", legendInfo); 
             
              // x Axis
-            let xAxis = vm.svg.append("g")
-                .attr("transform", "translate(0," + vm.height + ")")
-                .call(d3.axisBottom(x));
-            
-            // zoom with brush
-            xAxis.append("g")
-                .attr("class", "brush")
-                .call(
-                    d3.brushX()
-                        .on("end." + vm.plotElemID, brushend)
-                );
-            //create brush function redraw scatterplot with x selection
-            function brushend() {
-                var s = d3.event.selection;
-                var chrOptions;
-                if(s) {
-                    var s2 = s.map((el) => Math.floor(x.invert(el)));
-                    chrOptions = {
-                        start: s2[0],
-                        end: s2[1],
-                        name: vm.selectedChromosome.name
-                    }
-                    vm.$store.commit('setSelectedChromosome', chrOptions)
-                } else {
-                    chrOptions = {
-                        start: 0,
-                        end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
-                        name: vm.selectedChromosome.name
-                    }
-                    vm.$store.commit('setSelectedChromosome', chrOptions)
+            var xAxis;
+            if(vm.showAllChromosomes) {
+                for(var chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
+                    chrName = CHROMOSOMES[chr_i];
+                    xAxis = vm.svg.append("g")
+                        .attr("transform", "translate(0," + vm.height + ")")
+                        .call(d3.axisBottom(chr_x[chrName]).tickValues([0]).tickFormat(() => chrName));
                 }
-                vm.drawPlot();
+            } else {
+                // SINGLE CHROMOSOME
+                chrName = vm.selectedChromosome.name;
+                xAxis = vm.svg.append("g")
+                        .attr("transform", "translate(0," + vm.height + ")")
+                        .call(d3.axisBottom(chr_x[chrName]));
+                
+                // brushing
+                function brushend() {
+                    var s = d3.event.selection;
+                    var chrOptions;
+                    if(s) {
+                        var s2 = s.map((el) => Math.floor(chr_x[chrName].invert(el)));
+                        chrOptions = {
+                            start: s2[0],
+                            end: s2[1],
+                            name: vm.selectedChromosome.name
+                        }
+                        vm.$store.commit('setSelectedChromosome', chrOptions)
+                    } else {
+                        chrOptions = {
+                            start: 0,
+                            end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
+                            name: vm.selectedChromosome.name
+                        }
+                        vm.$store.commit('setSelectedChromosome', chrOptions)
+                    }
+                    vm.drawPlot();
+                }
+
+                xAxis.append("g")
+                    .attr("class", "brush")
+                    .call(
+                        d3.brushX()
+                            .on("end." + vm.plotElemID, brushend)
+                    );
             }
             
             // text label for the x axis
@@ -303,7 +347,7 @@ export default {
                 .attr("transform",
                         "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
                 .style("text-anchor", "middle")
-                .text("Chromosome Location");
+                .text("Chromosome" + (vm.showAllChromosomes ? "" : (" " + vm.selectedChromosome.name + " Location")));
 
             // y Axis
             vm.svg.append("g")
