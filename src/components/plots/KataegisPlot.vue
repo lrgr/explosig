@@ -264,8 +264,8 @@ export default {
                 chrName = vm.selectedChromosome.name;
                 chrLen = vm.$store.getters.chromosomeLength(chrName);
                 chr_x[chrName] = d3.scaleLinear()
-                    .range([0, vm.width])
-                    .domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
+                    .domain([vm.selectedChromosome.start, vm.selectedChromosome.end])
+                    .range([0, vm.width]);
                 
                 sampleBars.selectAll(".sample-bar-g")
                     .data(function (d) {

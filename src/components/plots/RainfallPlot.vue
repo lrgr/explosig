@@ -247,8 +247,8 @@ export default {
                 chrName = vm.selectedChromosome.name;
                 chrLen = vm.$store.getters.chromosomeLength(chrName);
                 chr_x[chrName] = d3.scaleLinear()
-                    .range([0, vm.width])
-                    .domain([vm.selectedChromosome.start, vm.selectedChromosome.end]);
+                    .domain([vm.selectedChromosome.start, vm.selectedChromosome.end])
+                    .range([0, vm.width]);
             }
 
             // kataegis highlights
@@ -295,7 +295,7 @@ export default {
             }
             LegendListBus.$emit("contexts", legendInfo); 
             
-             // x Axis
+            // x Axis
             var xAxis;
             if(vm.showAllChromosomes) {
                 for(var chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
