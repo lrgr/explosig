@@ -87,8 +87,7 @@ export default {
                 .attr("height", plotHeight + vm.margin.top + vm.margin.bottom)
                 .append("g")
                 .attr("transform",
-                    "translate(" + vm.margin.left + "," + vm.margin.top + ")")
-                .on('mouseleave', vm.tooltipDestroy);
+                    "translate(" + vm.margin.left + "," + vm.margin.top + ")");
       }
   }
 }

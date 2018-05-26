@@ -1,7 +1,6 @@
 <template>
     <div>
         <div :id="this.plotElemID" class="plot-component"></div>
-        <Karyotype :plotID="'k_' + this.plotElemID" />
 
         <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
             <table>
@@ -47,15 +46,13 @@ import { dispatch } from './plot-link.js';
 // child components
 import Spinner from './../Spinner.vue';
 import ChromosomeSelect from './../ChromosomeSelect.vue';
-import Karyotype from './../Karyotype.vue';
 
 export default {
     name: 'KataegisPlot',
     props: ['plotID', 'showInfo', 'plotOptions'],
     components: {
         Spinner,
-        ChromosomeSelect,
-        Karyotype
+        ChromosomeSelect
     },
     data: function () {
         return {
