@@ -6,10 +6,10 @@
         </div>
         <div class="bottom-options">
             <ChromosomeSelect ref="chrSelect" />
-            <div class="option-control">
+            <!--<div class="option-control">
                 <input type="checkbox" v-model="stackBars" :id="this.plotID + '_stack_bars'" />
                 <label :for="this.plotID + '_stack_bars'">Stack Bars</label>
-            </div>
+            </div>-->
         </div>
         
         <div class="plot-info" v-if="showInfo">

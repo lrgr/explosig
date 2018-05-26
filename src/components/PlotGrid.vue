@@ -11,7 +11,7 @@
                 class="item"
             ></Plot>
         </div>
-        <div class="legend-wrapper" v-if="selectedPlots.length > 0" :style="{ marginTop: legendMarginTop }">
+        <div class="legend-wrapper" v-if="selectedPlots.length > 0">
             <div class="legend">
                 <div class="options-bar">
                     <span class="title">Legend</span>
@@ -60,14 +60,11 @@ export default {
       };
   },
   mounted: function() {
-      window.addEventListener('scroll', this.scrollLegend);
+      
   },
   computed: {
       legendHeight: function() {
-          return (this.windowHeight - 40 - 69 - 24 - 58 + Math.min(49, this.pageY)) + "px";
-      },
-      legendMarginTop: function() {
-          return 20 - Math.min(this.pageY, 49) + "px";
+          return (this.windowHeight - 40 - 69 - 24 - 58) + "px";
       },
       ...mapGetters([
           'selectedPlots',
@@ -99,11 +96,9 @@ export default {
     vertical-align: top;
     box-sizing: border-box;
     position: fixed;
-    
-    
     .legend {
         margin-right: 20px;
-        
+        margin-top: 20px;
         .options-bar {
             display: inline-block;
             width: 100%;

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="navbar">
-            <span class="title">iMuSE<span class="title-extra">: Interactive Mutation Signature Explorer</span></span>
+            <span class="title">iMuSE<!--<span class="title-extra">: Interactive Mutation Signature Explorer</span>--></span>
             <div class="right-button-group">
                 <span class="button button-inverse" v-on:click="showDataPicker()">Data</span>
                 <span class="button button-inverse" v-on:click="showPlotPicker()">+ Plot</span>
