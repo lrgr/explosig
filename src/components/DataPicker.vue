@@ -4,7 +4,7 @@
             <div class="option-group">
                 <h3>Signatures</h3>
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
-                <div id="signaturePicker">
+                <div id="signaturePicker" v-show="!loading">
                     <div id="signaturePickerCheckboxes">
                         <div v-for="signature in allSignatures" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
                             <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'" :style="{ lineHeight: rowHeight + 'px'}">{{ signature.name }}</label>

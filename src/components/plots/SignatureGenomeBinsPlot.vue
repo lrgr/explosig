@@ -15,6 +15,7 @@
         <div class="plot-info" v-if="showInfo">
             <h3>Info</h3>
             <p>This plot displays bins of mutations assigned to the selected signatures for the selected datasets, across the genome.</p>
+            <p>By default, bars for each region are overlaid from front to back in order from smallest to largest number of mutations.</p>
         </div>
     </div>
 </template>
@@ -74,7 +75,7 @@ export default {
         ])
     },
     watch: {
-        windowWidth: function (val) {
+        windowWidth: function () {
             this.drawPlot();
         },
         selectedChromosome: {
@@ -83,7 +84,7 @@ export default {
             },
             deep: true
         },
-        stackBars: function(val) {
+        stackBars: function() {
             this.drawPlot();
         }
     },

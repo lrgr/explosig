@@ -49,10 +49,14 @@ export default {
   }, 
   methods: {
         updatePlot() {
-            this.$refs.innerPlot.updatePlot();
+            if(this.$refs.innerPlot) {
+                this.$refs.innerPlot.updatePlot();
+            }
         },
         drawPlot() {
-            this.$refs.innerPlot.drawPlot();
+            if(this.$refs.innerPlot) {
+                this.$refs.innerPlot.drawPlot();
+            }
         },
         removePlot() {
             let vm = this;
@@ -96,6 +100,6 @@ span.button {
 }
 .plot {
     border: 1px solid $color-lgray;;
-    position:relative;
+    position: relative;
 }
 </style>

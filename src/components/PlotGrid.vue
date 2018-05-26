@@ -11,8 +11,8 @@
                 class="item"
             ></Plot>
         </div>
-        <div class="legend-wrapper" v-if="selectedPlots.length > 0">
-            <div class="legend" :style="{ marginTop: legendMarginTop }">
+        <div class="legend-wrapper" v-if="selectedPlots.length > 0" :style="{ marginTop: legendMarginTop }">
+            <div class="legend">
                 <div class="options-bar">
                     <span class="title">Legend</span>
                 </div>
@@ -24,6 +24,7 @@
                     ></Legend>
                 </div>
             </div>
+            <ModeBar v-if="selectedPlots.length > 0"/>
         </div>
     </div>
 </template>
@@ -32,9 +33,10 @@
 import { mapGetters } from 'vuex';
 
 // child components
-import Plot from './Plot.vue'
-import Legend from './Legend.vue'
-import Intro from './Intro.vue'
+import Plot from './Plot.vue';
+import Legend from './Legend.vue';
+import ModeBar from './ModeBar.vue';
+import Intro from './Intro.vue';
 
 
 export default {
@@ -42,6 +44,7 @@ export default {
   components: {
     Plot,
     Legend,
+    ModeBar,
     Intro
   },
   data: function() {
@@ -61,7 +64,7 @@ export default {
   },
   computed: {
       legendHeight: function() {
-          return (this.windowHeight - 40 - 69 - 24 + Math.min(49, this.pageY)) + "px";
+          return (this.windowHeight - 40 - 69 - 24 - 58 + Math.min(49, this.pageY)) + "px";
       },
       legendMarginTop: function() {
           return 20 - Math.min(this.pageY, 49) + "px";
