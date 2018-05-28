@@ -2,7 +2,7 @@
     <div>
         <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
                     <th>Chromosome</th><td>{{ this.tooltipInfo.chromosome }}</td>
@@ -51,7 +51,7 @@
 
 <script>
 import * as d3 from 'd3';
-import { mapGetters } from 'vuex';
+import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
 import { MUTATION_CATEGORIES, CHROMOSOMES } from './../../constants.js';
@@ -63,17 +63,14 @@ import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'RainfallPlot',
-    props: ['plotID', 'showInfo', 'plotOptions'],
+    mixins: [plotMixin],
+    props: [],
     components: {
         Spinner,
         ChromosomeSelect
     },
     data: function () {
         return {
-            title: 'Rainfall',
-            loading: false,
-            plotData: null,
-            svg: null,
             margin: {
                 top: 20,
                 right: 30,
@@ -84,16 +81,11 @@ export default {
                 category: '',
                 position: '',
                 mutDist: '',
-                chromosome: '',
-                left: null,
-                top: null
+                chromosome: ''
             },
             highlightKataegis: true,
             logScale: true
         };
-    },
-    mounted: function() {
-        this.$emit('titleInit', this.title + " (" + this.plotOptions.proj_id + ", " + this.plotOptions.donor_id + ")");
     },
     computed: {
         height: function () {
@@ -101,27 +93,9 @@ export default {
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
-        },
-        plotElemID: function () {
-            return 'plot_' + this.plotID;
-        },
-        tooltipPosition: function() {
-            if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
-                return 'display: none;';
-            } else {
-                return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
-            }
-        },
-        ...mapGetters([
-            'selectedChromosome',
-            'windowWidth',
-            'showAllChromosomes'
-        ])
+        }
     },
     watch: {
-        windowWidth: function (val) {
-            this.drawPlot();
-        },
         highlightKataegis: function() {
             this.drawPlot();
         },
@@ -136,22 +110,18 @@ export default {
         }
     },
     methods: {
-        getPlotSelector: function () {
-            return "#" + this.plotElemID;
-        },
         tooltip: function(category, position, mutDist, chromosome) {
             this.tooltipInfo.category = category;
             this.tooltipInfo.position = position;
             this.tooltipInfo.mutDist = mutDist;
             this.tooltipInfo.chromosome = chromosome;
             
-            this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = this.height + this.margin.top;
+            this.tooltipPosition.left = d3.event.x;
+            this.tooltipPosition.top = this.height + this.margin.top;
 
         },
         tooltipDestroy: function() {
-            this.tooltipInfo.top = null;
-            this.tooltipInfo.left = null;
+            this.tooltipHide();
 
             dispatch.call("link-genome-destroy");
         },
@@ -192,10 +162,9 @@ export default {
             y.domain([1, maxDist]);
             
             // svg
-            let plotSelector = vm.getPlotSelector();
-            d3.select(plotSelector).select("svg").remove();
+            d3.select(this.plotSelector).select("svg").remove();
 
-            vm.svg = d3.select(plotSelector)
+            vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", vm.width + vm.margin.left + vm.margin.right)
                 .attr("height", vm.height + vm.margin.top + vm.margin.bottom)

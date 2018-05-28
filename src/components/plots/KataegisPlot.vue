@@ -2,7 +2,7 @@
     <div>
         <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
                     <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
@@ -37,7 +37,7 @@
 
 <script>
 import * as d3 from 'd3';
-import { mapGetters } from 'vuex';
+import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { getTranslation, getUUID } from './../../helpers.js';
 import { CHROMOSOMES } from './../../constants.js';
@@ -49,17 +49,14 @@ import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'KataegisPlot',
-    props: ['plotID', 'showInfo', 'plotOptions'],
+    mixins: [plotMixin],
+    props: [],
     components: {
         Spinner,
         ChromosomeSelect
     },
     data: function () {
         return {
-            title: 'Kataegis',
-            loading: false,
-            plotData: null,
-            svg: null,
             margin: {
                 top: 20,
                 right: 30,
@@ -69,14 +66,9 @@ export default {
             tooltipInfo: {
                 donorID: "",
                 projID: "",
-                kataegisCount: "",
-                left: null,
-                top: null
+                kataegisCount: ""
             }
         };
-    },
-    mounted: function() {
-        this.$emit('titleInit', this.title);
     },
     computed: {
         height: function () {
@@ -84,28 +76,9 @@ export default {
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
-        },
-        plotElemID: function () {
-            return 'plot_' + this.plotID;
-        },
-        tooltipPosition: function() {
-            if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
-                return 'display: none;';
-            } else {
-                return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
-            }
-        },
-        ...mapGetters([
-            'selectedChromosome',
-            'selectedDatasets',
-            'windowWidth',
-            'showAllChromosomes'
-        ])
+        }
     },
     watch: {
-        windowWidth: function (val) {
-            this.drawPlot();
-        },
         selectedChromosome: {
             handler: function() {
                 this.drawPlot();
@@ -114,9 +87,6 @@ export default {
         }
     },
     methods: {
-        getPlotSelector: function () {
-            return "#" + this.plotElemID;
-        },
         tooltip: function(donorID) {
             this.tooltipInfo.donorID = donorID;
             var projID = this.plotData[donorID]["proj_id"];
@@ -126,16 +96,15 @@ export default {
             } else {
                 this.tooltipInfo.kataegisCount = this.plotData[donorID]["kataegis"][this.selectedChromosome.name].length;
             }
-            this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = this.height + this.margin.top;
+            this.tooltipPosition.left = d3.event.x;
+            this.tooltipPosition.top = this.height + this.margin.top;
 
             dispatch.call("link-donor", null, donorID);
             dispatch.call("link-project", null, projID);
             dispatch.call("link-genome", null, d3.event.x);
         },
         tooltipDestroy: function() {
-            this.tooltipInfo.top = null;
-            this.tooltipInfo.left = null;
+            this.tooltipHide();
 
             dispatch.call("link-donor-destroy");
             dispatch.call("link-genome-destroy");
@@ -156,14 +125,16 @@ export default {
             };
             API.fetchKataegis(params).then(function (data) {
                 vm.plotData = data;
+                
                 vm.drawPlot();
                 vm.loading = false;
+
+                vm.$store.dispatch('emitDatasetsLegend');
             });
 
         },
         drawPlot: function () {
             var vm = this;
-            var plotSelector = vm.getPlotSelector();
 
             if(vm.plotData == null) {
                 return;
@@ -183,9 +154,9 @@ export default {
                 .domain(sampleNames)
                 .range([0, plotHeight]);
             
-            d3.select(plotSelector).select("svg").remove();
+            d3.select(this.plotSelector).select("svg").remove();
 
-            vm.svg = d3.select(plotSelector)
+            vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", vm.width + vm.margin.left + vm.margin.right)
                 .attr("height", plotHeight + vm.margin.top + vm.margin.bottom)
@@ -417,8 +388,6 @@ export default {
             dispatch.on("link-genome-destroy." + this.plotElemID, function() {
                 genomeHighlight.attr("fill-opacity", 0);
             });
-
-            vm.$store.dispatch('emitDatasetsLegend');
         }
     }
 }

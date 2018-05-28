@@ -2,7 +2,7 @@
     <div>
         <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotElemID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
                     <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
@@ -51,7 +51,7 @@
 
 <script>
 import * as d3 from 'd3';
-import { mapGetters } from 'vuex';
+import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
 import { getTranslation } from './../../helpers.js';
@@ -62,15 +62,13 @@ import Spinner from './../Spinner.vue';
 
 export default {
     name: 'ExposuresPlot',
-    props: ['plotID', 'showInfo', 'plotOptions'],
+    mixins: [plotMixin],
+    props: [],
     components: {
         Spinner
     },
     data: function () {
         return {
-            loading: false,
-            plotData: null,
-            svg: null,
             margin: {
                 top: 20,
                 right: 30,
@@ -81,9 +79,7 @@ export default {
                 donorID: "",
                 projID: "",
                 signature: "",
-                exposure: "",
-                left: null,
-                top: null
+                exposure: ""
             },
             options: {
                 normalizeExposures: false,
@@ -93,43 +89,15 @@ export default {
             sortByList: []
         };
     },
-    mounted: function() {
-        this.updatePlot();
-    },
     computed: {
         height: function () {
             return 450 - this.margin.top - this.margin.bottom;
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
-        },
-        plotElemID: function () {
-            return 'plot_' + this.plotID;
-        },
-        tooltipPosition: function() {
-            if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
-                return 'display: none;';
-            } else {
-                return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
-            }
-        },
-        ...mapGetters([
-            'windowWidth',
-            'selectedDatasets',
-            'selectedSignatures',
-            'selectedClinicalVariables'
-        ])
+        }
     },
     watch: {
-        windowWidth: function (val) {
-            this.drawPlot();
-        },
-        options: {
-            handler: function () {
-                this.drawPlot();
-            },
-            deep: true
-        },
         sortByCategory: function(val) {
             if(val == "exposures") {
                 this.sortByList = this.selectedSignatures;
@@ -189,6 +157,9 @@ export default {
 
                 vm.drawPlot();
                 vm.loading = false;
+
+                vm.$store.dispatch('emitSignaturesLegend');
+                vm.$store.dispatch('emitClinicalVariablesLegend');
             });
         },
         tooltip: function(donorID, projID, signature, exposure) {
@@ -197,16 +168,15 @@ export default {
             this.tooltipInfo.signature = signature || this.tooltipInfo.signature;
             this.tooltipInfo.exposure = exposure || this.tooltipInfo.exposure;
 
-            this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = this.height + 30;
+            this.tooltipPosition.left = d3.event.x;
+            this.tooltipPosition.top = this.height + 30;
 
             dispatch.call("link-donor", null, this.tooltipInfo.donorID);
             dispatch.call("link-project", null, this.tooltipInfo.projID);
             dispatch.call("link-signature", null, this.tooltipInfo.signature);
         },
         tooltipDestroy: function() {
-            this.tooltipInfo.left = null;
-            this.tooltipInfo.top = null;
+            this.tooltipHide();
 
             dispatch.call("link-donor-destroy");
         },
@@ -286,9 +256,9 @@ export default {
 
              
             // create svg elements
-            d3.select("#" + this.plotElemID).select("svg").remove();
+            d3.select(this.plotSelector).select("svg").remove();
 
-            vm.svg = d3.select("#" + this.plotElemID)
+            vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", plotWidth + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -480,9 +450,6 @@ export default {
                     .attr("fill-opacity", 1)
                     .attr("stroke-opacity", 1);
             });
-
-            vm.$store.dispatch('emitSignaturesLegend');
-            vm.$store.dispatch('emitClinicalVariablesLegend');
         }
     }
 }

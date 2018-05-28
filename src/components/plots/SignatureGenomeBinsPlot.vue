@@ -22,7 +22,7 @@
 
 <script>
 import * as d3 from 'd3';
-import { mapGetters } from 'vuex';
+import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { CHROMOSOMES } from './../../constants.js';
 import { dispatch } from './plot-link.js';
@@ -33,17 +33,14 @@ import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
     name: 'SignatureGenomeBinsPlot',
-    props: ['plotID', 'showInfo', 'plotOptions'],
+    mixins: [plotMixin],
+    props: [],
     components: {
         Spinner,
         ChromosomeSelect
     },
     data: function () {
         return {
-            title: 'Manhattan Plot with Signatures',
-            loading: false,
-            plotData: null,
-            svg: null,
             margin: {
                 top: 20,
                 right: 30,
@@ -53,31 +50,15 @@ export default {
             stackBars: false
         };
     },
-    mounted: function() {
-        this.$emit('titleInit', this.title);
-    },
     computed: {
         height: function() {
             return 400 - this.margin.top - this.margin.bottom;
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
-        },
-        plotElemID: function() {
-            return 'plot_' + this.plotID;
-        },
-        ...mapGetters([
-            'selectedChromosome',
-            'selectedSignatures',
-            'selectedDatasets',
-            'windowWidth',
-            'showAllChromosomes'
-        ])
+        }
     },
     watch: {
-        windowWidth: function () {
-            this.drawPlot();
-        },
         selectedChromosome: {
             handler: function () {
                 this.drawPlot();
@@ -104,6 +85,8 @@ export default {
 
                 vm.drawPlot();
                 vm.loading = false;
+                
+                vm.$store.dispatch('emitSignaturesLegend');
             });
         },
         drawPlot: function () {
@@ -128,9 +111,9 @@ export default {
                 .domain([0, yMax])
                 .range([this.height, 0]);
             
-            d3.select("#" + this.plotElemID).select("svg").remove();
+            d3.select(this.plotSelector).select("svg").remove();
 
-            vm.svg = d3.select("#" + this.plotElemID)
+            vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
                 .attr("height", this.height + this.margin.top + this.margin.bottom)
@@ -257,8 +240,6 @@ export default {
             dispatch.on("link-genome-destroy." + this.plotElemID, function() {
                 genomeHighlight.attr("fill-opacity", 0);
             });
-
-            vm.$store.dispatch('emitSignaturesLegend');
         }
     }
 }
