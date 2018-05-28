@@ -62,8 +62,5 @@ export default {
         drawPlot: function() {
             // stub
         }
-    },
-    mounted: function() {
-        this.updatePlot();
     }
 }
