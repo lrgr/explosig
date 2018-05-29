@@ -7,6 +7,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import rison from './../vendor/rison/rison.js';
 import API from './../api.js';
 import { getUUID } from './../helpers.js';
 
@@ -25,7 +26,7 @@ export default {
     // check for data in hash
     var paramStr = window.location.hash.substring(1) // remove the initial "#"
     if(paramStr.length > 0) {
-      var params = JSON.parse(decodeURIComponent(paramStr));
+      var params = rison.decode_object(decodeURIComponent(paramStr));
       if(params.datasets && params.signatures && params.plots && params.chr) {
         vm.$store.commit('setSelectedChromosome', {
           'name': params.chr.name,
@@ -59,7 +60,9 @@ export default {
           vm.$store.commit('toPreviousMode');
           break;
       }
-    })
+    });
+
+    console.log(rison.encode_object({any: "json", yes: true}));
   },
   computed: {
     ...mapGetters([
@@ -87,7 +90,7 @@ export default {
           'end': this.selectedChromosome.end
         }
       };
-      window.location.hash = JSON.stringify(hashData);
+      window.location.hash = rison.encode_object(hashData);
     }
   },
   watch: {
