@@ -130,8 +130,8 @@ export default {
             vm.loading = true;
 
             let rainfallOptions = {
-                'proj_id': vm.plotOptions.proj_id,
-                'donor_id': vm.plotOptions.donor_id,
+                'proj_id': vm.currentModeOptions.proj_id,
+                'donor_id': vm.currentModeOptions.donor_id,
                 'chromosome': vm.selectedChromosome.name
             }
 

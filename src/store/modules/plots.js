@@ -3,25 +3,21 @@ const state = {
     singleDonorMode: [{
         'type': 'RainfallPlot',
         'title': 'Rainfall',
-        'id': 'single-donor-rainfall-plot',
-        'options': {}
+        'id': 'single-donor-rainfall-plot'
     }],
     allDonorsMode: [{
         'type': 'ExposuresPlot',
         'title': 'Signature Exposures with Clinical Data',
-        'id': 'all-donors-exposures-plot',
-        'options': {}
+        'id': 'all-donors-exposures-plot'
     }, {
         'type': 'KataegisPlot',
         'title': 'Kataegis',
-        'id': 'all-donors-kataegis-plot',
-        'options': {}
+        'id': 'all-donors-kataegis-plot'
     }],
     overviewMode: [{
         'type': 'SignatureGenomeBinsPlot',
         'title': 'Manhattan Plot with Signatures',
-        'id': 'overview-manhattan-signatures-plot',
-        'options': {}
+        'id': 'overview-manhattan-signatures-plot'
     }],
     selected: []
 }

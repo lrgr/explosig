@@ -1,7 +1,7 @@
 import { mapGetters } from 'vuex';
 
 export default {
-    props: ['plotID', 'showInfo', 'plotOptions'],
+    props: ['plotID', 'showInfo'],
     data: function() {
         return {
             loading: false,
@@ -37,7 +37,8 @@ export default {
             'selectedSignatures',
             'selectedClinicalVariables',
             'selectedChromosome',
-            'showAllChromosomes'
+            'showAllChromosomes',
+            'currentModeOptions'
         ])
     },
     watch: {

@@ -2,8 +2,17 @@
     <div class="mode-bar-wrapper">
         <div class="mode-bar">
             <span class="key">Mode</span>
-            <span class="value">{{ currentModeTitle }}</span>
-            <span v-if="hasPreviousMode" @click="goBack()" class="back" title="Back (Esc)">&larr;</span>
+            <span class="value">
+            <select v-on:change="setMode($event.target.value)">
+                <option v-for="mode in allModes" 
+                    :key="mode.mode" 
+                    :value="mode.mode"
+                    :selected="mode.mode == currentMode" 
+                    :disabled="mode.mode == 'single-donor' && currentMode != 'single-donor'">
+                    {{ mode.title }}
+                </option>
+            </select>
+            </span>
         </div>
     </div>
 </template>
@@ -26,13 +35,19 @@ export default {
       ...mapGetters([
           'selectedPlots',
           'windowHeight',
-          'currentModeTitle',
-          'hasPreviousMode'
+          'allModes',
+          'currentMode'
       ])
   },
   methods: {
-      goBack: function() {
-          this.$store.commit('toPreviousMode');
+      setMode(selectedMode) {
+          let vm = this;
+          let modeObj = {
+              mode: selectedMode,
+              title: vm.allModes.find((el) => (el.mode == selectedMode)).title,
+              options: {}
+          };
+          this.$store.commit('setMode', modeObj);
       }
   }
 }
@@ -62,6 +77,8 @@ export default {
             display: inline-block;
             color: $color-darkgray;
             padding: 0.5rem 1rem;
+            user-select: none;
+            cursor: pointer;
         }
         span.back {
             cursor: pointer;
@@ -71,5 +88,7 @@ export default {
         }
     }
 }
+
+
 
 </style>

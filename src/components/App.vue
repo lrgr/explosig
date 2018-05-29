@@ -7,10 +7,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import rison from './../vendor/rison/rison.js';
 import API from './../api.js';
 import { getUUID } from './../helpers.js';
-
 // child components
 import PlotGrid from './PlotGrid.vue';
 import NavBar from './NavBar.vue';
@@ -26,7 +24,7 @@ export default {
     // check for data in hash
     var paramStr = window.location.hash.substring(1) // remove the initial "#"
     if(paramStr.length > 0) {
-      var params = rison.decode_object(decodeURIComponent(paramStr));
+      var params = JSON.parse(decodeURIComponent(paramStr));
       if(params.datasets && params.signatures && params.plots && params.chr) {
         vm.$store.commit('setSelectedChromosome', {
           'name': params.chr.name,
@@ -89,7 +87,7 @@ export default {
           'end': this.selectedChromosome.end
         }
       };
-      window.location.hash = rison.encode_object(hashData);
+      window.location.hash = JSON.stringify(hashData);
     }
   },
   watch: {

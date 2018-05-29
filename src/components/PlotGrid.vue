@@ -1,13 +1,11 @@
 <template>
     <div>
         <Intro v-if="!doneIntro"/>
-        <ModeProgress v-if="doneIntro"/>
         <div class="plot-grid" v-if="doneIntro">
             <div>
                 <Plot v-for="plot in selectedPlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotOptions="plot.options"
                     :plotID="plot.id"
                     :plotTitle="plot.title"
                     :canRemove="true"
@@ -18,10 +16,9 @@
                 <Plot v-for="plot in overviewModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotOptions="plot.options"
                     :plotID="plot.id"
                     :plotTitle="plot.title"
-                    :canRemove="true"
+                    :canRemove="false"
                     class="item"
                 ></Plot>
             </div>
@@ -29,10 +26,9 @@
                 <Plot v-for="plot in allDonorsModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotOptions="plot.options"
                     :plotID="plot.id"
                     :plotTitle="plot.title"
-                    :canRemove="true"
+                    :canRemove="false"
                     class="item"
                 ></Plot>
             </div>
@@ -40,10 +36,9 @@
                 <Plot v-for="plot in singleDonorModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotOptions="plot.options"
                     :plotID="plot.id"
                     :plotTitle="plot.title"
-                    :canRemove="true"
+                    :canRemove="false"
                     class="item"
                 ></Plot>
             </div>
@@ -72,7 +67,6 @@ import { mapGetters } from 'vuex';
 // child components
 import Plot from './Plot.vue';
 import Legend from './Legend.vue';
-import ModeProgress from './ModeProgress.vue';
 import ModeStatus from './ModeStatus.vue';
 import Intro from './Intro.vue';
 
@@ -83,7 +77,6 @@ export default {
     Plot,
     Legend,
     ModeStatus,
-    ModeProgress,
     Intro
   },
   data: function() {
@@ -103,7 +96,7 @@ export default {
           return (this.selectedDatasets.length > 0 && this.selectedSignatures.length > 0);
       },
       legendHeight: function() {
-          return (this.windowHeight - 40 - 69 - 24 - 128) + "px";
+          return (this.windowHeight - 40 - 69 - 24 - 58) + "px";
       },
       ...mapGetters([
           'windowHeight',

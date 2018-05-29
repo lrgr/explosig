@@ -2,12 +2,25 @@
 const state = {
     mode: "all-donors",
     title: "All Donors",
+    allModes: [
+        {
+            mode: "overview",
+            title: "Overview"
+        }, {
+            mode: "all-donors",
+            title: "All Donors"
+        }, {
+            mode: "single-donor",
+            title: "Single Donor"
+        }
+    ],
     options: {},
     history: []
 }
 
 // getters
 const getters = {
+    allModes: state => state.allModes,
     currentMode: state => state.mode,
     currentModeTitle: state => state.title,
     currentModeOptions: state => state.options,
@@ -29,17 +42,7 @@ const mutations = {
         // update mode
         state.mode = payload.mode;
         state.options = payload.options;
-        switch(payload.mode) {
-            case "overview":
-                state.title = "Overview";
-                break;
-            case "all-donors":
-                state.title = "All Donors";
-                break;
-            case "single-donor":
-                state.title = "Single Donor";
-                break;
-        }
+        state.title = state.allModes.find((el) => (el.mode == payload.mode)).title;
     },
     toPreviousMode (state) {
         if(state.history.length > 0) {
