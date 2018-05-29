@@ -2,8 +2,8 @@
     <div class="mode-bar-wrapper">
         <div class="mode-bar">
             <span class="key">Mode</span>
-            <span class="value">All Donors</span>
-            <span class="back" title="Back">&larr;</span>
+            <span class="value">{{ currentModeTitle }}</span>
+            <span v-if="hasPreviousMode" @click="goBack()" class="back" title="Back (Esc)">&larr;</span>
         </div>
     </div>
 </template>
@@ -25,11 +25,15 @@ export default {
   computed: {
       ...mapGetters([
           'selectedPlots',
-          'windowHeight'
+          'windowHeight',
+          'currentModeTitle',
+          'hasPreviousMode'
       ])
   },
   methods: {
-
+      goBack: function() {
+          this.$store.commit('toPreviousMode');
+      }
   }
 }
 </script>

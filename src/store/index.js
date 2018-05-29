@@ -6,6 +6,7 @@ import internal from './modules/internal'
 import datasets from './modules/datasets'
 import plots from './modules/plots'
 import clinicalVariables from './modules/clinical-variables'
+import mode from './modules/mode'
 
 Vue.use(Vuex)
 
@@ -16,6 +17,8 @@ export default new Vuex.Store({
     internal,
     datasets,
     plots,
-    clinicalVariables
+    clinicalVariables,
+    internal,
+    mode
   }
 })

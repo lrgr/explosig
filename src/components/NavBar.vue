@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="navbar">
-            <span class="title">iMuSE<!--<span class="title-extra">: Interactive Mutation Signature Explorer</span>--></span>
+            <span class="title">iMuSE</span>
             <div class="right-button-group">
                 <span class="button button-inverse" v-on:click="showDataPicker()">Data</span>
                 <span class="button button-inverse" v-on:click="showPlotPicker()">+ Plot</span>
@@ -77,11 +77,6 @@ span.title {
     color: $color-white;
     font-size: 1.5rem;
     margin: 0 1rem;
-}
-@media (max-width: 698px) {
-  span.title > .title-extra {
-      display: none;
-  }
 }
 .right-button-group {
     float: right;

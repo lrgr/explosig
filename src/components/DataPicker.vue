@@ -82,6 +82,9 @@ export default {
             vm.$store.commit('setAllSignatures', listing.sigs);
             vm.$store.commit('setAllDatasets', listing.sources);
             vm.$store.commit('setSignaturesPerCancerType', listing.sig_presets);
+
+            vm.options.signatures = vm.selectedSignatures;
+            vm.options.sources = vm.selectedDatasets;
             
             vm.loading = false;
 
@@ -89,7 +92,7 @@ export default {
         });
   },
   watch: {
-      windowWidth: function (val) {
+      windowWidth: function () {
         this.drawPlot();
       }
   },

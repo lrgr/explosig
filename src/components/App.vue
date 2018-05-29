@@ -7,12 +7,12 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import API from './api.js';
-import { getUUID } from './helpers.js';
+import API from './../api.js';
+import { getUUID } from './../helpers.js';
 
 // child components
-import PlotGrid from './components/PlotGrid.vue';
-import NavBar from './components/NavBar.vue';
+import PlotGrid from './PlotGrid.vue';
+import NavBar from './NavBar.vue';
 
 export default {
   name: 'app',
@@ -43,12 +43,23 @@ export default {
     API.fetchChromosomes().then(function(chromosomeLengths) {
         vm.$store.commit('setChromosomeLengths', chromosomeLengths);
     });
+
+    // resize bindings
     vm.$store.commit('setWindowWidth', window.innerWidth);
     vm.$store.commit('setWindowHeight', window.innerHeight);
     window.addEventListener('resize', () => {
         vm.$store.commit('setWindowWidth', window.innerWidth);
         vm.$store.commit('setWindowHeight', window.innerHeight);
     });
+
+    // key bindings
+    window.addEventListener('keypress', (e) => {
+      switch(e.keyCode) {
+        case 27: // escape
+          vm.$store.commit('toPreviousMode');
+          break;
+      }
+    })
   },
   computed: {
     ...mapGetters([
@@ -109,7 +120,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import './variables.scss';
+@import './../variables.scss';
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

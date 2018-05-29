@@ -10,9 +10,9 @@
                 <tr>
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
                 </tr>
-                <tr>
+                <!--<tr>
                     <th>Count</th><td>{{ this.tooltipInfo.kataegisCount }} (chr{{ this.selectedChromosome.name }})</td>
-                </tr>
+                </tr>-->
             </table>
             <span>&nbsp;Click for Rainfall Plot</span>
         </div>
@@ -110,10 +110,8 @@ export default {
             dispatch.call("link-genome-destroy");
         },
         addRainfallPlot: function(donor_id, proj_id) {
-            this.$store.commit('addPlot', {
-                type: 'RainfallPlot',
-                id: getUUID(),
-                title: 'Rainfall (' + proj_id + ', ' + donor_id + ')',
+            this.$store.commit('setMode', {
+                mode: 'single-donor',
                 options: { 'proj_id': proj_id, 'donor_id': donor_id }
             });
         },

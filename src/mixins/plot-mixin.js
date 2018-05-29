@@ -41,7 +41,7 @@ export default {
         ])
     },
     watch: {
-        windowWidth: function (val) {
+        windowWidth: function () {
             this.drawPlot();
         },
         options: {

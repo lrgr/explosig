@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div :id="this.plotID" class="plot-component"></div>
+        <div :id="this.plotElemID" class="plot-component"></div>
 
-        <div :id="this.plotID + '_tooltip'" class="tooltip" :style="this.tooltipPosition">
+        <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
                     <th>Var Name</th><td>{{ this.tooltipInfo.var }}</td>
@@ -26,6 +26,7 @@
 
 <script>
 import * as d3 from 'd3';
+import plotMixin from './../../mixins/plot-mixin.js';
 import { dispatch } from './plot-link.js';
 import API from './../../api.js';
 
@@ -34,19 +35,15 @@ import Spinner from './../Spinner.vue';
 import ChromosomeSelect from './../ChromosomeSelect.vue';
 
 export default {
-    name: 'RainfallPlot',
-    props: ['plotIndex', 'showInfo', 'windowWidth'],
+    name: 'SkeletonPlot',
+    mixins: [plotMixin],
+    props: [],
     components: {
         Spinner,
         ChromosomeSelect
     },
     data: function () {
         return {
-            title: 'Rainfall',
-            loading: false,
-            plotData: null,
-            width: 0,
-            svg: null,
             margin: {
                 top: 20,
                 right: 30,
@@ -60,51 +57,26 @@ export default {
             }
         };
     },
-    mounted: function() {
-        this.$emit('titleInit', this.title);
-    },
     computed: {
         height: function () {
             return 400 - this.margin.top - this.margin.bottom;
         },
-        plotID: function () {
-            return 'plot_' + this.plotIndex;
-        },
-        tooltipPosition: function() {
-            if(this.tooltipInfo.left == null || this.tooltipInfo.top == null) {
-                return 'display: none;';
-            } else {
-                return 'left: ' + this.tooltipInfo.left + 'px; top: ' + this.tooltipInfo.top + 'px;';
-            }
-        }
-    },
-    watch: {
-        windowWidth: function (val) {
-            this.width = (val*0.8) - 40 - this.margin.left - this.margin.right;
-        },
-        chromosome: {
-            handler: function () {
-                this.drawPlot();
-            },
-            deep: true
+        width: function() {
+            return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         }
     },
     methods: {
-        getPlotElem: function () {
-            return "#" + this.plotID;
-        },
         tooltip: function(donorID, y) {
             this.tooltipInfo.var = donorID;
             
-            this.tooltipInfo.left = d3.event.x;
-            this.tooltipInfo.top = y + this.margin.top;
-
+            this.tooltipPosition.left = d3.event.x;
+            this.tooltipPosition.top = y + this.margin.top;
+            
             dispatch.call("link-donor", null, donorID);
             dispatch.call("link-genome", null, d3.event.x);
         },
         tooltipDestroy: function() {
-            this.tooltipInfo.top = null;
-            this.tooltipInfo.left = null;
+            this.tooltipHide();
 
             dispatch.call("link-donor-destroy");
             dispatch.call("link-genome-destroy");
@@ -130,7 +102,7 @@ export default {
                 return;
             }
 
-            
+            // d3 code here
         }
     }
 }

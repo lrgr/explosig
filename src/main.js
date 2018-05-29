@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import Vue from 'vue';
-import App from './App.vue';
 import store from './store';
+import App from './components/App.vue';
 
 Vue.config.productionTip = false
 

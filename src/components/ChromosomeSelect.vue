@@ -1,9 +1,9 @@
 <template>
     <div class="chromosome-select">
+        <label>Chromosome </label>
         <select v-on:change="setChromosome($event.target.value)">
-            <option disabled value="">Chromosome</option>
-            <option value="*" :selected="'*' == selectedName">chr*</option>
-            <option v-for="chr in chromosomes" :key="chr" v-bind:value="chr" :selected="chr == selectedName">chr{{ chr }}</option>
+            <option value="*" :selected="'*' == selectedName">*</option>
+            <option v-for="chr in chromosomes" :key="chr" v-bind:value="chr" :selected="chr == selectedName">{{ chr }}</option>
         </select>
     </div>
 </template>

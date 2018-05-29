@@ -2,14 +2,20 @@
     <div>
         <Intro v-if="selectedPlots.length == 0"/>
         <div class="plot-grid">
-            <Plot v-for="plot in selectedPlots" 
-                :key="plot.id" 
-                :plotType="plot.type"
-                :plotOptions="plot.options"
-                :plotID="plot.id"
-                :plotTitle="plot.title"
-                class="item"
-            ></Plot>
+            <div class="all-donors-plots" v-show="isAllDonorsMode">
+                <Plot v-for="plot in selectedPlots" 
+                    :key="plot.id" 
+                    :plotType="plot.type"
+                    :plotOptions="plot.options"
+                    :plotID="plot.id"
+                    :plotTitle="plot.title"
+                    :canRemove="true"
+                    class="item"
+                ></Plot>
+            </div>
+            <div class="single-donor-plots" v-if="isSingleDonorMode">
+                <SingleDonorPlots class="item" />
+            </div>
         </div>
         <div class="legend-wrapper" v-if="selectedPlots.length > 0">
             <div class="legend">
@@ -34,6 +40,7 @@ import { mapGetters } from 'vuex';
 
 // child components
 import Plot from './Plot.vue';
+import SingleDonorPlots from './SingleDonorPlots.vue';
 import Legend from './Legend.vue';
 import ModeBar from './ModeBar.vue';
 import Intro from './Intro.vue';
@@ -43,6 +50,7 @@ export default {
   name: 'PlotGrid',
   components: {
     Plot,
+    SingleDonorPlots,
     Legend,
     ModeBar,
     Intro
@@ -59,16 +67,15 @@ export default {
           pageY: 0
       };
   },
-  mounted: function() {
-      
-  },
   computed: {
       legendHeight: function() {
           return (this.windowHeight - 40 - 69 - 24 - 58) + "px";
       },
       ...mapGetters([
           'selectedPlots',
-          'windowHeight'
+          'windowHeight',
+          'isAllDonorsMode',
+          'isSingleDonorMode'
       ])
   },
   methods: {
@@ -120,8 +127,5 @@ export default {
         }
     }
 }
-
-
-
 
 </style>

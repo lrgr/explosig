@@ -4,7 +4,7 @@
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
                 <span class="button" v-on:click="showInfo = !showInfo">?</span>
-                <span class="button button-warning" v-on:click="removePlot()">&ndash;</span>
+                <span class="button button-warning" v-on:click="removePlot()" v-if="canRemove">&ndash;</span>
             </div>
         </div>
         <div class="plot">
@@ -30,7 +30,7 @@ import RainfallPlot from './plots/RainfallPlot.vue'
 
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotOptions', 'plotTitle', 'plotID'],
+  props: ['plotType', 'plotOptions', 'plotTitle', 'plotID', 'canRemove'],
   data: function() { 
         return {
             showInfo: false
