@@ -3,9 +3,11 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
-                <span class="button button-warning"><i class="icon-pin_icon"></i></span>
+                <span class="button button-warning" @click="stickyPlot()" :title="canRemove ? 'Unpin' : 'Pin'">
+                    <i :class="canRemove ? 'icon-pin' : 'icon-pin_o'"></i>
+                </span>
                 <span class="button" v-on:click="showInfo = !showInfo" title="Info">?</span>
-                <span class="button button-warning" v-on:click="removePlot()" v-if="canRemove" title="Hide">&ndash;</span>
+                <span class="button button-warning" v-on:click="hidePlot()" title="Hide">&ndash;</span>
             </div>
         </div>
         <div class="plot">
@@ -13,7 +15,6 @@
                 v-bind:is="this.plotType" 
                 ref="innerPlot" 
                 :plotID="this.plotID" 
-                :plotOptions="this.plotOptions" 
                 :showInfo="this.showInfo"
             ></component>
         </div>
@@ -22,6 +23,7 @@
 
 <script>
 import { DataOptionsBus } from './../buses.js';
+import { getUUID } from '../helpers.js';
 
 // child components
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
@@ -31,7 +33,7 @@ import RainfallPlot from './plots/RainfallPlot.vue'
 
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotOptions', 'plotTitle', 'plotID', 'canRemove'],
+  props: ['plotType', 'plotTitle', 'plotID', 'canRemove'],
   data: function() { 
         return {
             showInfo: false
@@ -62,6 +64,22 @@ export default {
         removePlot() {
             let vm = this;
             this.$store.commit('removePlot', vm.plotID);
+        },
+        stickyPlot() {
+            let vm = this;
+            if(vm.canRemove) {
+                // already sticky, remove
+                vm.removePlot();
+            } else {
+                this.$store.commit('addPlot', {
+                    title: vm.plotTitle,
+                    type: vm.plotType,
+                    id: getUUID()
+                });
+            }
+        },
+        hidePlot() {
+            // TODO
         }
   },
   components: {
