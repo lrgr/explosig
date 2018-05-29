@@ -13,7 +13,8 @@ const getters = {
     currentModeOptions: state => state.options,
     hasPreviousMode: state => (state.history.length > 0),
     isAllDonorsMode: state => (state.mode == "all-donors"),
-    isSingleDonorMode: state => (state.mode == "single-donor")
+    isSingleDonorMode: state => (state.mode == "single-donor"),
+    isOverviewMode: state => (state.mode == "overview")
 }
 
 // mutations
@@ -29,6 +30,9 @@ const mutations = {
         state.mode = payload.mode;
         state.options = payload.options;
         switch(payload.mode) {
+            case "overview":
+                state.title = "Overview";
+                break;
             case "all-donors":
                 state.title = "All Donors";
                 break;

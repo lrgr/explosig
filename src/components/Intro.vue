@@ -3,8 +3,8 @@
         <div class="intro-figure">
             <span id="arrow1" class="arrow"></span>
             <span id="arrow2" class="arrow"></span>
-            <span id="text1" class="text"><span class="bubble">1</span>Select Signatures and Samples</span>
-            <span id="text2" class="text"><span class="bubble">2</span>Add Plots</span>
+            <span id="text1" class="text"><span class="bubble">1</span>Select Signatures</span>
+            <span id="text2" class="text"><span class="bubble">2</span>Select Samples</span>
         </div>
         <div class="intro-text">
             <h3>iMuSE provides interactive visualization and analysis of mutational signatures.</h3>

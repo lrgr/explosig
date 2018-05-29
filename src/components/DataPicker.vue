@@ -37,8 +37,8 @@
         </div>
         <div class="actions-bar">
             <span class="button button-secondary" v-on:click="emitUpdate()">Update</span>
-            <span class="button" v-on:click="showSamples()" v-bind:class="{ 'button-selected': this.samplesVisible }">Samples</span>
-            <span class="button" v-on:click="showSignatures()"  v-bind:class="{ 'button-selected': this.signaturesVisible }">Signatures</span>
+            <span class="button" v-on:click="setDataPicker('samples')" v-bind:class="{ 'button-selected': this.samplesVisible }">Samples</span>
+            <span class="button" v-on:click="setDataPicker('signatures')"  v-bind:class="{ 'button-selected': this.signaturesVisible }">Signatures</span>
         </div>
     </div>
 </template>
@@ -59,9 +59,8 @@ export default {
   },
   data: function() {
       return {
+          innerDataPicker: null,
           loading: true,
-          signaturesVisible: true,
-          samplesVisible: false,
           options: {
             'sources': [],
             'signatures': []
@@ -97,6 +96,12 @@ export default {
       }
   },
   computed: {
+      samplesVisible: function() {
+          return this.innerDataPicker == 'samples';
+      },
+      signaturesVisible: function() {
+          return this.innerDataPicker == 'signatures';
+      },
       height: function () {
         return 604 - this.margin.top - this.margin.bottom;
       },
@@ -127,13 +132,8 @@ export default {
               this.options.signatures = this.allSignatures.map((x) => x.name);
           }
       },
-      showSignatures: function() {
-          this.signaturesVisible = true;
-          this.samplesVisible = false;
-      },
-      showSamples: function() {
-          this.signaturesVisible = false;
-          this.samplesVisible = true;
+      setDataPicker: function(selection) {
+          this.innerDataPicker = selection;
       },
       emitUpdate: function() {
         this.$store.commit('setSelectedSignatures', this.options.signatures);

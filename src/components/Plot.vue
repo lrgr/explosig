@@ -3,8 +3,9 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
-                <span class="button" v-on:click="showInfo = !showInfo">?</span>
-                <span class="button button-warning" v-on:click="removePlot()" v-if="canRemove">&ndash;</span>
+                <span class="button button-warning" v-on:click="removePlot()" v-if="canRemove">&star;</span>
+                <span class="button" v-on:click="showInfo = !showInfo" title="Info">?</span>
+                <span class="button button-warning" v-on:click="removePlot()" v-if="canRemove" title="Hide">&ndash;</span>
             </div>
         </div>
         <div class="plot">

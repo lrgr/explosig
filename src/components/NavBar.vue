@@ -3,16 +3,15 @@
         <div class="navbar">
             <span class="title">iMuSE</span>
             <div class="right-button-group">
-                <span class="button button-inverse" v-on:click="showDataPicker()">Data</span>
-                <span class="button button-inverse" v-on:click="showPlotPicker()">+ Plot</span>
+                <span class="button button-inverse" v-on:click="showDataPicker('signatures')">Signatures</span>
+                <span class="button button-inverse" v-on:click="showDataPicker('samples')">Samples</span>
             </div>
         </div>
         
         <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" v-on:click="closeModal()">Close</span>
-                <PlotPicker v-show="plotPickerVisible" v-on:closePlotPicker="closeModal()"></PlotPicker>
-                <DataPicker v-show="dataPickerVisible"></DataPicker>
+                <DataPicker ref="dataPicker"></DataPicker>
             </div>
         </div>
         <div class="modal-background" v-show="modalVisible" v-on:click="closeModal()"></div>
@@ -24,19 +23,16 @@ import { DataOptionsBus } from './../buses.js';
 
 // child components
 import DataPicker from './DataPicker.vue'
-import PlotPicker from './PlotPicker.vue'
 
 export default {
   name: 'NavBar',
   data: function() { 
         return {
             modalVisible: false,
-            plotPickerVisible: false,
-            dataPickerVisible: false
+            selectedDataPicker: null
         };
   },
   components: {
-      PlotPicker,
       DataPicker
   },
   mounted: function() {
@@ -46,18 +42,12 @@ export default {
       });
   },
   methods: {
-      showPlotPicker: function() {
+      showDataPicker: function(selection) {
+          this.$refs.dataPicker.setDataPicker(selection);
           this.modalVisible = true;
-          this.plotPickerVisible = true;
-      },
-      showDataPicker: function() {
-          this.modalVisible = true;
-          this.dataPickerVisible = true;
       },
       closeModal: function() {
           this.modalVisible = false;
-          this.dataPickerVisible = false;
-          this.plotPickerVisible = false;
       }
   }
 }

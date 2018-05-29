@@ -62,7 +62,6 @@ export default {
       }
     });
 
-    console.log(rison.encode_object({any: "json", yes: true}));
   },
   computed: {
     ...mapGetters([

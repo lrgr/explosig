@@ -24,6 +24,25 @@ span.button {
         background-color: $color-green;
         color: $color-darkgray;
     }
+    
+    &.button-mode-past {
+        background-color: $color-purple;
+        color: $color-white;
+        border: 1px solid $color-purple;
+    }
+
+    &.button-mode-selected {
+        background-color: $color-white;
+        color: $color-purple;
+        border: 1px solid $color-purple;
+    }
+
+    &.button-mode-future {
+        background-color: $color-white;
+        color: $color-lgray;
+        border: 1px solid $color-lgray;
+    }
+
     &.button-selected {
         opacity: 0.4;
     }

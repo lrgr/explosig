@@ -13,7 +13,7 @@ import { mapGetters } from 'vuex';
 
 
 export default {
-  name: 'ModeBar',
+  name: 'ModeStatus',
   components: {
 
   },
