@@ -3,7 +3,7 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
-                <span class="button button-warning">&star;</span>
+                <span class="button button-warning"><i class="icon-pin_icon"></i></span>
                 <span class="button" v-on:click="showInfo = !showInfo" title="Info">?</span>
                 <span class="button button-warning" v-on:click="removePlot()" v-if="canRemove" title="Hide">&ndash;</span>
             </div>
@@ -76,6 +76,7 @@ export default {
 <style scoped lang="scss">
 
 @import './../variables.scss';
+@import './../style/icomoon.css';
 
 .options-bar {
     width: 100%;
@@ -90,15 +91,23 @@ export default {
     }
     .right-button-group {
         float: right;
-        margin: 0.2rem 0.5rem;
+        margin-top: 0.0rem;
+        margin-right: 0.5rem;
+        span.button {
+            display: inline-block;
+            margin: 0 0.4rem;
+            padding: 0.2rem 0.3rem 0.1rem 0.3rem;
+            font-size: 1rem;
+            width: 15px;
+            text-align: center;
+            i {
+                font-size: 0.9rem;
+            }
+        }
     }
 }
 
-span.button {
-    margin: 0rem 0.4rem;
-    padding: 0.1rem 0.3rem;
-    font-size: 1rem;
-}
+
 .plot {
     border: 1px solid $color-lgray;;
     position: relative;

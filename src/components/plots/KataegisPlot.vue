@@ -39,7 +39,7 @@
 import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
-import { getTranslation, getUUID } from './../../helpers.js';
+import { getTranslation } from './../../helpers.js';
 import { CHROMOSOMES } from './../../constants.js';
 import { dispatch } from './plot-link.js';
 
@@ -183,19 +183,19 @@ export default {
                 .attr("height", barHeight - yMargin)
                 .attr("fill", function(d) { return vm.$store.getters.datasetColor(vm.plotData[d]["proj_id"]); })
                 .style("cursor", "pointer")
-                .on('mousemove', function(d, i) { vm.tooltip(d) })
+                .on('mousemove', function(d) { vm.tooltip(d) })
                 .on('click', (d) => {
                     vm.addRainfallPlot(d, vm.plotData[d]["proj_id"]);
                 });
             
             
             var chr_x = {};
-            var chrLen, chrName;
+            var chrLen, chrName, chr_i;
             
             if(vm.showAllChromosomes) {
                 let genomeLength = CHROMOSOMES.map((name) => vm.$store.getters.chromosomeLength(name)).reduce((a, h) => a + h);
                 var cumulativeLength = 0;
-                for(var chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
+                for(chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
                     chrName = CHROMOSOMES[chr_i];
                     chrLen = vm.$store.getters.chromosomeLength(chrName);
                     chr_x[chrName] = d3.scaleLinear()
@@ -311,7 +311,7 @@ export default {
             // x Axis
             var xAxis;
             if(vm.showAllChromosomes) {
-                for(var chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
+                for(chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
                     chrName = CHROMOSOMES[chr_i];
                     xAxis = vm.svg.append("g")
                         .attr("transform", "translate(0," + vm.height + ")")
@@ -324,33 +324,33 @@ export default {
                         .attr("transform", "translate(0," + vm.height + ")")
                         .call(d3.axisBottom(chr_x[chrName]));
                 
-                // brushing
-                function brushendX() {
-                    var s = d3.event.selection;
-                    if(s) {
-                        var s2 = s.map((el) => Math.floor(chr_x[chrName].invert(el)));
-                        var chrOptions = {
-                            start: s2[0],
-                            end: s2[1],
-                            name: vm.selectedChromosome.name
-                        }
-                        vm.$store.commit('setSelectedChromosome', chrOptions)
-                    } else {
-                        var chrOptions = {
-                            start: 0,
-                            end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
-                            name: vm.selectedChromosome.name
-                        }
-                        vm.$store.commit('setSelectedChromosome', chrOptions)
-                    }
-                    vm.drawPlot();
-                }
-                
+
+                // brushing                
                 xAxis.append("g")
                 .attr("class", "brush")
                 .call(
                     d3.brushX()
-                        .on("end." + vm.plotElemID, brushendX)
+                        .on("end." + vm.plotElemID, () => {
+                            var s = d3.event.selection;
+                            var chrOptions;
+                            if(s) {
+                                var s2 = s.map((el) => Math.floor(chr_x[chrName].invert(el)));
+                                chrOptions = {
+                                    start: s2[0],
+                                    end: s2[1],
+                                    name: vm.selectedChromosome.name
+                                }
+                                vm.$store.commit('setSelectedChromosome', chrOptions)
+                            } else {
+                                chrOptions = {
+                                    start: 0,
+                                    end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
+                                    name: vm.selectedChromosome.name
+                                }
+                                vm.$store.commit('setSelectedChromosome', chrOptions)
+                            }
+                            vm.drawPlot();
+                        })
                 );
             }
             

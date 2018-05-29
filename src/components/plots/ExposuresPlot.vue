@@ -53,7 +53,6 @@
 import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
-import { LegendListBus } from './../../buses.js';
 import { getTranslation } from './../../helpers.js';
 import { dispatch } from './plot-link.js';
 
@@ -275,7 +274,7 @@ export default {
                 .data(series)
             .enter().append("g")
                 .attr("class", "layer")
-                .style("fill", (d, i) => { 
+                .style("fill", (d) => { 
                     return vm.$store.getters.signatureColor(d["key"]); 
                 })
                 .on('mousemove', (d) => {
@@ -300,7 +299,7 @@ export default {
                 .data(sampleNames)
             .enter().append("rect")
                 .attr("class", "clinical-alcohol")
-                .attr("x", (d, i) => { return x(d) + 1; })
+                .attr("x", (d) => { return x(d) + 1; })
                 .attr("y", vm.height - 2*(cHeight) - cMargin)
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
@@ -321,7 +320,7 @@ export default {
                 .data(sampleNames)
             .enter().append("rect")
                 .attr("class", "clinical-tobacco")
-                .attr("x", (d, i) => { return x(d) + 1; })
+                .attr("x", (d) => { return x(d) + 1; })
                 .attr("y", vm.height - cHeight + 1)
                 .attr("height", cHeight)
                 .attr("width", barWidth - xMargin - 2)
