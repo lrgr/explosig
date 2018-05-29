@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 export default class API {
     //static api_base = 'http://localhost:8000/';
-    static api_base = 'http://imuse-server.lrgr.io/';
+    static api_base = 'https://imuse-server.lrgr.io/';
 
     static fetchDataListing() {
         var url = API.api_base + "data-listing";

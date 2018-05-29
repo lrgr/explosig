@@ -2,7 +2,7 @@
 
 # Mutation Signature Explorer
 
-Hosted: [http://35.231.174.21/](http://35.231.174.21/)
+Hosted: [https://imuse.lrgr.io](https://imuse.lrgr.io)
 
 ### Dependencies
 - nodejs
