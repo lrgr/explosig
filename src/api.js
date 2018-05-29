@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 export default class API {
     //static api_base = 'http://localhost:8000/';
-    static api_base = 'http://35.199.44.26/';
+    static api_base = 'http://35.237.140.243/';
 
     static fetchDataListing() {
         var url = API.api_base + "data-listing";
