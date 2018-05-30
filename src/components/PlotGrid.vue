@@ -33,6 +33,10 @@
                 ></Plot>
             </div>
             <div v-if="isSingleDonorMode">
+                <div class="title-wrapper">
+                    <span class="title-big">{{ currentModeOptions.donor_id }}</span>
+                    <span class="title-small">{{ currentModeOptions.proj_id }}</span>
+                </div>
                 <Plot v-for="plot in singleDonorModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
@@ -108,7 +112,8 @@ export default {
           'isSingleDonorMode',
           'singleDonorModePlots',
           'isOverviewMode',
-          'overviewModePlots'
+          'overviewModePlots',
+          'currentModeOptions'
       ])
   },
   methods: {
@@ -158,6 +163,19 @@ export default {
             box-sizing: border-box;
             overflow-y: auto;
         }
+    }
+}
+.title-wrapper {
+    margin-bottom: 0;
+    margin-left: 20px;
+    margin-top: 20px;
+    display: inline-block;
+    .title-big {
+        font-size: 26px;
+        margin-right: 1rem;
+    }
+    .title-small {
+
     }
 }
 

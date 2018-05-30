@@ -36,6 +36,9 @@
             <select v-model="options.sortBy" v-if="sortByCategory !== null">
                 <option v-for="sortByOption in sortByList" :key="sortByOption" :value="sortByOption">{{ sortByOption }}</option>
             </select>
+
+            <input type="checkbox" id="enableXScroll" v-model="options.xScroll">
+            <label for="enableXScroll">Enable Horizontal Scroll</label>
         </div>
 
         <div class="plot-info" v-if="showInfo">
@@ -82,7 +85,8 @@ export default {
             },
             options: {
                 normalizeExposures: false,
-                sortBy: null
+                sortBy: null,
+                xScroll: false
             },
             sortByCategory: null,
             sortByList: []
@@ -187,7 +191,7 @@ export default {
             }
 
 
-            let minBarWidth = 20;
+            let minBarWidth = (this.options.xScroll ? 20 : 0);
             let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
             // expand plot width to account for minimum bar width adjustments
             let plotWidth = barWidth * this.plotData.length;
@@ -462,6 +466,12 @@ export default {
 .plot-component {
     overflow-x: hidden;
     overflow-y: hidden;
+}
+
+.bottom-options {
+    select:nth-of-type(2) {
+        margin-right: 15px;
+    }
 }
 
 </style>

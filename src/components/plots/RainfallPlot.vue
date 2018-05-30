@@ -331,7 +331,7 @@ export default {
             
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, function(donorID) {
-                if(donorID == vm.plotOptions.donor_id) {
+                if(donorID == vm.currentModeOptions.donor_id) {
                     donorHighlight.attr("fill-opacity", 0.5);
                 } else {
                     donorHighlight.attr("fill-opacity", 0);

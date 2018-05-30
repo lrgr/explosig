@@ -7,10 +7,10 @@
                     <i :class="canRemove ? 'icon-pin' : 'icon-pin_o'"></i>
                 </span>
                 <span class="button" v-on:click="showInfo = !showInfo" title="Info">?</span>
-                <span class="button button-warning" v-on:click="hidePlot()" title="Hide">&ndash;</span>
+                <span class="button button-warning" v-on:click="toggleVisibility()" :title="hidden ? 'Show' : 'Hide'">{{ hidden ? '+' : '&ndash;' }}</span>
             </div>
         </div>
-        <div class="plot">
+        <div class="plot" v-show="!hidden">
             <component 
                 v-bind:is="this.plotType" 
                 ref="innerPlot" 
@@ -36,7 +36,8 @@ export default {
   props: ['plotType', 'plotTitle', 'plotID', 'canRemove'],
   data: function() { 
         return {
-            showInfo: false
+            showInfo: false,
+            hidden: false
         };
   },
   mounted: function() {
@@ -78,8 +79,8 @@ export default {
                 });
             }
         },
-        hidePlot() {
-            // TODO
+        toggleVisibility() {
+            this.hidden = !this.hidden;
         }
   },
   components: {
