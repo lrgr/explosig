@@ -109,12 +109,6 @@ export default {
             dispatch.call("link-donor-destroy");
             dispatch.call("link-genome-destroy");
         },
-        addRainfallPlot: function(donor_id, proj_id) {
-            this.$store.commit('setMode', {
-                mode: 'single-donor',
-                options: { 'proj_id': proj_id, 'donor_id': donor_id }
-            });
-        },
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
@@ -185,7 +179,7 @@ export default {
                 .style("cursor", "pointer")
                 .on('mousemove', function(d) { vm.tooltip(d) })
                 .on('click', (d) => {
-                    vm.addRainfallPlot(d, vm.plotData[d]["proj_id"]);
+                    vm.enterSingleDonorMode(d, vm.plotData[d]["proj_id"]);
                 });
             
             

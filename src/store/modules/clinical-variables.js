@@ -3,20 +3,24 @@ import { LegendListBus } from '../../buses.js';
 
 // initial state
 const state = {
-    selected: ["alcohol_binary", "tobacco_binary"],
+    selected: ["Alcohol Binary", "Tobacco Binary"],
     all: [{
-        "id": "alcohol_binary",
+        "id": "Alcohol Binary",
         "name": "Alcohol"
     }, {
-        "id": "tobacco_binary",
+        "id": "Tobacco Binary",
         "name": "Tobacco"
+    }, {
+        "id": "Tobacco Intensity",
+        "name": "Tobacco Intensity"
     }]
 }
 
 // getters
 const getters = {
     selectedClinicalVariables: state => state.selected,
-    allClinicalVariables: state => state.all
+    allClinicalVariables: state => state.all,
+    clinicalVariable: (state) => (varID) => state.all.find((el) => (el.id == varID))
 }
 
 // mutations

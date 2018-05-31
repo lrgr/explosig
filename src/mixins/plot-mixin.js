@@ -62,6 +62,12 @@ export default {
         },
         drawPlot: function() {
             // stub
+        },
+        enterSingleDonorMode: function(donor_id, proj_id) {
+            this.$store.commit('setMode', {
+                mode: 'single-donor',
+                options: { 'proj_id': proj_id, 'donor_id': donor_id }
+            });
         }
     }
 }

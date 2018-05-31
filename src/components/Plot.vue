@@ -7,7 +7,7 @@
                     <i :class="canRemove ? 'icon-pin' : 'icon-pin_o'"></i>
                 </span>
                 <span class="button" v-on:click="showInfo = !showInfo" title="Info">?</span>
-                <span class="button button-warning" v-on:click="toggleVisibility()" :title="hidden ? 'Show' : 'Hide'">{{ hidden ? '+' : '&ndash;' }}</span>
+                <span class="button button-warning" v-on:click="toggleVisibility()" :title="hidden ? 'Show' : 'Minimize'">{{ hidden ? '+' : '&ndash;' }}</span>
             </div>
         </div>
         <div class="plot" v-show="!hidden">

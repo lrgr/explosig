@@ -51,15 +51,6 @@ export default {
         vm.$store.commit('setWindowHeight', window.innerHeight);
     });
 
-    // key bindings
-    window.addEventListener('keypress', (e) => {
-      switch(e.keyCode) {
-        case 27: // escape
-          vm.$store.commit('toPreviousMode');
-          break;
-      }
-    });
-
   },
   computed: {
     ...mapGetters([

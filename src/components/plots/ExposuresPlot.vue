@@ -10,11 +10,14 @@
                 <tr>
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
                 </tr>
-                <tr>
+                <tr v-if="tooltipInfo.type == 'signature'">
                     <th>Signature</th><td>{{ this.tooltipInfo.signature }}</td>
                 </tr>
-                <tr>
+                <tr v-if="tooltipInfo.type == 'signature'">
                     <th>Exposure</th><td>{{ this.tooltipInfo.exposure }}</td>
+                </tr>
+                <tr v-if="tooltipInfo.type == 'clinical'">
+                    <th>{{ tooltipInfo.clinicalKey }}</th><td>{{ tooltipInfo.clinicalValue }}</td>
                 </tr>
             </table>
         </div>
@@ -80,13 +83,16 @@ export default {
             tooltipInfo: {
                 donorID: "",
                 projID: "",
+                type: "",
                 signature: "",
-                exposure: ""
+                exposure: "",
+                clinicalKey: "",
+                clinicalValue: ""
             },
             options: {
                 normalizeExposures: false,
                 sortBy: null,
-                xScroll: false
+                xScroll: true
             },
             sortByCategory: null,
             sortByList: []
@@ -119,7 +125,7 @@ export default {
                 var reader = new FileReader();
                 reader.onloadend = function(evt) {
                     var dataUrl = evt.target.result;
-                    d3.csv(dataUrl, vm.rowOp).then((data) => {
+                    d3.json(dataUrl).then((data) => {
                         vm.plotData = data;
 
                         vm.drawPlot();
@@ -130,24 +136,6 @@ export default {
                 reader.readAsDataURL(file);
             }
         },
-        rowOp: function(d) {
-            var row = {
-                'donor_id': d["donor_id"],
-                'clinical': {
-                    'alcohol_binary': d["Alcohol Binary"],
-                    'tobacco_binary': d["Tobacco Binary"],
-                    'tobacco_intensity': d["Tobacco Intensity"]
-                },
-                'proj_id': d["proj_id"]
-            }
-            delete d["donor_id"];
-            delete d["Alcohol Binary"];
-            delete d["Tobacco Binary"];
-            delete d["Tobacco Intensity"];
-            delete d["proj_id"];
-            row["exposures"] = d;
-            return row;
-        },
         updatePlot: function () {
             let vm = this;
             vm.loading = true;
@@ -155,7 +143,7 @@ export default {
                 "sources": vm.selectedDatasets,
                 "signatures": vm.selectedSignatures
             };
-            API.fetchExposures(params, vm.rowOp).then((data) => {
+            API.fetchExposures(params).then((data) => {
                 vm.plotData = data;
 
                 vm.drawPlot();
@@ -165,15 +153,23 @@ export default {
                 vm.$store.dispatch('emitClinicalVariablesLegend');
             });
         },
-        tooltip: function(donorID, projID, signature, exposure) {
+        tooltip: function(donorID, projID, signature, exposure, clinicalKey, clinicalValue) {
             this.tooltipInfo.donorID = donorID || this.tooltipInfo.donorID;
             this.tooltipInfo.projID = projID || this.tooltipInfo.projID;
-            this.tooltipInfo.signature = signature || this.tooltipInfo.signature;
-            this.tooltipInfo.exposure = exposure || this.tooltipInfo.exposure;
+
+            if(signature != null || exposure != null) {
+                this.tooltipInfo.type = 'signature';
+                this.tooltipInfo.signature = signature || this.tooltipInfo.signature;
+                this.tooltipInfo.exposure = exposure || this.tooltipInfo.exposure;
+            } else if(clinicalKey != null || clinicalValue != null) {
+                this.tooltipInfo.type = 'clinical';
+                this.tooltipInfo.clinicalKey = clinicalKey;
+                this.tooltipInfo.clinicalValue = clinicalValue;
+            }
 
             this.tooltipPosition.left = d3.event.x;
             this.tooltipPosition.top = this.height + 30;
-
+            
             dispatch.call("link-donor", null, this.tooltipInfo.donorID);
             dispatch.call("link-project", null, this.tooltipInfo.projID);
             dispatch.call("link-signature", null, this.tooltipInfo.signature);
@@ -189,8 +185,10 @@ export default {
             if(vm.plotData === null) {
                 return;
             }
-
-
+            let marginX = 2;
+            let clinicalHeight = 10;
+            let clinicalMarginY = 4;
+            let totalClinicalHeight = vm.selectedClinicalVariables.length * (clinicalHeight + clinicalMarginY);
             let minBarWidth = (this.options.xScroll ? 20 : 0);
             let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
             // expand plot width to account for minimum bar width adjustments
@@ -213,51 +211,38 @@ export default {
             }
             // sort data if necessary
             if(vm.sortByCategory != null && vm.options.sortBy != null && vm.sortByList.indexOf(vm.options.sortBy) >= 0) {
-                
-                normalizedData.sort(function(x, y) {
-                    //console.log(x[vm.sortByCategory][vm.options.sortBy]);
-                    return d3.descending(+x[vm.sortByCategory][vm.options.sortBy], +y[vm.sortByCategory][vm.options.sortBy]);
+                normalizedData.sort(function(a, b) {
+                    return d3.descending(
+                        (a[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +a[vm.sortByCategory][vm.options.sortBy]), 
+                        (b[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +b[vm.sortByCategory][vm.options.sortBy])
+                    );
                 });
             }
+
             // compute max for y axis
-            var maxCountSum = d3.max(normalizedData.map((d) => {
+            let maxCountSum = d3.max(normalizedData.map((d) => {
                 return d3.sum(Object.values(d["exposures"]));
             }));
 
-            // height and margins for clinical variable rects
-            let cHeight = 15;
-            let cMargin = 3;
-
-            var sampleNames = normalizedData.map((d) => { return d["donor_id"]; });
-   
+            let sampleNames = normalizedData.map((d) => { return d["donor_id"]; });
 
             // axis scales
-            var x = d3.scaleBand()
+            let x = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, plotWidth]);
-            var y = d3.scaleLinear()
+            let y = d3.scaleLinear()
                 .domain([0, maxCountSum])
-                .range([this.height - 2*(cHeight + cMargin), 0]);
+                .range([this.height - totalClinicalHeight, 0]);
+            
             // stacked bar values
-            var stack = d3.stack()
+            let stack = d3.stack()
                 .keys(vm.selectedSignatures.slice().reverse())
                 .value((d, key) => { return d["exposures"][key]; })
                 .order(d3.stackOrderNone)
                 .offset(d3.stackOffsetNone);
 
-            var series = stack(normalizedData);
+            let series = stack(normalizedData);
 
-            var xMargin = 2;
-
-            var yClinicalAlcohol = d3.scaleBand()
-                .domain(["Alcohol"])
-                .range([cHeight, 0]);
-            
-            var yClinicalTobacco = d3.scaleBand()
-                .domain(["Tobacco"])
-                .range([cHeight, 0]);
-
-             
             // create svg elements
             d3.select(this.plotSelector).select("svg").remove();
 
@@ -292,59 +277,71 @@ export default {
                 .attr("x", (d, i) => { return x(normalizedData[i]["donor_id"]); })
                 .attr("y", (d) => { return y(d[1]); })
                 .attr("height", (d) => { return y(d[0]) - y(d[1]); })
-                .attr("width", barWidth - xMargin)
+                .attr("width", barWidth - marginX)
                 .style("cursor", "pointer")
                 .on('mouseover', (d, i) => { 
-                    vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0])); 
+                    vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0]), null, null); 
+                })
+                .on('click', (d, i) => {
+                    vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
                 });
         
             // clinical variables
-            XContainer.selectAll(".clinical-alcohol")
-                .data(sampleNames)
-            .enter().append("rect")
-                .attr("class", "clinical-alcohol")
-                .attr("x", (d) => { return x(d) + 1; })
-                .attr("y", vm.height - 2*(cHeight) - cMargin)
-                .attr("height", cHeight)
-                .attr("width", barWidth - xMargin - 2)
-                .style("cursor", "pointer")
-                .attr("stroke", "black")
-                .attr("stroke-width", (d, i) => {
-                    return ((normalizedData[i]["clinical"]["alcohol_binary"] == "") ? 0 : 2)
-                })
-                .attr("fill", (d, i) => {
-                    if(normalizedData[i]["clinical"]["alcohol_binary"] == "") {
-                        return "transparent";
-                    } else {
-                        return d3.interpolateGreys(normalizedData[i]["clinical"]["alcohol_binary"]);
-                    }
-                });
-            
-            XContainer.selectAll(".clinical-tobacco")
-                .data(sampleNames)
-            .enter().append("rect")
-                .attr("class", "clinical-tobacco")
-                .attr("x", (d) => { return x(d) + 1; })
-                .attr("y", vm.height - cHeight + 1)
-                .attr("height", cHeight)
-                .attr("width", barWidth - xMargin - 2)
-                .style("cursor", "pointer")
-                .attr("stroke", "black")
-                .attr("stroke-width", (d, i) => {
-                    return ((normalizedData[i]["clinical"]["tobacco_binary"] == "") ? 0 : 2)
-                })
-                .attr("fill", (d, i) => {
-                    if(normalizedData[i]["clinical"]["tobacco_binary"] == "") {
-                        return "transparent";
-                    } else {
-                        return d3.interpolateGreys(normalizedData[i]["clinical"]["tobacco_binary"]);
-                        //return d3.interpolateGreys(normalizedData[i]["clinical"]["tobacco_intensity"] / 100.0);
-                    }
-                });
+            let clinicalY = {};
+            var var_i;
+            for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {
+                let selectedClinicalVariable = vm.selectedClinicalVariables[var_i];
+                let selectedClinicalVariableName = vm.$store.getters.clinicalVariable(selectedClinicalVariable).name;
+
+                clinicalY[selectedClinicalVariable] = d3.scaleBand()
+                    .domain([selectedClinicalVariableName])
+                    .range([this.height - totalClinicalHeight + clinicalMarginY + (var_i+1)*(clinicalHeight + clinicalMarginY), this.height - totalClinicalHeight + clinicalMarginY + (var_i)*(clinicalHeight + clinicalMarginY)]);
+
+                XContainer.append("g")
+                    .attr("class", "clinical-group")
+                .selectAll(".clinical-rect")
+                    .data(sampleNames)
+                .enter().append("rect")
+                    .attr("class", "clinical-rect")
+                    .attr("x", (d) => { return x(d) + 1; })
+                    .attr("y", clinicalY[selectedClinicalVariable](selectedClinicalVariableName))
+                    .attr("height", clinicalHeight)
+                    .attr("width", barWidth - marginX - 2)
+                    .style("cursor", "pointer")
+                    .attr("stroke", (d, i) => {
+                        if(normalizedData[i]["clinical"][selectedClinicalVariable] === undefined || normalizedData[i]["clinical"][selectedClinicalVariable] == "nan") {
+                            // variable is not present for the donor or is NaN => unknown
+                            return "transparent";
+                        } else {
+                            return "#000000";
+                        }
+                    })
+                    .attr("stroke-width", 2)
+                    .attr("fill", (d, i) => {
+                        if(normalizedData[i]["clinical"][selectedClinicalVariable] === undefined || normalizedData[i]["clinical"][selectedClinicalVariable] == "nan") {
+                            // variable is not present for the donor or is NaN => unknown
+                            return "transparent";
+                        } else {
+                            return d3.interpolateGreys(+normalizedData[i]["clinical"][selectedClinicalVariable]);
+                        }
+                    })
+                    .on('mouseover', (d, i) => {
+                        if(normalizedData[i]["clinical"][selectedClinicalVariable] === undefined || normalizedData[i]["clinical"][selectedClinicalVariable] == "nan") {
+                            // variable is not present for the donor or is NaN => unknown
+                            vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, selectedClinicalVariableName, "Unknown"); 
+                        } else {
+                            vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, selectedClinicalVariableName, +normalizedData[i]["clinical"][selectedClinicalVariable]); 
+                        }
+                        
+                    })
+                    .on('click', (d, i) => {
+                        vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
+                    });
+            }
 
             // x Axis container
             let xAxis = XContainer.append("g")
-                .attr("transform", "translate(0," + (vm.height + 2*cMargin) + ")")
+                .attr("transform", "translate(0," + (vm.height + clinicalMarginY) + ")")
                 .attr("class", "x_axis");
 
             // x Axis ticks
@@ -383,9 +380,9 @@ export default {
             // y axis white background
             yAxis.append("rect")
                     .attr("width", vm.margin.left)
-                    .attr("height", vm.height + 2*(cMargin) + vm.margin.bottom)
+                    .attr("height", vm.height + vm.margin.bottom)
                     .attr("transform", "translate(" + (-vm.margin.left) + ",0)")
-                    .attr("fill", "#FFF");
+                    .attr("fill", (vm.options.xScroll ? "#FFF" : "transparent"));
             
             // y Axis exposures ticks
             yAxis.call(d3.axisLeft(y));
@@ -394,38 +391,29 @@ export default {
             vm.svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - vm.margin.left + 10)
-                .attr("x", 0 - (vm.height / 2))
+                .attr("x", 0 - ((vm.height - totalClinicalHeight) / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text("Signature Exposures");  
             
             // y Axis for clinical vars
-            vm.svg.append("g")
-                .call(d3.axisLeft(yClinicalAlcohol).tickSizeOuter(0))
-                .attr("transform", "translate(0," + (vm.height - 2*cHeight - cMargin) + ")")
-                .selectAll("text")	
-                    .style("text-anchor", "end")
-                    .attr("dx", "-.4em")
-                    .attr("dy", ".1em")
-                    .attr("transform", "rotate(-25)");
-
-            vm.svg.append("g")
-                .call(d3.axisLeft(yClinicalTobacco).tickSizeOuter(0))
-                .attr("transform", "translate(0," + (vm.height - cHeight) + ")")
-                .selectAll("text")	
-                    .style("text-anchor", "end")
-                    .attr("dx", "-.4em")
-                    .attr("dy", ".1em")
-                    .attr("transform", "rotate(-25)");
+            for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {
+                var axisClinicalVariable = vm.selectedClinicalVariables[var_i];
+                vm.svg.append("g")
+                    .call(d3.axisLeft(clinicalY[axisClinicalVariable]).tickSizeOuter(0))
+                    .attr("transform", "translate(0,0)")
+                    .selectAll("text")	
+                        .style("text-anchor", "end")
+                        .attr("dx", "-.4em")
+                        .attr("dy", ".1em")
+                        .attr("transform", "rotate(-25)");
+            }
 
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
                 if(donorID != null) {
                     // clinical opacities
-                    XContainer.selectAll(".clinical-alcohol")
-                        .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4))
-                        .attr("stroke-opacity", (d) => (d == donorID ? 1 : 0.4));
-                    XContainer.selectAll(".clinical-tobacco")
+                    XContainer.selectAll(".clinical-group").selectAll(".clinical-rect")
                         .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4))
                         .attr("stroke-opacity", (d) => (d == donorID ? 1 : 0.4));
                     // signature opacities
@@ -434,10 +422,7 @@ export default {
                 } else {
                     vm.svg.selectAll(".exposure-bar")
                         .attr("fill-opacity", 1);
-                    XContainer.selectAll(".clinical-alcohol")
-                        .attr("fill-opacity", 1)
-                        .attr("stroke-opacity", 1);
-                    XContainer.selectAll(".clinical-tobacco")
+                    XContainer.selectAll(".clinical-group").selectAll(".clinical-rect")
                         .attr("fill-opacity", 1)
                         .attr("stroke-opacity", 1);
                 }
@@ -446,12 +431,9 @@ export default {
             dispatch.on("link-donor-destroy." + this.plotElemID, () => {
                 vm.svg.selectAll(".exposure-bar")
                     .attr("fill-opacity", 1);
-                XContainer.selectAll(".clinical-alcohol")
-                    .attr("fill-opacity", 1)
-                    .attr("stroke-opacity", 1);
-                XContainer.selectAll(".clinical-tobacco")
-                    .attr("fill-opacity", 1)
-                    .attr("stroke-opacity", 1);
+                XContainer.selectAll(".clinical-group").selectAll(".clinical-rect")
+                        .attr("fill-opacity", 1)
+                        .attr("stroke-opacity", 1);
             });
         }
     }
