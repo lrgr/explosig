@@ -38,6 +38,13 @@ export default {
           return plotInfo; 
         }));
       }
+      if(params.mode && params.mode.mode && params.mode.title && params.mode.options) {
+        vm.$store.commit('setMode', {
+            mode: params.mode.mode,
+            title: params.mode.title,
+            options: params.mode.options
+        });
+      }
     }
     API.fetchChromosomes().then(function(chromosomeLengths) {
         vm.$store.commit('setChromosomeLengths', chromosomeLengths);
@@ -57,7 +64,10 @@ export default {
       'selectedChromosome',
       'selectedSignatures',
       'selectedPlots',
-      'selectedDatasets'
+      'selectedDatasets',
+      'currentMode',
+      'currentModeTitle',
+      'currentModeOptions'
     ])
   },
   methods: {
@@ -76,6 +86,11 @@ export default {
           'name': this.selectedChromosome.name,
           'start': this.selectedChromosome.start,
           'end': this.selectedChromosome.end
+        },
+        'mode': {
+          'mode': this.currentMode,
+          'title': this.currentModeTitle,
+          'options': this.currentModeOptions
         }
       };
       window.location.hash = JSON.stringify(hashData);
@@ -105,6 +120,15 @@ export default {
         this.setHash();
       },
       deep: true
+    },
+    currentMode: function() {
+      this.setHash();
+    },
+    currentModeTitle: function() {
+      this.setHash();
+    },
+    currentModeOptions: function() {
+      this.setHash();
     }
   }
 }
