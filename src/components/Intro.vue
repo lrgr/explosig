@@ -60,23 +60,23 @@ export default {
         }
     }
     #arrow1 {
-        right: 6rem;
+        right: 8.5rem;
         &:before {
             height: 100px;
         }
         &:after {
             top: 117px;
-            width: 10rem;
+            width: 7rem;
         }
     }
     #arrow2 {
-        right: 0.8rem;
+        right: 1.3rem;
         &:before {
             height: 164px;
         }
         &:after {
             top: 181px;
-            width: 14rem;
+            width: 13rem;
         }
     }
     .text {

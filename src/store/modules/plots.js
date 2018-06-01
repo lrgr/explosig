@@ -1,6 +1,10 @@
 // initial state
 const state = {
     singleDonorMode: [{
+        'type': 'SingleDonorExposuresPlot',
+        'title': 'Exposures with Clinical Data',
+        'id': 'single-donor-exposures-plot'
+    }, {
         'type': 'RainfallPlot',
         'title': 'Rainfall',
         'id': 'single-donor-rainfall-plot'

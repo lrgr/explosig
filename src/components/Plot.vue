@@ -30,6 +30,8 @@ import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
+import SingleDonorExposuresPlot from './plots/SingleDonorExposuresPlot.vue'
+
 
 export default {
   name: 'Plot',
@@ -87,7 +89,8 @@ export default {
       SignatureGenomeBinsPlot,
       KataegisPlot,
       ExposuresPlot,
-      RainfallPlot
+      RainfallPlot,
+      SingleDonorExposuresPlot
   }
 }
 </script>
