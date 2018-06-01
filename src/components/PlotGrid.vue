@@ -4,10 +4,12 @@
         <div class="plot-grid" v-if="doneIntro">
             <div>
                 <Plot v-for="plot in selectedPlots" 
+                    v-if="checkPin(plot.id)"
                     :key="plot.id" 
                     :plotType="plot.type"
                     :plotID="plot.id"
-                    :plotTitle="plot.title"
+                    :plotTitle="plot.title + prettifyOptions(plot.options)"
+                    :plotOptions="plot.options"
                     :canRemove="true"
                     class="item"
                 ></Plot>
@@ -16,8 +18,9 @@
                 <Plot v-for="plot in overviewModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotID="plot.id"
+                    :plotID="plot.id + serializeOptions(currentModeOptions)"
                     :plotTitle="plot.title"
+                    :plotOptions="currentModeOptions"
                     :canRemove="false"
                     class="item"
                 ></Plot>
@@ -26,8 +29,9 @@
                 <Plot v-for="plot in allDonorsModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotID="plot.id"
+                    :plotID="plot.id + serializeOptions(currentModeOptions)"
                     :plotTitle="plot.title"
+                    :plotOptions="currentModeOptions"
                     :canRemove="false"
                     class="item"
                 ></Plot>
@@ -40,8 +44,9 @@
                 <Plot v-for="plot in singleDonorModePlots" 
                     :key="plot.id" 
                     :plotType="plot.type"
-                    :plotID="plot.id"
+                    :plotID="plot.id + serializeOptions(currentModeOptions)"
                     :plotTitle="plot.title"
+                    :plotOptions="currentModeOptions"
                     :canRemove="false"
                     class="item"
                 ></Plot>
@@ -119,6 +124,25 @@ export default {
   methods: {
       scrollLegend: function(event) {
           this.pageY = event.pageY;
+      },
+      checkPin(plotID) {
+          if(this.isAllDonorsMode) {
+              return (this.allDonorsModePlots.find((el) => ((el.id + this.serializeOptions(this.currentModeOptions)) == plotID)) === undefined);
+          } else if(this.isSingleDonorMode) {
+              return (this.singleDonorModePlots.find((el) => ((el.id + this.serializeOptions(this.currentModeOptions)) == plotID)) === undefined);
+          } else if(this.isOverviewMode) {
+              return (this.overviewModePlots.find((el) => ((el.id + this.serializeOptions(this.currentModeOptions)) == plotID)) === undefined);
+          }
+          return true;
+      },
+      serializeOptions(options) {
+          return Object.values(options).reduce(((a, h) => a + "-" + h), "");
+      },
+      prettifyOptions(options) {
+          if(Object.values(options).length > 0) {
+            return " (" + Object.values(options).reduce(((a, h) => a + ", " + h), "").substring(2) + ")";
+          }
+          return "";
       }
   }
 }
@@ -126,7 +150,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 .plot-grid {
     display: inline-block;
     width: 80%;

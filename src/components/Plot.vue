@@ -3,8 +3,8 @@
         <div class="options-bar">
             <span class="title">{{ plotTitle }}</span>
             <div class="right-button-group">
-                <span class="button button-warning" @click="stickyPlot()" :title="canRemove ? 'Unpin' : 'Pin'">
-                    <i :class="canRemove ? 'icon-pin' : 'icon-pin_o'"></i>
+                <span class="button button-warning" @click="stickyPlot()" :title="isPinned ? 'Unpin' : 'Pin'">
+                    <i :class="isPinned ? 'icon-pin' : 'icon-pin_o'"></i>
                 </span>
                 <span class="button" v-on:click="showInfo = !showInfo" title="Info">?</span>
                 <span class="button button-warning" v-on:click="toggleVisibility()" :title="hidden ? 'Show' : 'Minimize'">{{ hidden ? '+' : '&ndash;' }}</span>
@@ -14,8 +14,10 @@
             <component 
                 v-bind:is="this.plotType" 
                 ref="innerPlot" 
-                :plotID="this.plotID" 
+                :plotID="this.plotID"
+                :plotOptions="this.plotOptions"
                 :showInfo="this.showInfo"
+                :pinned="this.canRemove"
             ></component>
         </div>
   </div>
@@ -23,7 +25,6 @@
 
 <script>
 import { DataOptionsBus } from './../buses.js';
-import { getUUID } from '../helpers.js';
 
 // child components
 import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
@@ -31,16 +32,26 @@ import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
 import SingleDonorExposuresPlot from './plots/SingleDonorExposuresPlot.vue'
+import { mapGetters } from 'vuex';
 
 
 export default {
   name: 'Plot',
-  props: ['plotType', 'plotTitle', 'plotID', 'canRemove'],
+  props: ['plotType', 'plotTitle', 'plotID', 'plotOptions', 'canRemove'],
   data: function() { 
         return {
             showInfo: false,
             hidden: false
         };
+  },
+  computed: {
+      isPinned: function() {
+          return (this.canRemove || (this.selectedPlots.find((el) => (el.id == this.plotID)) !== undefined));
+      },
+      ...mapGetters([
+          'selectedPlots',
+          'currentModeOptions'
+      ])
   },
   mounted: function() {
         let vm = this;
@@ -70,14 +81,16 @@ export default {
         },
         stickyPlot() {
             let vm = this;
-            if(vm.canRemove) {
+            if(vm.isPinned) {
                 // already sticky, remove
                 vm.removePlot();
             } else {
-                this.$store.commit('addPlot', {
+                var clonedModeOptions = Object.assign({}, vm.currentModeOptions);
+                vm.$store.commit('addPlot', {
                     title: vm.plotTitle,
                     type: vm.plotType,
-                    id: getUUID()
+                    id: vm.plotID,
+                    options: clonedModeOptions
                 });
             }
         },
@@ -97,7 +110,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 @import './../style/icomoon.css';
 
 .options-bar {

@@ -55,7 +55,7 @@ import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
 import { MUTATION_CATEGORIES, CHROMOSOMES } from './../../constants.js';
-import { dispatch } from './plot-link.js';
+import { dispatch } from './../../plot-link.js';
 
 // child components
 import Spinner from './../Spinner.vue';
@@ -107,6 +107,14 @@ export default {
                 this.drawPlot();
             },
             deep: true
+        },
+        currentModeOptions: {
+            handler: function() {
+                if(!this.pinned) {
+                    this.updatePlot();
+                }
+            },
+            deep: true
         }
     },
     methods: {
@@ -130,8 +138,8 @@ export default {
             vm.loading = true;
 
             let rainfallOptions = {
-                'proj_id': vm.currentModeOptions.proj_id,
-                'donor_id': vm.currentModeOptions.donor_id,
+                'proj_id': vm.plotOptions.proj_id,
+                'donor_id': vm.plotOptions.donor_id,
                 'chromosome': vm.selectedChromosome.name
             }
 
@@ -331,7 +339,7 @@ export default {
             
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, function(donorID) {
-                if(donorID == vm.currentModeOptions.donor_id) {
+                if(donorID == vm.plotOptions.donor_id) {
                     donorHighlight.attr("fill-opacity", 0.5);
                 } else {
                     donorHighlight.attr("fill-opacity", 0);
@@ -359,8 +367,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
-@import './../../variables.scss';
-@import './plot-style.scss';
+@import './../../style/variables.scss';
+@import './../../style/plots.scss';
 
 .plot-component {
     overflow-x: hidden;

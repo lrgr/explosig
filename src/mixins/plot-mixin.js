@@ -1,7 +1,7 @@
 import { mapGetters } from 'vuex';
 
 export default {
-    props: ['plotID', 'showInfo'],
+    props: ['plotID', 'plotOptions', 'showInfo', 'pinned'],
     data: function() {
         return {
             loading: false,

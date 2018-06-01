@@ -14,7 +14,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 
 .hollow-dots-spinner, .hollow-dots-spinner * {
     box-sizing: border-box;

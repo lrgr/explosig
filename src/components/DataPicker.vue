@@ -232,7 +232,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 
 .plot-options {
     display: flex;

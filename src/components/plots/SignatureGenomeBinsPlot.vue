@@ -25,7 +25,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { CHROMOSOMES } from './../../constants.js';
-import { dispatch } from './plot-link.js';
+import { dispatch } from './../../plot-link.js';
  
 // child components
 import Spinner from './../Spinner.vue';
@@ -248,7 +248,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
-@import './../../variables.scss';
-@import './plot-style.scss';
+@import './../../style/variables.scss';
+@import './../../style/plots.scss';
 
 </style>

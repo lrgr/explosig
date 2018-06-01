@@ -34,8 +34,7 @@
 import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
-import { getTranslation } from './../../helpers.js';
-import { dispatch } from './plot-link.js';
+import { dispatch } from './../../plot-link.js';
 
 // child components
 import Spinner from './../Spinner.vue';
@@ -77,6 +76,16 @@ export default {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         }
     },
+    watch: {
+        currentModeOptions: {
+            handler: function() {
+                if(!this.pinned) {
+                    this.updatePlot();
+                }
+            },
+            deep: true
+        }
+    },
     methods: {
         updatePlot: function () {
             let vm = this;
@@ -84,8 +93,8 @@ export default {
             let params = {
                 "sources": vm.selectedDatasets,
                 "signatures": vm.selectedSignatures,
-                "donor_id": vm.currentModeOptions.donor_id,
-                "proj_id": vm.currentModeOptions.proj_id
+                "donor_id": vm.plotOptions.donor_id,
+                "proj_id": vm.plotOptions.proj_id
             };
             API.fetchSingleDonorExposures(params).then((data) => {
                 vm.plotData = data[0];
@@ -108,7 +117,7 @@ export default {
                 this.tooltipInfo.clinicalValue = clinicalValue;
             }
             this.tooltipPosition.left = d3.event.x;
-            this.tooltipPosition.top = this.height + 30;
+            this.tooltipPosition.top = this.height + 24;
             
             dispatch.call("link-donor", null, this.tooltipInfo.donorID);
             dispatch.call("link-project", null, this.tooltipInfo.projID);
@@ -137,6 +146,8 @@ export default {
                 .domain(vm.selectedSignatures)
                 .range([0, halfWidth]);
             
+            d3.select(this.plotSelector).select("svg").remove();
+            
             vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
@@ -145,7 +156,7 @@ export default {
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
                 .on('mouseleave', vm.tooltipDestroy);
-            
+                        
             vm.svg.append("g")
                 .selectAll(".exposure-bar")
                 .data(vm.selectedSignatures)
@@ -156,7 +167,10 @@ export default {
                 .attr("height", (d) => (vm.height - y(vm.plotData.exposures[d])))
                 .attr("x", (d) => x(d) + 1)
                 .attr("y", (d) => y(vm.plotData.exposures[d]))
-                .attr("fill", (d) => vm.$store.getters.signatureColor(d));
+                .attr("fill", (d) => vm.$store.getters.signatureColor(d))
+                .on('mouseover', (d) => {
+                    vm.tooltip(d, vm.plotData.exposures[d], null, null); 
+                });
             
             // x axis
             vm.svg.append("g")
@@ -252,8 +266,8 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../../variables.scss';
-@import './plot-style.scss';
+@import './../../style/variables.scss';
+@import './../../style/plots.scss';
 
 .plot-component {
     overflow-x: hidden;

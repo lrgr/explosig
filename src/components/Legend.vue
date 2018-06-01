@@ -44,7 +44,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 .legend-wrapper {
     width: 100%;
     display: block;

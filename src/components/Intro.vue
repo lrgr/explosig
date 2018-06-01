@@ -21,7 +21,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 .intro-text {
     position: absolute;
     top: 60px;

@@ -27,7 +27,7 @@
 <script>
 import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
-import { dispatch } from './plot-link.js';
+import { dispatch } from './../../plot-link.js';
 import API from './../../api.js';
 
 // child components
@@ -110,7 +110,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../../variables.scss';
-@import './plot-style.scss';
+@import './../../style/variables.scss';
+@import './../../style/plots.scss';
 
 </style>

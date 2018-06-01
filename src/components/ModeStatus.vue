@@ -55,7 +55,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 
 .mode-bar-wrapper {
     box-sizing: border-box;

@@ -60,7 +60,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { getTranslation } from './../../helpers.js';
-import { dispatch } from './plot-link.js';
+import { dispatch } from './../../plot-link.js';
 
 // child components
 import Spinner from './../Spinner.vue';
@@ -442,8 +442,8 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../../variables.scss';
-@import './plot-style.scss';
+@import './../../style/variables.scss';
+@import './../../style/plots.scss';
 
 .plot-component {
     overflow-x: hidden;

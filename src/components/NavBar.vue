@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="navbar">
-            <span class="title">iMuSE</span>
+            <span class="title"><a href="/">iMuSE</a></span>
             <div class="right-button-group">
                 <span class="button button-inverse" v-on:click="showDataPicker('signatures')">Signatures</span>
                 <span class="button button-inverse" v-on:click="showDataPicker('samples')">Samples</span>
@@ -55,7 +55,7 @@ export default {
 
 <style scoped lang="scss">
 
-@import './../variables.scss';
+@import './../style/variables.scss';
 
 .navbar {
     width: 100%;
@@ -67,6 +67,10 @@ span.title {
     color: $color-white;
     font-size: 1.5rem;
     margin: 0 1rem;
+    a {
+        text-decoration: none;
+        color: $color-white;
+    }
 }
 .right-button-group {
     float: right;

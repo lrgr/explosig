@@ -6,9 +6,10 @@
 </template>
 
 <script>
+import { debounce } from 'lodash';
 import { mapGetters } from 'vuex';
 import API from './../api.js';
-import { getUUID } from './../helpers.js';
+
 // child components
 import PlotGrid from './PlotGrid.vue';
 import NavBar from './NavBar.vue';
@@ -21,31 +22,8 @@ export default {
   },
   mounted: function() {
     let vm = this;
-    // check for data in hash
-    var paramStr = window.location.hash.substring(1) // remove the initial "#"
-    if(paramStr.length > 0) {
-      var params = JSON.parse(decodeURIComponent(paramStr));
-      if(params.datasets && params.signatures && params.plots && params.chr) {
-        vm.$store.commit('setSelectedChromosome', {
-          'name': params.chr.name,
-          'start': params.chr.start,
-          'end': params.chr.end
-        });
-        vm.$store.commit('setSelectedSignatures', params.signatures);
-        vm.$store.commit('setSelectedDatasets', params.datasets);
-        vm.$store.commit('setSelectedPlots', params.plots.map((plotInfo) => {
-          plotInfo['id'] = getUUID();
-          return plotInfo; 
-        }));
-      }
-      if(params.mode && params.mode.mode && params.mode.title && params.mode.options) {
-        vm.$store.commit('setMode', {
-            mode: params.mode.mode,
-            title: params.mode.title,
-            options: params.mode.options
-        });
-      }
-    }
+    vm.checkHash();
+    
     API.fetchChromosomes().then(function(chromosomeLengths) {
         vm.$store.commit('setChromosomeLengths', chromosomeLengths);
     });
@@ -53,10 +31,10 @@ export default {
     // resize bindings
     vm.$store.commit('setWindowWidth', window.innerWidth);
     vm.$store.commit('setWindowHeight', window.innerHeight);
-    window.addEventListener('resize', () => {
+    window.addEventListener('resize', debounce(() => {
         vm.$store.commit('setWindowWidth', window.innerWidth);
         vm.$store.commit('setWindowHeight', window.innerHeight);
-    });
+    }, 250));
 
   },
   computed: {
@@ -71,6 +49,31 @@ export default {
     ])
   },
   methods: {
+    checkHash: function() {
+      let vm = this;
+      // check for data in hash
+      var paramStr = window.location.hash.substring(1) // remove the initial "#"
+      if(paramStr.length > 0) {
+        var params = JSON.parse(decodeURIComponent(paramStr));
+        if(params.datasets && params.signatures && params.plots && params.chr) {
+          vm.$store.commit('setSelectedChromosome', {
+            'name': params.chr.name,
+            'start': params.chr.start,
+            'end': params.chr.end
+          });
+          vm.$store.commit('setSelectedSignatures', params.signatures);
+          vm.$store.commit('setSelectedDatasets', params.datasets);
+          vm.$store.commit('setSelectedPlots', params.plots);
+        }
+        if(params.mode && params.mode.mode && params.mode.title && params.mode.options) {
+          vm.$store.commit('setMode', {
+              mode: params.mode.mode,
+              title: params.mode.title,
+              options: params.mode.options
+          });
+        }
+      }
+    },
     setHash: function() {
       let hashData = {
         'datasets': this.selectedDatasets,
@@ -79,7 +82,8 @@ export default {
           return {
             "type": plotInfo.type,
             "options": plotInfo.options,
-            "title": plotInfo.title
+            "title": plotInfo.title,
+            "id": plotInfo.id
           }; 
         }),
         'chr': { 
@@ -135,7 +139,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import './../variables.scss';
+@import './../style/variables.scss';
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
