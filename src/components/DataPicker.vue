@@ -150,11 +150,15 @@ export default {
             var x = d3.scaleBand()
                 .domain(Array.from(Array(vm.signaturesPerCancerType.length).keys()))
                 .range([0, vm.width]);
+            
+            
+            let yStep = 10.8888889;
+            vm.rowHeight = yStep * 0.705;
+            let totalHeight = yStep*sigNames.length
+
             var y = d3.scaleBand()
                 .domain(sigNames)
-                .range([0, vm.height]);
-
-            vm.rowHeight = y.step() * 0.75;
+                .range([0, totalHeight]);
 
             // append svg
             d3.select("#signaturePicker").select("svg").remove();
@@ -162,7 +166,7 @@ export default {
             vm.svg = d3.select("#signaturePicker")
                 .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)
-                .attr("height", this.height + this.margin.top + this.margin.bottom)
+                .attr("height", totalHeight + this.margin.top + this.margin.bottom)
                 .append("g")
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")");
@@ -173,7 +177,7 @@ export default {
                 .attr("class", "signatureRow")
                 .append("rect")
                     .attr("width", vm.width)
-                    .attr("height", y.step())
+                    .attr("height", yStep)
                     .attr("x", 0)
                     .attr("y", (d) => y(d.name))
                     .attr("fill", "#8acb88")
@@ -192,7 +196,7 @@ export default {
                     .attr("class", "perCancerTypeCell")
                     .attr("x", 0)
                     .attr("width", x.step()-2)
-                    .attr("height", y.step()-2)
+                    .attr("height", yStep-2)
                     .attr("y", (d) => y(d))
                     .attr("fill", "#575761");
 
