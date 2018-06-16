@@ -2,8 +2,15 @@
     <div class="legend-wrapper">
         <div class="legend" v-if="legendInfo != null && legendInfo.data.length > 0">
             <span class="legend-key">{{ legendInfo.meta.title }}</span>
-            <div v-for="item in legendInfo.data" :key="item.name">
-                <span class="item-color" :style="{ backgroundColor: item.color, border: border(item.color) }"></span><span class="item-name">{{ item.name }}</span>
+            <div v-if="legendInfo.meta.type === undefined || legendInfo.meta.type === abstractCV.type.DISCRETE">
+                <div v-for="item in legendInfo.data" :key="item.name">
+                    <span class="item-color" :style="{ backgroundColor: item.color }"></span><span class="item-name">{{ item.name }}</span>
+                </div>
+            </div>
+            <div v-if="legendInfo.meta.type === abstractCV.type.CONTINUOUS">
+                <div v-for="item in legendInfo.data" :key="item.name">
+                    <span class="item-color" :style="{ backgroundColor: item.color }"></span><span class="item-name">{{ item.name }}</span>
+                </div>
             </div>
         </div>
         
@@ -12,24 +19,26 @@
 
 <script>
 import * as d3 from 'd3';
-import { LegendListBus } from './../buses.js'
+import { LegendListBus } from './../buses.js';
+import { mapGetters } from 'vuex';
+import AbstractCV from '../store/modules/clinical-variables/AbstractCV.js';
 
 export default {
   name: 'Legend',
   props: ['legendKey'],
   data: function() {
       return {
-          legendInfo: null
+          legendInfo: null,
+          abstractCV: AbstractCV
       };
   },
+  computed: {
+      ...mapGetters([
+          'selectedClinicalVariables'
+      ])
+  },
   methods: {
-      border(itemColor) {
-          if(this.legendKey == "clinicalVariables" && itemColor == "#FFF") {
-              return '2px solid #000000';
-          } else {
-              return 'none';
-          }
-      }
+      
   },
   mounted: function() {
       let vm = this;

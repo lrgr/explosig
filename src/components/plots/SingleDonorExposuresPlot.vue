@@ -219,31 +219,11 @@ export default {
                 .attr("y", (d, i) => i*(clinicalSize+4 + clinicalMarginY))
                 .attr("height", clinicalSize)
                 .attr("width", clinicalSize)
-                .attr("stroke", (d) => {
-                    if(vm.plotData.clinical[d] === undefined || vm.plotData.clinical[d] == "nan") {
-                        // variable is not present for the donor or is NaN => unknown
-                        return "transparent";
-                    } else {
-                        return "#000000";
-                    }
-                })
-                .attr("stroke-width", 2)
                 .attr("fill", (d) => {
-                    if(vm.plotData.clinical[d] === undefined || vm.plotData.clinical[d] == "nan") {
-                        // variable is not present for the donor or is NaN => unknown
-                        return "transparent";
-                    } else {
-                        return d3.interpolateGreys(+vm.plotData.clinical[d]);
-                    }
+                    return d.color(vm.plotData.clinical[d.id]);
                 })
                 .on('mouseover', (d) => {
-                    if(vm.plotData.clinical[d] === undefined || vm.plotData.clinical[d] == "nan") {
-                        // variable is not present for the donor or is NaN => unknown
-                        vm.tooltip(null, null, vm.$store.getters.clinicalVariable(d).name, "Unknown"); 
-                    } else {
-                        vm.tooltip(null, null, vm.$store.getters.clinicalVariable(d).name, +vm.plotData.clinical[d]); 
-                    }
-                    
+                    vm.tooltip(null, null, d.name, d.transform(vm.plotData.clinical[d.id])); 
                 });
                 
 
@@ -251,7 +231,7 @@ export default {
                 .style("font-size", "14px")
                 .attr("x", clinicalSize + 4 + 3)
                 .attr("y", (d, i) => i*(clinicalSize+4 + clinicalMarginY) + ((clinicalSize+4)/2) + 3)
-                .text((d) => vm.$store.getters.clinicalVariable(d).name);
+                .text((d) => d.name);
             
             // text label for clinical variables
             vm.svg.append("text")
