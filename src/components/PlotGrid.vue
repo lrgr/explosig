@@ -58,9 +58,14 @@
                     <span class="title">Legend</span>
                 </div>
                 <div class="legend-list" :style="{ height: legendHeight }">
-                    <Legend v-for="(legendKey, index) in legendKeys"
-                        :key="index"
+                    <Legend v-for="legendKey in legendKeys"
+                        :key="legendKey"
                         :legendKey="legendKey"
+                        class="legend-item"
+                    ></Legend>
+                    <Legend v-for="cv in selectedClinicalVariables"
+                        :key="cv.id"
+                        :legendKey="cv.id"
                         class="legend-item"
                     ></Legend>
                 </div>
@@ -118,7 +123,8 @@ export default {
           'singleDonorModePlots',
           'isOverviewMode',
           'overviewModePlots',
-          'currentModeOptions'
+          'currentModeOptions',
+          'selectedClinicalVariables'
       ])
   },
   methods: {

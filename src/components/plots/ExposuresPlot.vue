@@ -111,7 +111,7 @@ export default {
             if(val == "exposures") {
                 this.sortByList = this.selectedSignatures;
             } else if(val == "clinical") {
-                this.sortByList = this.selectedClinicalVariables;
+                this.sortByList = this.selectedClinicalVariables.map((el) => el.id);
             }
         }
     },
@@ -290,11 +290,10 @@ export default {
             let clinicalY = {};
             var var_i;
             for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {
-                let selectedClinicalVariable = vm.selectedClinicalVariables[var_i];
-                let selectedClinicalVariableName = vm.$store.getters.clinicalVariable(selectedClinicalVariable).name;
+                let selectedCV = vm.selectedClinicalVariables[var_i];
 
-                clinicalY[selectedClinicalVariable] = d3.scaleBand()
-                    .domain([selectedClinicalVariableName])
+                clinicalY[selectedCV.id] = d3.scaleBand()
+                    .domain([selectedCV.name])
                     .range([this.height - totalClinicalHeight + clinicalMarginY + (var_i+1)*(clinicalHeight + clinicalMarginY), this.height - totalClinicalHeight + clinicalMarginY + (var_i)*(clinicalHeight + clinicalMarginY)]);
 
                 XContainer.append("g")
@@ -303,36 +302,16 @@ export default {
                     .data(sampleNames)
                 .enter().append("rect")
                     .attr("class", "clinical-rect")
-                    .attr("x", (d) => { return x(d) + 1; })
-                    .attr("y", clinicalY[selectedClinicalVariable](selectedClinicalVariableName))
+                    .attr("x", (d) => { return x(d); })
+                    .attr("y", clinicalY[selectedCV.id](selectedCV.name))
                     .attr("height", clinicalHeight)
-                    .attr("width", barWidth - marginX - 2)
+                    .attr("width", barWidth - marginX)
                     .style("cursor", "pointer")
-                    .attr("stroke", (d, i) => {
-                        if(normalizedData[i]["clinical"][selectedClinicalVariable] === undefined || normalizedData[i]["clinical"][selectedClinicalVariable] == "nan") {
-                            // variable is not present for the donor or is NaN => unknown
-                            return "transparent";
-                        } else {
-                            return "#000000";
-                        }
-                    })
-                    .attr("stroke-width", 2)
                     .attr("fill", (d, i) => {
-                        if(normalizedData[i]["clinical"][selectedClinicalVariable] === undefined || normalizedData[i]["clinical"][selectedClinicalVariable] == "nan") {
-                            // variable is not present for the donor or is NaN => unknown
-                            return "transparent";
-                        } else {
-                            return d3.interpolateGreys(+normalizedData[i]["clinical"][selectedClinicalVariable]);
-                        }
+                        return selectedCV.color(normalizedData[i]["clinical"][selectedCV.id]);
                     })
                     .on('mouseover', (d, i) => {
-                        if(normalizedData[i]["clinical"][selectedClinicalVariable] === undefined || normalizedData[i]["clinical"][selectedClinicalVariable] == "nan") {
-                            // variable is not present for the donor or is NaN => unknown
-                            vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, selectedClinicalVariableName, "Unknown"); 
-                        } else {
-                            vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, selectedClinicalVariableName, +normalizedData[i]["clinical"][selectedClinicalVariable]); 
-                        }
-                        
+                        vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, selectedCV.name, selectedCV.transform(normalizedData[i]["clinical"][selectedCV.id]));
                     })
                     .on('click', (d, i) => {
                         vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
@@ -398,9 +377,9 @@ export default {
             
             // y Axis for clinical vars
             for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {
-                var axisClinicalVariable = vm.selectedClinicalVariables[var_i];
+                var axisCV = vm.selectedClinicalVariables[var_i];
                 vm.svg.append("g")
-                    .call(d3.axisLeft(clinicalY[axisClinicalVariable]).tickSizeOuter(0))
+                    .call(d3.axisLeft(clinicalY[axisCV.id]).tickSizeOuter(0))
                     .attr("transform", "translate(0,0)")
                     .selectAll("text")	
                         .style("text-anchor", "end")

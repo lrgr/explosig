@@ -1,8 +1,6 @@
-import * as d3 from 'd3';
-import { LegendListBus } from '../../../buses.js';
-import ClinicalVariable from './ClinicalVariable.js';
+import AbstractBinaryCV from './AbstractBinaryCV';
 
-export default class TobaccoCV extends ClinicalVariable {
+export default class TobaccoCV extends AbstractBinaryCV {
     
     get id () {
         return "Tobacco Binary";
@@ -10,10 +8,6 @@ export default class TobaccoCV extends ClinicalVariable {
     
     get name () {
         return "Tobacco User";
-    }
-
-    get colorScale () {
-        return d3.interpolateGreys;
     }
     
 }
