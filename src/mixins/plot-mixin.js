@@ -38,7 +38,8 @@ export default {
             'selectedClinicalVariables',
             'selectedChromosome',
             'showAllChromosomes',
-            'currentModeOptions'
+            'currentModeOptions',
+            'getClinicalVariable'
         ])
     },
     watch: {

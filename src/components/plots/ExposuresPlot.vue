@@ -187,7 +187,7 @@ export default {
             }
             let marginX = 2;
             let clinicalHeight = 10;
-            let clinicalMarginY = 4;
+            let clinicalMarginY = 2;
             let totalClinicalHeight = vm.selectedClinicalVariables.length * (clinicalHeight + clinicalMarginY);
             let minBarWidth = (this.options.xScroll ? 20 : 0);
             let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
@@ -211,12 +211,22 @@ export default {
             }
             // sort data if necessary
             if(vm.sortByCategory != null && vm.options.sortBy != null && vm.sortByList.indexOf(vm.options.sortBy) >= 0) {
-                normalizedData.sort(function(a, b) {
-                    return d3.descending(
-                        (a[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +a[vm.sortByCategory][vm.options.sortBy]), 
-                        (b[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +b[vm.sortByCategory][vm.options.sortBy])
+                if(vm.sortByCategory == "exposures") {
+                    normalizedData.sort(function(a, b) {
+                        return d3.descending(
+                            (a[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +a[vm.sortByCategory][vm.options.sortBy]), 
+                            (b[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +b[vm.sortByCategory][vm.options.sortBy])
+                        );
+                    });
+                } else if(vm.sortByCategory == "clinical") {
+                    normalizedData.sort( (a, b) => 
+                        vm.getClinicalVariable(vm.options.sortBy).comparator(
+                            a[vm.sortByCategory][vm.options.sortBy], 
+                            b[vm.sortByCategory][vm.options.sortBy]
+                        )
                     );
-                });
+                }
+                
             }
 
             // compute max for y axis

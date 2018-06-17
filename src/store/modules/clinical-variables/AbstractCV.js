@@ -7,6 +7,7 @@ export default class AbstractCV {
     static unknownColor = "#E3E3E3";
     
     get id () {
+        // column name
         throw new Error('You have to implement the getter id!');
     }
     
@@ -38,7 +39,7 @@ export default class AbstractCV {
         if(AbstractCV.isUnknown(domainValue)) {
             return "Unknown";
         }
-        return this.scale(+domainValue);
+        return this.scale(domainValue);
     }
 
     color () {
