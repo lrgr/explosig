@@ -15,34 +15,29 @@ export default class API {
     static fetchGenomeSignatureBins(dataOptions) {
         var url = API.api_base + "signature-genome-bins";
         dataOptions['regionWidth'] = 5000000;
-        //console.log(JSON.stringify(dataOptions));
 
         return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
     }
     static fetchKataegis(dataOptions) {
         var url = API.api_base + "kataegis";
-        //console.log(JSON.stringify(dataOptions));
 
         return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
     }
 
     static fetchRainfall(rainfallOptions) {
         var url = API.api_base + "kataegis-rainfall";
-        //console.log(JSON.stringify(rainfallOptions));
 
         return d3.csv(url, { method: "POST", body: JSON.stringify(rainfallOptions) });
     }
 
     static fetchExposures(dataOptions) {
         var url = API.api_base + "exposures";
-        //console.log(JSON.stringify(dataOptions));
 
         return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
     }
 
     static fetchSingleDonorExposures(dataOptions) {
         var url = API.api_base + "exposures-single-donor";
-        //console.log(JSON.stringify(dataOptions));
         
         return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
     }
@@ -54,6 +49,12 @@ export default class API {
         .then(function(response) {
             return response.json();
         });
+    }
+
+    static fetchSignature(dataOptions) {
+        var url = API.api_base + "signature";
+        
+        return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
     }
 
     static fetchKaryotype() {

@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import { DataOptionsBus } from './../buses.js';
 
 // child components
@@ -32,7 +33,7 @@ import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
 import SingleDonorExposuresPlot from './plots/SingleDonorExposuresPlot.vue'
-import { mapGetters } from 'vuex';
+import SignaturePlot from './plots/SignaturePlot.vue'
 
 
 export default {
@@ -85,7 +86,7 @@ export default {
                 // already sticky, remove
                 vm.removePlot();
             } else {
-                var clonedModeOptions = Object.assign({}, vm.currentModeOptions);
+                var clonedModeOptions = Object.assign({}, vm.plotOptions);
                 vm.$store.commit('addPlot', {
                     title: vm.plotTitle,
                     type: vm.plotType,
@@ -103,7 +104,8 @@ export default {
       KataegisPlot,
       ExposuresPlot,
       RainfallPlot,
-      SingleDonorExposuresPlot
+      SingleDonorExposuresPlot,
+      SignaturePlot
   }
 }
 </script>

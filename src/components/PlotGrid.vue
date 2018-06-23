@@ -14,6 +14,17 @@
                     class="item"
                 ></Plot>
             </div>
+            <div v-if="isSignaturesMode">
+                <Plot v-for="(signature, index) in selectedSignatures" 
+                    :key="signature" 
+                    :plotType="'SignaturePlot'"
+                    :plotID="'sigplot_' + index"
+                    :plotTitle="'Signature: ' + signature"
+                    :plotOptions="{'signature': signature}"
+                    :canRemove="false"
+                    class="item"
+                ></Plot>
+            </div>
             <div v-if="isOverviewMode">
                 <Plot v-for="plot in overviewModePlots" 
                     :key="plot.id" 
@@ -123,6 +134,7 @@ export default {
           'singleDonorModePlots',
           'isOverviewMode',
           'overviewModePlots',
+          'isSignaturesMode',
           'currentModeOptions',
           'selectedClinicalVariables'
       ])
@@ -138,6 +150,8 @@ export default {
               return (this.singleDonorModePlots.find((el) => ((el.id + this.serializeOptions(this.currentModeOptions)) == plotID)) === undefined);
           } else if(this.isOverviewMode) {
               return (this.overviewModePlots.find((el) => ((el.id + this.serializeOptions(this.currentModeOptions)) == plotID)) === undefined);
+          } else if(this.isSignaturesMode) {
+              return !(plotID.substring(0, 7) == 'sigplot');
           }
           return true;
       },

@@ -4,6 +4,10 @@ const state = {
     title: "All Donors",
     allModes: [
         {
+            mode: "signatures",
+            title: "Signatures"
+        },
+        {
             mode: "overview",
             title: "Overview"
         }, {
@@ -25,7 +29,8 @@ const getters = {
     currentModeOptions: state => state.options,
     isAllDonorsMode: state => (state.mode == "all-donors"),
     isSingleDonorMode: state => (state.mode == "single-donor"),
-    isOverviewMode: state => (state.mode == "overview")
+    isOverviewMode: state => (state.mode == "overview"),
+    isSignaturesMode: state => (state.mode == "signatures")
 }
 
 // mutations
