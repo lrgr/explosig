@@ -4,6 +4,12 @@
             <div class="option-group">
                 <h3>Signatures</h3>
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
+                <span id="preset-source">
+                    <label>Source: </label>
+                    <select v-model="options.perCancerTypeGroup">
+                        <option v-for="pctg in signaturesPerCancerType" :key="pctg.id" :value="pctg.id" :selected="pctg.id == options.perCancerTypeGroup ? 'selected' : ''">{{ pctg.group }}</option>
+                    </select>
+                </span>
                 <div id="signaturePicker" v-show="!loading">
                     <div id="signaturePickerCheckboxes">
                         <div v-for="signature in allSignatures" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
@@ -62,8 +68,9 @@ export default {
           innerDataPicker: null,
           loading: true,
           options: {
-            'sources': [],
-            'signatures': []
+            sources: [],
+            signatures: [],
+            perCancerTypeGroup: 'COSMIC'
           },
           rowHeight: 0,
           svg: null,
@@ -93,6 +100,12 @@ export default {
   watch: {
       windowWidth: function () {
         this.drawPlot();
+      },
+      options: {
+          deep: true,
+          handler: function() {
+              this.drawPlot();
+          }
       }
   },
   computed: {
@@ -143,12 +156,19 @@ export default {
       drawPlot: function () {
             var vm = this;
 
+            if(vm.signaturesPerCancerType.length == 0) {
+                return;
+            }
+
+            var perCancerTypeGroup = vm.signaturesPerCancerType.find((el) => (el.id == vm.options.perCancerTypeGroup));
+            var presets = perCancerTypeGroup['cancer-types'];
+
             let sigNames = vm.allSignatures.map((sig) => sig.name);
-            let cancerTypes = vm.signaturesPerCancerType.map((preset) => preset.name);
+            let cancerTypes = presets.map((preset) => preset.name);
 
             // axis scales
             var x = d3.scaleBand()
-                .domain(Array.from(Array(vm.signaturesPerCancerType.length).keys()))
+                .domain(Array.from(Array(presets.length).keys()))
                 .range([0, vm.width]);
             
             
@@ -186,7 +206,7 @@ export default {
                     });
             
             vm.svg.selectAll(".cancerTypeColumn")
-                .data(vm.signaturesPerCancerType)
+                .data(presets)
             .enter().append("g")
                 .attr("class", "cancerTypeColumn")
                 .attr("transform", (d, i) => "translate(" + x(i) + ",0)")
@@ -212,7 +232,7 @@ export default {
                     .attr("dy", "0.3em")
                     .attr("transform", "rotate(45)")
                     .on("click", (d) => {
-                        vm.options.signatures = vm.signaturesPerCancerType[d].signatures;  
+                        vm.options.signatures = presets[d].signatures;  
                     })
                     .on("mouseover", (d) => {
                         vm.svg.selectAll(".perCancerTypeCell")
@@ -248,6 +268,9 @@ export default {
         padding: 1rem;
         display: flex;
         flex-direction: row;
+        #preset-source {
+            margin-left: 10px;
+        }
         .sample-label {
             cursor: pointer;
         }
