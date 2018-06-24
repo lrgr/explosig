@@ -53,7 +53,7 @@ export default {
       let vm = this;
       // check for data in hash
       var paramStr = window.location.hash.substring(1) // remove the initial "#"
-      if(paramStr.length > 0) {
+      if(paramStr.length > 0 && paramStr.substring(0, 3) != "bib") {
         var params = JSON.parse(decodeURIComponent(paramStr));
         if(params.datasets && params.signatures && params.plots && params.chr) {
           vm.$store.commit('setSelectedChromosome', {
