@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
 
 export default class API {
-    //static api_base = 'http://localhost:8000/';
-    static api_base = 'https://imuse-server.lrgr.io/';
+    static api_base = process.env.VUE_APP_API_BASE;
 
     static fetchDataListing() {
         var url = API.api_base + "data-listing";
