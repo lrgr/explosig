@@ -34,6 +34,7 @@ import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
 import SingleDonorExposuresPlot from './plots/SingleDonorExposuresPlot.vue'
 import SignaturePlot from './plots/SignaturePlot.vue'
+import SamplesWithSignaturesPlot from './plots/SamplesWithSignaturesPlot.vue'
 
 
 export default {
@@ -105,7 +106,8 @@ export default {
       ExposuresPlot,
       RainfallPlot,
       SingleDonorExposuresPlot,
-      SignaturePlot
+      SignaturePlot,
+      SamplesWithSignaturesPlot
   }
 }
 </script>

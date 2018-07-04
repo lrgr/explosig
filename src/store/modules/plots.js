@@ -8,6 +8,11 @@ const state = {
         'type': 'RainfallPlot',
         'title': 'Rainfall',
         'id': 'single-donor-rainfall-plot'
+    },
+    {
+        'type': 'SignatureGenomeBinsPlot',
+        'title': 'Manhattan Plot with Signatures',
+        'id': 'single-donor-manhattan-signatures-plot'
     }],
     allDonorsMode: [{
         'type': 'ExposuresPlot',
@@ -18,11 +23,13 @@ const state = {
         'title': 'Kataegis',
         'id': 'all-donors-kataegis-plot'
     }],
-    overviewMode: [{
-        'type': 'SignatureGenomeBinsPlot',
-        'title': 'Manhattan Plot with Signatures',
-        'id': 'overview-manhattan-signatures-plot'
-    }],
+    overviewMode: [
+        {
+            'type': 'SamplesWithSignaturesPlot',
+            'title': 'Samples With Signatures',
+            'id': 'overview-samples-with-sigs-plot'
+        }
+    ],
     selected: []
 }
 

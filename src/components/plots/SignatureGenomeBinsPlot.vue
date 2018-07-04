@@ -76,11 +76,13 @@ export default {
         updatePlot: function () {
             var vm = this;
             vm.loading = true;
-            var params = {
+            let params = {
                 "sources": vm.selectedDatasets,
-                "signatures": vm.selectedSignatures
+                "signatures": vm.selectedSignatures,
+                "donor_id": vm.plotOptions.donor_id,
+                "proj_id": vm.plotOptions.proj_id
             };
-            API.fetchGenomeSignatureBins(params).then(function (data) {
+            API.fetchSingleDonorGenomeSignatureBins(params).then(function (data) {
                 vm.plotData = data;
 
                 vm.drawPlot();

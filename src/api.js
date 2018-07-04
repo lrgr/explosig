@@ -56,6 +56,19 @@ export default class API {
         return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
     }
 
+    static fetchSamplesWithSignatures(dataOptions) {
+        var url = API.api_base + "samples-with-signatures";
+        
+        return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
+    }
+
+    static fetchSingleDonorGenomeSignatureBins(dataOptions) {
+        var url = API.api_base + "signature-genome-bins-single-donor";
+        dataOptions['regionWidth'] = 5000000;
+
+        return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
+    }
+
     static fetchKaryotype() {
         var url = API.api_base + "karyotype";
 
