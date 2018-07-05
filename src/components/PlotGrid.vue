@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="plot-grid-wrapper">
         <Intro v-if="!doneIntro"/>
         <div class="plot-grid" v-if="doneIntro">
             <div>
@@ -171,6 +171,9 @@ export default {
 <style scoped lang="scss">
 
 @import './../style/variables.scss';
+.plot-grid-wrapper {
+    overflow-y: hidden;
+}
 .plot-grid {
     display: inline-block;
     width: 80%;

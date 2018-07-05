@@ -289,7 +289,7 @@ export default {
                 .attr("x", 0 - (vm.height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Donors");  
+                .text("Donor");  
              
             
             // white background rects to hide overflow-y

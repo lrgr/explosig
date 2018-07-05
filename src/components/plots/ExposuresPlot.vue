@@ -111,7 +111,7 @@ export default {
             if(val == "exposures") {
                 this.sortByList = this.selectedSignatures;
             } else if(val == "clinical") {
-                this.sortByList = this.selectedClinicalVariables.map((el) => el.id);
+                this.sortByList = this.selectedClinicalVariables.map((el) => el.name);
             }
         }
     },
@@ -361,7 +361,7 @@ export default {
                 .attr("transform",
                         "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 70) + ")")
                 .style("text-anchor", "middle")
-                .text("Donors");
+                .text("Donor");
 
             // y Axis container
             let yAxis = vm.svg.append("g");
@@ -383,7 +383,7 @@ export default {
                 .attr("x", 0 - ((vm.height - totalClinicalHeight) / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Signature Exposures");  
+                .text("Signature Exposure");  
             
             // y Axis for clinical vars
             for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {

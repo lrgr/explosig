@@ -8,7 +8,10 @@
                     <th>Signature</th><td>{{ this.tooltipInfo.signature }}</td>
                 </tr>
                 <tr>
-                    <th>Percentage of Samples</th><td>{{ this.tooltipInfo.samplePercentage }}</td>
+                    <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
+                </tr>
+                <tr>
+                    <th>Percentage of Total Samples</th><td>{{ this.tooltipInfo.samplePercentage }}%</td>
                 </tr>
                 <tr>
                     <th>Number of Samples</th><td>{{ this.tooltipInfo.sampleNumber }}</td>
@@ -20,7 +23,10 @@
             <Spinner class="spinner"></Spinner>
         </div>
         <div class="bottom-options">
-            
+            <label>Stack by </label>
+            <select>
+                <option>Cohort</option>
+            </select>
         </div>
 
         <div class="plot-info" v-if="showInfo">
@@ -56,6 +62,7 @@ export default {
             },
             tooltipInfo: {
                 signature: "",
+                projID: "",
                 samplePercentage: "",
                 sampleNumber: ""
             },
@@ -97,6 +104,7 @@ export default {
                 vm.loading = false;
 
                 vm.$store.dispatch('emitSignaturesLegend');
+                vm.$store.dispatch('emitDatasetsLegend');
             });
         },
         tooltip: function(signature, samplePercentage, sampleNumber, projID) {
@@ -183,9 +191,8 @@ export default {
                 .attr("y", (d) => { return y(d[1]); })
                 .attr("height", (d) => { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth() - 2)
-                .style("cursor", "pointer")
                 .on('mouseover', (d, i) => { 
-                    vm.tooltip(signatureEntries[i].key, null, (d[1] - d[0]), null); 
+                    vm.tooltip(signatureEntries[i].key, Math.ceil((d[1] - d[0]) / totalSamples * 100), (d[1] - d[0]), null); 
                 });
             
             // x axis

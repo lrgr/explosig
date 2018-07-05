@@ -51,4 +51,17 @@ export default class AbstractContinuousCV extends AbstractCV {
         );
     }
 
+    categorize_color(domainValue) {
+        // Classify a value into a category and return a clipped value
+        // The number does not matter other than for coloring purposes
+        // For example: age < 60 returns 0 and age >= 60 returns 100
+        throw new Error('You have to implement the partitioner!');
+    }
+
+    categorize_string(domainValue) {
+        // Classify a value into a category and return a string
+        // For example: age < 60 or age >= 60
+        throw new Error('You have to implement the partitioner!');
+    }
+
 }

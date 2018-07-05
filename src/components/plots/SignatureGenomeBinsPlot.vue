@@ -109,6 +109,10 @@ export default {
                     ))
             );
 
+
+            
+
+
             var y = d3.scaleLinear()
                 .domain([0, yMax])
                 .range([this.height, 0]);
