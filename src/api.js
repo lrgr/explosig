@@ -74,4 +74,10 @@ export default class API {
 
         return d3.csv(url, { method: "POST" });
     }
+
+    static fetchClustering(dataOptions) {
+        var url = API.api_base + "clustering";
+        
+        return d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) });
+    }
 }
