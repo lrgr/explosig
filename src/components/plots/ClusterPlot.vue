@@ -44,9 +44,9 @@ export default {
         return {
             margin: {
                 top: 20,
-                right: 30,
+                right: 25,
                 bottom: 100,
-                left: 90
+                left: 25
             },
             tooltipInfo: {
                 donorID: ""
@@ -101,11 +101,9 @@ export default {
             
             // Prepare data
             var tree = d3.cluster()
-                .size([vm.height, vm.width - 160]);
+                .size([vm.width, vm.height / 2]);
             var root = d3.hierarchy(vm.plotData);
-            console.log("Starting");
             tree(root);
-            console.log("Done");
 
             // create svg elements
             d3.select(this.plotSelector).select("svg").remove();
@@ -126,10 +124,10 @@ export default {
                 .enter().append("path")
                 .attr("class", "link")
                 .attr("d", function(d) {
-                    return "M" + d.y + "," + d.x
-                        + "H" + d.parent.y
-                        + "M" + d.parent.y + "," + d.parent.x
-                        + "V" + d.x;
+                    return "M" + d.parent.x + "," + d.parent.y
+                        + "H" + d.x
+                        + "M" + d.x + "," + d.y
+                        + "V" + d.parent.y;
                 })
                 .attr("fill", "none")
                 .attr("stroke", "#555")
@@ -140,18 +138,17 @@ export default {
                 .data(root.descendants())
                 .enter().append("g")
                 .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
-                .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
-            node.append("circle")
-                .attr("r", 2.5)
-                .attr("fill", "#999");
 
             node.append("text")
-                .attr("dy", 3)
-                .attr("x", function(d) { return d.children ? -8 : 8; })
-                .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-                .text(function(d) { return d.name; })
-                .style("font", "10px sans-serif");
+                .style("display", (d) =>{ return d.children ? 'none' : 'inline'; })
+                .text((d) => { return d.data.name; })
+                .style("font", "10px sans-serif")
+                .style("text-anchor", "end")
+                .attr("dx", "-.6em")
+                .attr("dy", ".6em")
+                .attr("transform", "rotate(-65)");
            
 
             // dispatch callbacks
