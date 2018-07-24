@@ -44,9 +44,9 @@ export default {
         return {
             margin: {
                 top: 20,
-                right: 25,
+                right: 30,
                 bottom: 100,
-                left: 25
+                left: 90
             },
             tooltipInfo: {
                 donorID: ""
@@ -72,11 +72,14 @@ export default {
                 "sources": vm.selectedDatasets,
                 "signatures": vm.selectedSignatures
             };
-            API.fetchClustering(params).then((data) => {
-                vm.plotData = data;
+            API.fetchClustering(params).then((clusteringData) => {
+                API.fetchExposures(params).then((exposuresData) => {
+                    vm.clusteringData = clusteringData;
+                    vm.exposuresData = exposuresData;
 
-                vm.drawPlot();
-                vm.loading = false;
+                    vm.drawPlot();
+                    vm.loading = false;
+                });
             });
         },
         tooltip: function(donorID) {
@@ -95,15 +98,22 @@ export default {
         drawPlot: function () {
             var vm = this;
 
-            if(vm.plotData === null) {
+            if(vm.clusteringData === null || vm.exposuresData === null) {
                 return;
             }
             
             // Prepare data
-            var tree = d3.cluster()
-                .size([vm.width, vm.height / 2]);
-            var root = d3.hierarchy(vm.plotData);
+            let tree = d3.cluster()
+                .size([vm.width, vm.height / 3]);
+            var root = d3.hierarchy(vm.clusteringData);
             tree(root);
+
+            let leaves = root.descendants().map((el) => {
+                if(!el.children) {
+                    // console.log(el);
+                }
+            });
+
 
             // create svg elements
             d3.select(this.plotSelector).select("svg").remove();
@@ -119,7 +129,7 @@ export default {
 
             let g = vm.svg.append("g").attr("transform", "translate(0,0)");
 
-            var link = g.selectAll(".link")
+            let link = g.selectAll(".link")
                 .data(root.descendants().slice(1))
                 .enter().append("path")
                 .attr("class", "link")
@@ -134,7 +144,7 @@ export default {
                 .attr("stroke-opacity", 0.4)
                 .attr("stroke-width", "1.5px");
 
-            var node = g.selectAll(".node")
+            let node = g.selectAll(".node")
                 .data(root.descendants())
                 .enter().append("g")
                 .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
@@ -142,7 +152,7 @@ export default {
 
 
             node.append("text")
-                .style("display", (d) =>{ return d.children ? 'none' : 'inline'; })
+                .style("display", (d) =>{ return d.children ? 'none' : 'none'; })
                 .text((d) => { return d.data.name; })
                 .style("font", "10px sans-serif")
                 .style("text-anchor", "end")
