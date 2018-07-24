@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
-import { globalPlotData } from './plot-data';
-import { getHashCode } from './helpers'
+import { getHashCode } from './helpers';
+
+const globalPlotData = {};
 
 export default class API {
     static api_base = process.env.VUE_APP_API_BASE;
