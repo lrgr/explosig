@@ -108,10 +108,26 @@ export default {
             var root = d3.hierarchy(vm.clusteringData);
             tree(root);
 
-            let leaves = root.descendants().map((el) => {
-                if(!el.children) {
-                    // console.log(el);
-                }
+            // Set x and y of clustered values for exposure/clinical values
+            let leaves = root.descendants().filter((el) => (!el.children));
+            for(let leaf of leaves) {
+                let exposureIndex = vm.exposuresData.findIndex((el) => (leaf.data.name === el.donor_id));
+                vm.exposuresData[exposureIndex].x = leaf.x;
+                vm.exposuresData[exposureIndex].y = leaf.y;
+            }
+
+            // normalize data
+            var normalizedData = vm.exposuresData;
+            normalizedData = normalizedData.map((d) => {
+                // deep copy of exposures objects
+                d = Object.assign({}, d);
+                d["exposures"] = Object.assign({}, d["exposures"]);
+
+                let dMax = d3.sum(Object.values(d["exposures"]));
+                Object.keys(d["exposures"]).map((sigName) => {
+                    d["exposures"][sigName] = d["exposures"][sigName] / parseFloat(dMax);
+                });
+                return d;
             });
 
 
@@ -127,9 +143,9 @@ export default {
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
                 .on('mouseleave', vm.tooltipDestroy);
 
-            let g = vm.svg.append("g").attr("transform", "translate(0,0)");
+            let gTree = vm.svg.append("g").attr("transform", "translate(0,0)");
 
-            let link = g.selectAll(".link")
+            gTree.selectAll(".link")
                 .data(root.descendants().slice(1))
                 .enter().append("path")
                 .attr("class", "link")
@@ -144,7 +160,7 @@ export default {
                 .attr("stroke-opacity", 0.4)
                 .attr("stroke-width", "1.5px");
 
-            let node = g.selectAll(".node")
+            let node = gTree.selectAll(".node")
                 .data(root.descendants())
                 .enter().append("g")
                 .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
@@ -159,7 +175,38 @@ export default {
                 .attr("dx", "-.6em")
                 .attr("dy", ".6em")
                 .attr("transform", "rotate(-65)");
-           
+            
+            // Add heatmap below tree
+            let gHeatmap = vm.svg.append("g").attr("transform", "translate(0,0)");
+
+            let heatmapColWidth = vm.width / normalizedData.length / 2;
+            let signaturesY = d3.scaleBand()
+                .domain(vm.selectedSignatures)
+                .range([0, (vm.height / 2)]);
+
+
+            let donorCols = gHeatmap.selectAll(".donor-col")
+                .data(normalizedData)
+                .enter().append("g")
+                .attr("class", "donor-col")
+                .attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
+            donorCols.selectAll(".signature-cell")
+                    .data((d) => d3.entries(d.exposures))
+                    .enter().append("rect")
+                        .attr("class", "signature-cell")
+                        .attr("width", heatmapColWidth)
+                        .attr("height", signaturesY.bandwidth())
+                        .attr("x", -(heatmapColWidth / 2))
+                        .attr("y", (d) => signaturesY(d.key))
+                        .attr("fill", (d) => vm.$store.getters.signatureColor(d.key) )
+                        .attr("fill-opacity", (d) => d.value);
+            
+            // y Axis for signature names
+            let yAxis = vm.svg.append("g")
+                .attr("transform", "translate(0," + normalizedData[0].y + ")");
+            
+            yAxis.call(d3.axisLeft(signaturesY).tickSizeOuter(0));
+            
 
             // dispatch callbacks
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
