@@ -5,7 +5,6 @@ export default {
     data: function() {
         return {
             loading: false,
-            svg: null,
             tooltipPosition: {
                 left: null,
                 top: null
