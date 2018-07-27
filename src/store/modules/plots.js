@@ -22,6 +22,10 @@ const state = {
         'type': 'KataegisPlot',
         'title': 'Kataegis',
         'id': 'all-donors-kataegis-plot'
+    }, {
+        'type': 'ClusterPlot',
+        'title': 'Hierarchical Clustering',
+        'id': 'all-donors-cluster-plot'
     }],
     overviewMode: [
         {

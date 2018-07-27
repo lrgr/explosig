@@ -11,9 +11,21 @@ export const getTranslation = function(t) {
 };
 
 export const getUUID = function() {
-    // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+    // Reference: https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+};
+
+export const getHashCode = function(s, obj) {
+    if(obj !== undefined && obj != null) {
+        s += JSON.stringify(obj);
+    }
+    // Reference: https://gist.github.com/hyamamoto/fd435505d29ebfa3d9716fd2be8d42f0
+    var h = 0, l = s.length, i = 0;
+    if ( l > 0 )
+        while (i < l)
+        h = (h << 5) - h + s.charCodeAt(i++) | 0;
+    return h.toString();
 };
