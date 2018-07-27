@@ -194,6 +194,9 @@ export default {
             // expand plot width to account for minimum bar width adjustments
             let plotWidth = barWidth * this.plotData.length;
             
+            /**
+             * Data preparation
+             */
             // normalize data if necessary
             var normalizedData = vm.plotData;
             if(vm.options.normalizeExposures) {
@@ -236,7 +239,9 @@ export default {
 
             let sampleNames = normalizedData.map((d) => { return d["donor_id"]; });
 
-            // axis scales
+            /**
+             * Scales
+             */
             let x = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, plotWidth]);
@@ -253,9 +258,13 @@ export default {
 
             let series = stack(normalizedData);
 
-            // create svg elements
+            /**
+             * SVG Elements
+             */
+            // remove existing svg element
             d3.select(this.plotSelector).select("svg").remove();
-
+            
+            // create new svg element
             vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", plotWidth + this.margin.left + this.margin.right)
@@ -268,7 +277,9 @@ export default {
             let XContainer = vm.svg.append("g")
                 .attr("transform", "translate(0,0)");
 
-            
+            /**
+             * Signature exposure stacked bars
+             */
             let layer = XContainer.selectAll(".layer")
                 .data(series)
             .enter().append("g")
@@ -296,7 +307,9 @@ export default {
                     vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
                 });
         
-            // clinical variables
+            /**
+             * Clinical variable heatmap
+             */
             let clinicalY = {};
             var var_i;
             for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {
@@ -327,13 +340,16 @@ export default {
                         vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
                     });
             }
-
-            // x Axis container
+            
+            /**
+             * Axes
+             */
+            // x axis container
             let xAxis = XContainer.append("g")
                 .attr("transform", "translate(0," + (vm.height + clinicalMarginY) + ")")
                 .attr("class", "x_axis");
 
-            // x Axis ticks
+            // x axis ticks
             xAxis.call(d3.axisBottom(x).tickSizeOuter(0).tickPadding(0))
                 .selectAll("text")	
                     .style("text-anchor", "end")
@@ -341,7 +357,7 @@ export default {
                     .attr("y", ".15em")
                     .attr("transform", "rotate(-65)");
             
-            // x Axis drag target
+            // x axis drag target
             xAxis.append("rect")
                 .attr("class", "x-drag-target")
                 .attr("width", plotWidth)
@@ -356,14 +372,14 @@ export default {
                     XContainer.attr("transform", "translate(" + newX + ",0)");
                 }));
             
-            // text label for the x axis
+            // x axis text label
             vm.svg.append("text")
                 .attr("transform",
                         "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 70) + ")")
                 .style("text-anchor", "middle")
                 .text("Donor");
 
-            // y Axis container
+            // y axis container
             let yAxis = vm.svg.append("g");
             
             // y axis white background
@@ -373,10 +389,10 @@ export default {
                     .attr("transform", "translate(" + (-vm.margin.left) + ",0)")
                     .attr("fill", (vm.options.xScroll ? "#FFF" : "transparent"));
             
-            // y Axis exposures ticks
+            // y axis exposures ticks
             yAxis.call(d3.axisLeft(y));
             
-            // text label for the y axis
+            // y axis text label
             vm.svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - vm.margin.left + 10)
@@ -385,7 +401,7 @@ export default {
                 .style("text-anchor", "middle")
                 .text("Signature Exposure");  
             
-            // y Axis for clinical vars
+            // y axis for clinical vars
             for(var_i = 0; var_i < vm.selectedClinicalVariables.length; var_i++) {
                 var axisCV = vm.selectedClinicalVariables[var_i];
                 vm.svg.append("g")
@@ -398,31 +414,55 @@ export default {
                         .attr("transform", "rotate(-25)");
             }
 
-            // dispatch callbacks
+            /**
+             * Dispatch indicators
+             */
+            let donorHighlight = XContainer.append("g")
+                .attr("class", "donor-highlight");
+            
+            donorHighlight.append("line")
+                .attr("x1", 0)
+                .attr("y1", 0)
+                .attr("x2", 0)
+                .attr("y2", vm.height)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0);
+            
+            donorHighlight.append("line")
+                .attr("x1", barWidth - marginX)
+                .attr("y1", 0)
+                .attr("x2", barWidth - marginX)
+                .attr("y2", vm.height)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0);
+
+            /**
+             * Dispatch callbacks
+             */
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
-                if(donorID != null) {
-                    // clinical opacities
-                    XContainer.selectAll(".clinical-group").selectAll(".clinical-rect")
-                        .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4))
-                        .attr("stroke-opacity", (d) => (d == donorID ? 1 : 0.4));
-                    // signature opacities
-                    vm.svg.selectAll(".layer").selectAll(".exposure-bar")
-                        .attr("fill-opacity", (d, i) => ((normalizedData[i] && normalizedData[i]["donor_id"] == donorID) ? 1 : 0.4));
+                let i = sampleNames.indexOf(donorID);
+                if(i != -1) {
+                    // move donor highlight group
+                    donorHighlight
+                        .attr("transform", "translate(" + x(donorID) + ",0)");
+
+                    // show donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0.5);
+
                 } else {
-                    vm.svg.selectAll(".exposure-bar")
-                        .attr("fill-opacity", 1);
-                    XContainer.selectAll(".clinical-group").selectAll(".clinical-rect")
-                        .attr("fill-opacity", 1)
-                        .attr("stroke-opacity", 1);
+                    // hide donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, () => {
-                vm.svg.selectAll(".exposure-bar")
-                    .attr("fill-opacity", 1);
-                XContainer.selectAll(".clinical-group").selectAll(".clinical-rect")
-                        .attr("fill-opacity", 1)
-                        .attr("stroke-opacity", 1);
+                // hide donor highlight
+                donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0);
             });
         }
     }

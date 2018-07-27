@@ -141,12 +141,20 @@ export default {
             let plotHeight = barHeight * numSamples;
             var yMargin = 2;
 
+            /**
+             * Scales
+             */
             var y = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, plotHeight]);
             
+            /**
+             * SVG Elements
+             */
+            // remove existing svg element
             d3.select(this.plotSelector).select("svg").remove();
-
+            
+            // create new svg element
             vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", vm.width + vm.margin.left + vm.margin.right)
@@ -247,7 +255,30 @@ export default {
                     .attr("fill", "black");
             }
 
-            // dispatch elements
+            /**
+             * Dispatch indicators
+             */
+            let donorHighlight = YContainer.append("g")
+                .attr("class", "donor-highlight");
+            
+            donorHighlight.append("line")
+                .attr("x1", 0)
+                .attr("y1", 0)
+                .attr("x2", vm.width)
+                .attr("y2", 0)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0);
+            
+            donorHighlight.append("line")
+                .attr("x1", 0)
+                .attr("y1", barHeight - yMargin)
+                .attr("x2", vm.width)
+                .attr("y2", barHeight - yMargin)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0);
+            
             let genomeHighlight = YContainer.append("g")
                 .append("rect")
                 .attr("x", 0)
@@ -259,14 +290,16 @@ export default {
                 .attr("fill", "silver");
             
             
-
-            // y Axis
+            /**
+             * Axes
+             */
+            // y axis
             let yAxis = YContainer.append("g")
                 .attr("class", "y_axis");
             
             yAxis.call(d3.axisLeft(y).tickSizeOuter(0));
 
-            // y Axis drag target
+            // y axis drag target
             yAxis.append("rect")
                 .attr("class", "y-drag-target")
                 .attr("width", vm.margin.left)
@@ -282,7 +315,7 @@ export default {
                     YContainer.attr("transform", "translate(0," + newY + ")");
                 }));
             
-            // text label for the y axis
+            // y axis text label
             vm.svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - vm.margin.left + 5)
@@ -301,7 +334,7 @@ export default {
                 .attr("height", plotHeight)
                 .attr("fill", "#FFF");
 
-            // x Axis
+            // x axis
             var xAxis;
             if(vm.showAllChromosomes) {
                 for(chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
@@ -347,27 +380,38 @@ export default {
                 );
             }
             
-            // text label for the x axis
+            // x axis text label
             vm.svg.append("text")             
                 .attr("transform",
                         "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 20) + ")")
                 .style("text-anchor", "middle")
                 .text("Chromosome" + (vm.showAllChromosomes ? "" : (" " + vm.selectedChromosome.name + " Location")));
             
-            // dispatch callbacks
+            /**
+             * Dispatch callbacks
+             */
             dispatch.on("link-donor." + this.plotElemID, function(donorID) {
-                if(donorID != null) {
-                    vm.svg.selectAll(".sample-bar")
-                        .attr("fill-opacity", (d) => (d == donorID ? 1 : 0.4));
+                let i = sampleNames.indexOf(donorID);
+                if(i != -1) {
+                    // move donor highlight group
+                    donorHighlight
+                        .attr("transform", "translate(0," + y(donorID) + ")");
+
+                    // show donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0.5);
+
                 } else {
-                    vm.svg.selectAll(".sample-bar")
-                        .attr("fill-opacity", 1);
+                    // hide donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, function() {
-                vm.svg.selectAll(".sample-bar")
-                        .attr("fill-opacity", 1);
+                // hide donor highlight
+                donorHighlight.selectAll("line")
+                    .attr("stroke-opacity", 0);
             });
 
             dispatch.on("link-genome." + this.plotElemID, function(location) {

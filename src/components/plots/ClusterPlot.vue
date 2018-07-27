@@ -180,7 +180,7 @@ export default {
                 return d;
             });
 
-            
+            let sampleNames = normalizedData.map((el) => el.donor_id);
 
 
             // create svg elements
@@ -303,18 +303,59 @@ export default {
             
             yAxis.call(d3.axisLeft(signaturesY).tickSizeOuter(0));
             
+            /**
+             * Dispatch indicators
+             */
+            let donorHighlight = vm.svg.append("g")
+                .attr("class", "donor-highlight");
+            
+            donorHighlight.append("line")
+                .attr("x1", -(heatmapColWidth / 2))
+                .attr("y1", 0)
+                .attr("x2", -(heatmapColWidth / 2))
+                .attr("y2", vm.height)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0);
+            
+            donorHighlight.append("line")
+                .attr("x1", (heatmapColWidth / 2))
+                .attr("y1", 0)
+                .attr("x2", (heatmapColWidth / 2))
+                .attr("y2", vm.height)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0);
 
-            // dispatch callbacks
+            /**
+             * Dispatch callbacks
+             */
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
-                if(donorID != null) {
-                    /// TODO
+                let i = sampleNames.indexOf(donorID);
+                if(i != -1) {
+                    console.log(i);
+                    // get x position of donor col
+                    let donorTranslate = gHeatmap.selectAll(".donor-col").filter(":nth-child(" + (i+1) + ")").attr("transform");
+                    console.log(donorTranslate);
+                    // move donor highlight group
+                    donorHighlight
+                        .attr("transform", donorTranslate);
+
+                    // show donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0.5);
+
                 } else {
-                    // TODO
+                    // hide donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0);
                 }
             });
 
             dispatch.on("link-donor-destroy." + this.plotElemID, () => {
-                // TODO
+                // hide donor highlight
+                    donorHighlight.selectAll("line")
+                        .attr("stroke-opacity", 0);
             });
         }
     }
