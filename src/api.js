@@ -35,18 +35,6 @@ export default class API {
     }
 
     // Fetches with cacheing
-    static fetchChromosomes() {
-        let url = API.api_base + "chromosomes";
-
-        return API.request(
-            fetch(url, { method: "POST" })
-                .then(function(response) {
-                    return response.json();
-                }), 
-            url,
-            null
-        );
-    }
 
     static fetchKaryotype() {
         let url = API.api_base + "karyotype";

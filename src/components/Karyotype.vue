@@ -7,7 +7,7 @@
 <script>
 import * as d3 from 'd3';
 import API from './../api.js';
-import { KARYOTYPE_COLORS } from '../constants';
+import { CHROMOSOME_LENGTHS, KARYOTYPE_COLORS } from '../constants';
 
 export default {
   name: 'Karyotype',
@@ -51,7 +51,7 @@ export default {
       setChromosome: function(event) {
           var chrLen = 0;
           if(event != '*') {
-              chrLen = this.$store.getters.chromosomeLength(event);
+              chrLen = CHROMOSOME_LENGTHS[event];
           }
           var chrOptions = {
               'name': event,

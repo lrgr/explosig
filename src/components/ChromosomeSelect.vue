@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { CHROMOSOMES } from './../constants.js'
+import { CHROMOSOMES, CHROMOSOME_LENGTHS } from './../constants.js'
 
 export default {
   name: 'ChromosomeSelect',
@@ -30,7 +30,7 @@ export default {
       setChromosome: function(event) {
           var chrLen = 0;
           if(event != '*') {
-              chrLen = this.$store.getters.chromosomeLength(event);
+              chrLen = CHROMOSOME_LENGTHS[event];
           }
           var chrOptions = {
               'name': event,

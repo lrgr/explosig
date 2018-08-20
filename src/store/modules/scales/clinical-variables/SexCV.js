@@ -1,6 +1,6 @@
-import AbstractCategoricalCV from './AbstractCategoricalCV';
+import AbstractCategoricalScale from '../AbstractCategoricalScale';
 
-export default class SexCV extends AbstractCategoricalCV {
+export default class SexCV extends AbstractCategoricalScale {
     
     get id () {
         return "Sex";

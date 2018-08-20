@@ -24,9 +24,6 @@ export default {
     let vm = this;
     vm.checkHash();
     
-    API.fetchChromosomes().then(function(chromosomeLengths) {
-        vm.$store.commit('setChromosomeLengths', chromosomeLengths);
-    });
 
     // resize bindings
     vm.$store.commit('setWindowWidth', window.innerWidth);
