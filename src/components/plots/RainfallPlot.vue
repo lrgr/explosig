@@ -54,7 +54,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
-import { CATEGORY_INDEX, CHROMOSOMES, CHROMOSOME_LENGTHS } from './../../constants.js';
+import { CHROMOSOMES, CHROMOSOME_LENGTHS } from './../../constants.js';
 import { dispatch } from './../../plot-link.js';
 
 // child components
@@ -257,8 +257,8 @@ export default {
                     vm.tooltip(d.cat, d.pos, d.mut_dist, d.chr);
                 });
             
-            
-            var legendInfo = {
+            // TODO: move this out of component
+            /*var legendInfo = {
                 "meta": {
                     "title": "Mutation Categories"
                 },
@@ -269,7 +269,7 @@ export default {
             for(var i = 0; i < catNames.length; i++) {
                 legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(CATEGORY_INDEX['SBS_96'][catNames[i]] / 96) });
             }
-            LegendListBus.$emit("contexts", legendInfo); 
+            LegendListBus.$emit("contexts", legendInfo); */
             
             // x Axis
             var xAxis;

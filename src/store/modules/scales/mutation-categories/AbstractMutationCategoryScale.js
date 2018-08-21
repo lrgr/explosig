@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import AbstractCategoricalScale from '../AbstractCategoricalScale.js';
-import { CATEGORY_INDEX } from '../../../../constants';
 
 
 export default class AbstractMutationCategoryScale extends AbstractCategoricalScale {
@@ -19,12 +18,12 @@ export default class AbstractMutationCategoryScale extends AbstractCategoricalSc
         throw new Error('You have to implement the getter mutation type!');
     }
 
-    get range() {
-        return Object.values(CATEGORY_INDEX[this.id]);
+    get domain() {
+        throw new Error('You have to implement the getter domain!');
     }
 
-    get domain() {
-        return Object.keys(CATEGORY_INDEX[this.id]);
+    get range() {
+        return Array.apply(null, { length: this.domain.length }).map(Number.call, Number)
     }
     
 }
