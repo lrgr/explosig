@@ -15,9 +15,9 @@ const getters = {
         return state.selected.map((el) => el.id);
     },
     allDatasets: state => state.all,
-    datasetColor: (state) => (name) => d3.hsl(d3.hsl(
+    datasetColor: (state) => (projID) => d3.hsl(d3.hsl(
         state.colorScale(
-            state.selected.findIndex((el) => (el === name)) / parseFloat(state.selected.length)
+            state.selected.findIndex((el) => (el.id === projID)) / parseFloat(state.selected.length)
         )
     ).h, 1.00, 0.87).toString()
 }
@@ -39,10 +39,10 @@ const actions = {
             "meta": {
                 "title": "Samples"
             },
-            "data": state.selected.map((name) => {
+            "data": state.selected.map((dataset) => {
                 return {
-                    "name": name,
-                    "color": (getters.datasetColor(state))(name)
+                    "name": dataset.id,
+                    "color": (getters.datasetColor(state))(dataset.id)
                 };
             })
         });
