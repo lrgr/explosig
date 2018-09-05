@@ -112,7 +112,7 @@ export default {
             var vm = this;
             vm.loading = true;
             var params = {
-                "sources": vm.selectedDatasets
+                "projects": vm.selectedDatasetNames
             };
             API.fetchKataegis(params).then(function (data) {
                 vm.plotData = data;
@@ -322,7 +322,7 @@ export default {
                 .attr("x", 0 - (vm.height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Donor");  
+                .text("Sample");  
              
             
             // white background rects to hide overflow-y

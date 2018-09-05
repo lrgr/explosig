@@ -38,9 +38,9 @@ export default {
   computed: {
     ...mapGetters([
       'selectedChromosome',
-      'selectedSignatures',
+      'selectedSignatureNames',
       'selectedPlots',
-      'selectedDatasets',
+      'selectedDatasetNames',
       'currentMode',
       'currentModeTitle',
       'currentModeOptions'
@@ -68,8 +68,11 @@ export default {
               });
             }
             vm.$store.commit('setSelectedSignatures', selectedSignatures);
-            
-            vm.$store.commit('setSelectedDatasets', params.datasets);
+            let selectedDatasets = [];
+            for(let dataset of params.datasets) {
+              selectedDatasets.push(listing['projects'][dataset]);
+            }
+            vm.$store.commit('setSelectedDatasets', selectedDatasets);
             vm.$store.commit('setSelectedPlots', params.plots);
           }
           if(params.mode && params.mode.mode && params.mode.title && params.mode.options) {
@@ -83,13 +86,9 @@ export default {
       })
     },
     setHash: function() {
-      let selectedSignatures = {};
-      for(let mutType of MUT_TYPES) {
-        selectedSignatures[mutType] = this.selectedSignatures[mutType].map((el) => el.name);
-      }
       let hashData = {
-        'datasets': this.selectedDatasets,
-        'signatures': selectedSignatures,
+        'datasets': this.selectedDatasetNames,
+        'signatures': this.selectedSignatureNames,
         'plots': this.selectedPlots.map((plotInfo) => {
           return {
             "type": plotInfo.type,
@@ -113,13 +112,13 @@ export default {
     }
   },
   watch: {
-    selectedSignatures: {
+    selectedSignatureNames: {
       handler: function() {
         this.setHash();
       },
       deep: true
     },
-    selectedDatasets: {
+    selectedDatasetNames: {
       handler: function() {
         this.setHash();
       },

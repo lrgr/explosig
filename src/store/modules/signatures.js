@@ -40,6 +40,13 @@ const getters = {
         }
         return result;
     },
+    selectedSignatureNames: state => {
+        let result = {};
+        for(let mutType of MUT_TYPES) {
+            result[mutType] = state.selected[mutType].map((el) => el.name);
+        }
+        return result;
+    },
     signatureGroups: state => state.signatureGroups,
     signatureColor: (state) => (name, mutType) => state.colorScale(
         state.selected[mutType].findIndex((el) => (el.name === name)) / parseFloat(state.selected[mutType].length)

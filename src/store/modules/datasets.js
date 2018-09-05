@@ -11,6 +11,9 @@ const state = {
 // getters
 const getters = {
     selectedDatasets: state => state.selected,
+    selectedDatasetNames: state => {
+        return state.selected.map((el) => el.id);
+    },
     allDatasets: state => state.all,
     datasetColor: (state) => (name) => d3.hsl(d3.hsl(
         state.colorScale(

@@ -77,9 +77,9 @@ export default {
             var vm = this;
             vm.loading = true;
             let params = {
-                "sources": vm.selectedDatasets,
-                "signatures": vm.selectedSignatures,
-                "donor_id": vm.plotOptions.donor_id,
+                "projects": vm.selectedDatasetNames,
+                "signatures": vm.selectedSignatureNames,
+                "sample_id": vm.plotOptions.donor_id,
                 "proj_id": vm.plotOptions.proj_id
             };
             API.fetchSingleDonorGenomeSignatureBins(params).then(function (data) {

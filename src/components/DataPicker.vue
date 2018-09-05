@@ -98,7 +98,7 @@ export default {
             vm.$store.commit('setSignatureGroups', listing['sigs_per_cancer_type']);
 
             vm.options.signatures = vm.selectedSignaturesFlat.map((el) => el.name);
-            vm.options.projects = vm.selectedDatasets;
+            vm.options.projects = vm.selectedDatasets.map((el) => el.id);
             
             vm.loading = false;
 
@@ -161,9 +161,12 @@ export default {
       emitUpdate: function() {
         let signatures = this.options.signatures.map((sigName) => {
             return this.allSignaturesFlat.find(el => (el.name === sigName));
+        });
+        let datasets = this.options.projects.map((projName) => {
+            return this.allDatasets[projName];
         })
         this.$store.commit('setSelectedSignaturesFlat', signatures);
-        this.$store.commit('setSelectedDatasets', this.options.projects);
+        this.$store.commit('setSelectedDatasets', datasets);
         DataOptionsBus.$emit('updateDataOptions');
       },
       drawPlot: function () {

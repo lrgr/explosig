@@ -139,7 +139,7 @@ export default {
 
             let rainfallOptions = {
                 'proj_id': vm.plotOptions.proj_id,
-                'donor_id': vm.plotOptions.donor_id
+                'sample_id': vm.plotOptions.donor_id
             }
 
             API.fetchRainfall(rainfallOptions).then(function (data) {
