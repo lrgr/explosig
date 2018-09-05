@@ -1,3 +1,8 @@
+export const MUT_TYPES = [
+    'SBS',
+    'DBS',
+    'INDEL'
+];
 export const CHROMOSOMES = [
     '1',
     '2', 

@@ -15,11 +15,11 @@
                 ></Plot>
             </div>
             <div v-if="isSignaturesMode">
-                <Plot v-for="(signature, index) in selectedSignatures" 
+                <Plot v-for="(signature, index) in selectedSignaturesFlat" 
                     :key="signature" 
                     :plotType="'SignaturePlot'"
                     :plotID="'sigplot_' + index"
-                    :plotTitle="'Signature: ' + signature"
+                    :plotTitle="'Signature: ' + signature.name"
                     :plotOptions="{'signature': signature}"
                     :canRemove="false"
                     class="item"
@@ -118,7 +118,7 @@ export default {
   },
   computed: {
       doneIntro: function() {
-          return (this.selectedDatasets.length > 0 && this.selectedSignatures.length > 0);
+          return (this.selectedDatasets.length > 0 && this.selectedSignaturesFlat.length > 0);
       },
       legendHeight: function() {
           return (this.windowHeight - 40 - 69 - 24 - 58) + "px";
@@ -127,7 +127,7 @@ export default {
           'windowHeight',
           'selectedPlots',
           'selectedDatasets',
-          'selectedSignatures',
+          'selectedSignaturesFlat',
           'isAllDonorsMode',
           'allDonorsModePlots',
           'isSingleDonorMode',
