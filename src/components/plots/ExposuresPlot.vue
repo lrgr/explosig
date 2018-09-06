@@ -1,5 +1,15 @@
 <template>
     <div>
+        <div class="top-options">
+            <div id="inactivating-events-button" v-show="!showDropdown">
+                <button v-on:click="toggleInactivatingDropdown()">Inactivating Events</button>
+            </div>
+            <div id="inactivating-events-dropdown" v-show="showDropdown">
+                <input type="text" placeholder="Gene" name="gene_id" autocomplete="off" v-model="geneInput" />
+                <button v-on:click="toggleInactivatingDropdown()">x</button>
+            </div>
+        </div>
+
         <div :id="this.plotElemID" class="plot-component"></div>
 
         <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
@@ -95,7 +105,9 @@ export default {
                 xScroll: true
             },
             sortByCategory: null,
-            sortByList: []
+            sortByList: [],
+            showDropdown: false,
+            geneInput: ""
         };
     },
     computed: {
@@ -113,9 +125,17 @@ export default {
             } else if(val == "clinical") {
                 this.sortByList = this.selectedClinicalVariables.map((el) => el.name);
             }
+        },
+        geneInput: function(val) {
+            if(val.length >= 2) {
+                console.log(val);
+            }
         }
     },
     methods: {
+        toggleInactivatingDropdown() {
+            this.showDropdown = !this.showDropdown;
+        },
         fileInput: function(files) {
             let vm = this;
             vm.loading = true;
@@ -482,6 +502,35 @@ export default {
 .bottom-options {
     select:nth-of-type(2) {
         margin-right: 15px;
+    }
+}
+
+.top-options {
+    right: 0;
+    top: 0;
+    position: absolute;
+    #inactivating-events-button {
+        position: relative;
+        right: 0;
+        text-align: right;
+        button {
+            margin-top: 0.5em;
+            margin-right: 0.5em;
+        }
+    }
+    
+    #inactivating-events-dropdown {
+        border-left: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding: 0.5em;
+        input {
+            position: relative;
+        }
+        button {
+            padding: 2px 2px;
+            top: -1px;
+            position: relative;
+        }
     }
 }
 
