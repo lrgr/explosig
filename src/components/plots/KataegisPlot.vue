@@ -5,7 +5,7 @@
         <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
-                    <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
+                    <th>Sample</th><td>{{ this.tooltipInfo.donorID }}</td>
                 </tr>
                 <tr>
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
@@ -25,11 +25,11 @@
 
         <div class="plot-info" v-if="showInfo">
             <h3>Info</h3>
-            <p>This plot displays each donor, with mutations in "kataegis regions" highlighted along the chromosome. </p>
+            <p>This plot displays each sample, with mutations in "kataegis regions" highlighted along the chromosome. </p>
             <p>For the purposes of this plot, kataegis is defined as six or more mutations with an average intermutation distance of less than or equal to 1,000 bp.</p>
-            <p>To view the rainfall plot for a donor, click on its colored row.</p>
+            <p>To view the rainfall plot for a sample, click on its colored row.</p>
             <p>To zoom in along chromosome location, click and drag mouse below the axis. To zoom out, double click.</p>
-            <p>Drag along the y axis to pan across additional donors.</p>
+            <p>Drag along the y axis to pan across additional samples.</p>
         </div>
     </div>
 </template>

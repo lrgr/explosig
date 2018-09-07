@@ -108,7 +108,9 @@ export default {
       return {
           legendKeys: [
                 "datasets",
-                "signatures",
+                "signatures_SBS",
+                "signatures_DBS",
+                "signatures_INDEL",
                 "clinicalVariables",
                 "contexts"
           ],

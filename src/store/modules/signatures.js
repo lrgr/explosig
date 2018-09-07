@@ -90,14 +90,14 @@ const mutations = {
 const actions = {
     emitSignaturesLegend ({ state }) {
         for(let mutType of Object.keys(state.selected)) {
-            LegendListBus.$emit("signatures", {
+            LegendListBus.$emit("signatures_" + mutType, {
                 "meta": {
                     "title": (mutType + " Signatures")
                 },
                 "data": state.selected[mutType].map((signature) => {
                     return {
                         "name": signature.name,
-                        "color": (getters.signatureColor(state))(signature.name)
+                        "color": (getters.signatureColor(state))(signature.name, mutType)
                     };
                 })
             });
