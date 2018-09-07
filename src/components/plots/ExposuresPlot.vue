@@ -4,7 +4,7 @@
             <GeneAutocomplete :submitGene="submitGene"/>
         </div>
 
-        <div :id="this.plotElemID" class="plot-component" :style="{'height': customHeight + 'px'}"></div>
+        <div :id="this.plotElemID" class="plot-component" :style="{'height': outerHeight + 'px'}"></div>
 
         <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
@@ -80,7 +80,7 @@ export default {
     },
     data: function () {
         return {
-            customHeight: 450,
+            outerHeight: 450,
             margin: {
                 top: 20,
                 right: 30,
@@ -108,7 +108,7 @@ export default {
     },
     computed: {
         height: function () {
-            return this.customHeight - this.margin.top - this.margin.bottom;
+            return this.outerHeight - this.margin.top - this.margin.bottom;
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
@@ -215,7 +215,7 @@ export default {
             let clinicalHeight = vm.selectedClinicalVariables.length * (clinicalRowHeight + clinicalRowMargin);
             let eventsHeight = Object.keys(vm.eventsData).length * (clinicalRowHeight + clinicalRowMargin);
             
-            vm.customHeight = signaturesHeight + eventsHeight + clinicalHeight + vm.margin.top + vm.margin.bottom;
+            vm.outerHeight = signaturesHeight + eventsHeight + clinicalHeight + vm.margin.top + vm.margin.bottom;
             
 
             let minBarWidth = (this.options.xScroll ? 20 : 0);
