@@ -1,34 +1,7 @@
 <template>
     <div>
         <div class="top-options">
-            <div id="inactivating-events-button" v-show="!showDropdown">
-                <button v-on:click="toggleInactivatingDropdown()">Inactivating Events</button>
-            </div>
-            <div id="inactivating-events-dropdown" v-show="showDropdown">
-                <div class="dropdown-input-wrapper">
-                    <input 
-                        type="text" 
-                        placeholder="Gene" 
-                        name="gene_id" 
-                        autocomplete="off" 
-                        v-model="geneInput"
-                        @keyup.up="geneAutocompleteDec"
-                        @keyup.down="geneAutocompleteInc"
-                        @keyup.enter="geneAutocompleteEnter"
-                     />
-                    <button v-on:click="toggleInactivatingDropdown()">x</button>
-                </div>
-                <div>
-                    <span 
-                        v-for="(geneId, index) in geneAutocompleteList" 
-                        :key="geneId" 
-                        :class="[index === geneAutocompleteIndex ? 'selected-gene' : '']"
-                        @click="geneAutocompleteSelect(geneId)"
-                    >
-                        {{ geneId }}
-                    </span>
-                </div>
-            </div>
+            <GeneAutocomplete :submitGene="submitGene"/>
         </div>
 
         <div :id="this.plotElemID" class="plot-component"></div>
@@ -95,13 +68,15 @@ import { dispatch } from './../../plot-link.js';
 
 // child components
 import Spinner from './../Spinner.vue';
+import GeneAutocomplete from './../GeneAutocomplete.vue';
 
 export default {
     name: 'ExposuresPlot',
     mixins: [plotMixin],
     props: [],
     components: {
-        Spinner
+        Spinner,
+        GeneAutocomplete
     },
     data: function () {
         return {
@@ -126,11 +101,7 @@ export default {
                 xScroll: true
             },
             sortByCategory: null,
-            sortByList: [],
-            showDropdown: false,
-            geneInput: "",
-            geneAutocompleteList: [],
-            geneAutocompleteIndex: null
+            sortByList: []
         };
     },
     computed: {
@@ -148,50 +119,11 @@ export default {
             } else if(val == "clinical") {
                 this.sortByList = this.selectedClinicalVariables.map((el) => el.name);
             }
-        },
-        geneInput: function(val) {
-            if(val.length >= 2) {
-                API.fetchAutocompleteGene(val)
-                    .then((geneArray) => {
-                        let oldListLength = this.geneAutocompleteList.length;
-                        this.geneAutocompleteList = geneArray;
-                        if(this.geneAutocompleteList.length === 0) {
-                            this.geneAutocompleteIndex = null;
-                        } else {
-                            if(this.geneAutocompleteIndex === null) {
-                                this.geneAutocompleteIndex = 0;
-                            } else if(this.geneAutocompleteList.length < oldListLength && this.geneAutocompleteIndex >= this.geneAutocompleteList.length) {
-                                this.geneAutocompleteIndex = this.geneAutocompleteList.length - 1;
-                            }
-                        }
-                    });
-            }
-        },
+        }
     },
     methods: {
-        toggleInactivatingDropdown() {
-            this.showDropdown = !this.showDropdown;
-            // reset
-            this.geneAutocompleteList = [];
-            this.geneInput = "";
-        },
-        geneAutocompleteInc() {
-            if(this.geneAutocompleteIndex < (this.geneAutocompleteList.length - 1)) {
-                this.geneAutocompleteIndex += 1;
-            }
-        },
-        geneAutocompleteDec() {
-            if(this.geneAutocompleteIndex > 0) {
-                this.geneAutocompleteIndex -= 1;
-            }
-        },
-        geneAutocompleteEnter() {
-            console.log(this.geneAutocompleteList[this.geneAutocompleteIndex]);
-            this.toggleInactivatingDropdown();
-        },
-        geneAutocompleteSelect(geneId) {
+        submitGene(geneId) {
             console.log(geneId);
-            this.toggleInactivatingDropdown();
         },
         fileInput: function(files) {
             let vm = this;
@@ -566,39 +498,6 @@ export default {
     right: 0;
     top: 0;
     position: absolute;
-    #inactivating-events-button {
-        position: relative;
-        right: 0;
-        text-align: right;
-        button {
-            margin-top: 0.5em;
-            margin-right: 0.5em;
-        }
-    }
-    
-    #inactivating-events-dropdown {
-        border-left: 1px solid gray;
-        border-bottom: 1px solid gray;
-        .dropdown-input-wrapper {
-            padding: 0.5em;
-        }
-        div > span {
-            display: block;
-            padding: 0.5em;
-            border-top: 1px solid #ddd;
-            cursor: pointer;
-            &.selected-gene {
-                background-color: #ddd;
-            }
-        }
-        input {
-            position: relative;
-        }
-        button {
-            padding: 2px 4px;
-            position: relative;
-        }
-    }
 }
 
 </style>
