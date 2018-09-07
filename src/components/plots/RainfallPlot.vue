@@ -54,7 +54,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
-import { MUTATION_CATEGORIES, CHROMOSOMES } from './../../constants.js';
+import { CHROMOSOMES, CHROMOSOME_LENGTHS } from './../../constants.js';
 import { dispatch } from './../../plot-link.js';
 
 // child components
@@ -139,8 +139,7 @@ export default {
 
             let rainfallOptions = {
                 'proj_id': vm.plotOptions.proj_id,
-                'donor_id': vm.plotOptions.donor_id,
-                'chromosome': vm.selectedChromosome.name
+                'sample_id': vm.plotOptions.donor_id
             }
 
             API.fetchRainfall(rainfallOptions).then(function (data) {
@@ -208,11 +207,11 @@ export default {
             var chrLen, chrName, chr_i;
             
             if(vm.showAllChromosomes) {
-                let genomeLength = CHROMOSOMES.map((name) => vm.$store.getters.chromosomeLength(name)).reduce((a, h) => a + h);
+                let genomeLength = CHROMOSOMES.map((name) => CHROMOSOME_LENGTHS[name]).reduce((a, h) => a + h);
                 var cumulativeLength = 0;
                 for(chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
                     chrName = CHROMOSOMES[chr_i];
-                    chrLen = vm.$store.getters.chromosomeLength(chrName);
+                    chrLen = CHROMOSOME_LENGTHS[chrName];
                     chr_x[chrName] = d3.scaleLinear()
                         .domain([0, chrLen])
                         .range([vm.width*(cumulativeLength / genomeLength), vm.width*((cumulativeLength + chrLen) / genomeLength)]);
@@ -222,7 +221,7 @@ export default {
             } else {
                 // SINGLE CHROMOSOME
                 chrName = vm.selectedChromosome.name;
-                chrLen = vm.$store.getters.chromosomeLength(chrName);
+                chrLen = CHROMOSOME_LENGTHS[chrName];
                 chr_x[chrName] = d3.scaleLinear()
                     .domain([vm.selectedChromosome.start, vm.selectedChromosome.end])
                     .range([0, vm.width]);
@@ -258,19 +257,19 @@ export default {
                     vm.tooltip(d.cat, d.pos, d.mut_dist, d.chr);
                 });
             
-            
-            var legendInfo = {
+            // TODO: move this out of component
+            /*var legendInfo = {
                 "meta": {
                     "title": "Mutation Categories"
                 },
                 "data": []
             };
 
-            let catNames = Object.keys(MUTATION_CATEGORIES);
+            let catNames = Object.keys(CATEGORY_INDEX['SBS_96']);
             for(var i = 0; i < catNames.length; i++) {
-                legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(MUTATION_CATEGORIES[catNames[i]] / 96) });
+                legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(CATEGORY_INDEX['SBS_96'][catNames[i]] / 96) });
             }
-            LegendListBus.$emit("contexts", legendInfo); 
+            LegendListBus.$emit("contexts", legendInfo); */
             
             // x Axis
             var xAxis;
@@ -307,7 +306,7 @@ export default {
                                 } else {
                                     chrOptions = {
                                         start: 0,
-                                        end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
+                                        end: CHROMOSOME_LENGTHS[vm.selectedChromosome.name],
                                         name: vm.selectedChromosome.name
                                     }
                                     vm.$store.commit('setSelectedChromosome', chrOptions)

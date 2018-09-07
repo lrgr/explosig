@@ -1,6 +1,6 @@
-import AbstractBinaryCV from './AbstractBinaryCV';
+import AbstractBinaryScale from '../AbstractBinaryScale';
 
-export default class TobaccoCV extends AbstractBinaryCV {
+export default class TobaccoCV extends AbstractBinaryScale {
     
     get id () {
         return "Tobacco Binary";

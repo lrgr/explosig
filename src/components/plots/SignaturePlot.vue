@@ -32,7 +32,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { dispatch } from './../../plot-link.js';
-import { MUTATION_COLORS } from './../../constants.js';
+import { MUTATION_COLORS } from './../../colors.js';
 
 // child components
 import Spinner from './../Spinner.vue';

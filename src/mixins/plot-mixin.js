@@ -32,7 +32,9 @@ export default {
         ...mapGetters([
             'windowWidth',
             'selectedDatasets',
+            'selectedDatasetNames',
             'selectedSignatures',
+            'selectedSignatureNames',
             'selectedClinicalVariables',
             'selectedChromosome',
             'showAllChromosomes',

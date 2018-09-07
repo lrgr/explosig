@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import AbstractCV from './AbstractCV.js';
+import AbstractScale from './AbstractScale.js';
 
-export default class AbstractBinaryCV extends AbstractCV {
+export default class AbstractBinaryScale extends AbstractScale {
     
     get id () {
         throw new Error('You have to implement the getter id!');
@@ -18,7 +18,7 @@ export default class AbstractBinaryCV extends AbstractCV {
     }
 
     get scaleType() {
-        return AbstractCV.type.DISCRETE;
+        return AbstractScale._type.DISCRETE;
     }
 
     get range () {
@@ -30,8 +30,8 @@ export default class AbstractBinaryCV extends AbstractCV {
     }
 
     color (domainValue) {
-        if(AbstractCV.isUnknown(domainValue)) {
-            return AbstractCV.unknownColor;
+        if(AbstractScale.isUnknown(domainValue)) {
+            return AbstractScale.unknownColor;
         }
         return this.colorScale(1 - domainValue);
     }

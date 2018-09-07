@@ -88,8 +88,8 @@ export default {
             let vm = this;
             vm.loading = true;
             let params = {
-                "sources": vm.selectedDatasets,
-                "signatures": vm.selectedSignatures
+                "projects": vm.selectedDatasetNames,
+                "signatures": vm.selectedSignatureNames
             };
             API.fetchClustering(params).then((clusteringData) => {
                 API.fetchExposures(params).then((exposuresData) => {

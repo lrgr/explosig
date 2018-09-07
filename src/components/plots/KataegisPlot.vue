@@ -39,7 +39,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { getTranslation } from './../../helpers.js';
-import { CHROMOSOMES } from './../../constants.js';
+import { CHROMOSOMES, CHROMOSOME_LENGTHS } from './../../constants.js';
 import { dispatch } from './../../plot-link.js';
 
 // child components
@@ -112,7 +112,7 @@ export default {
             var vm = this;
             vm.loading = true;
             var params = {
-                "sources": vm.selectedDatasets
+                "projects": vm.selectedDatasetNames
             };
             API.fetchKataegis(params).then(function (data) {
                 vm.plotData = data;
@@ -194,11 +194,11 @@ export default {
             var chrLen, chrName, chr_i;
             
             if(vm.showAllChromosomes) {
-                let genomeLength = CHROMOSOMES.map((name) => vm.$store.getters.chromosomeLength(name)).reduce((a, h) => a + h);
+                let genomeLength = CHROMOSOMES.map((name) => CHROMOSOME_LENGTHS[name]).reduce((a, h) => a + h);
                 var cumulativeLength = 0;
                 for(chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
                     chrName = CHROMOSOMES[chr_i];
-                    chrLen = vm.$store.getters.chromosomeLength(chrName);
+                    chrLen = CHROMOSOME_LENGTHS[chrName];
                     chr_x[chrName] = d3.scaleLinear()
                         .domain([0, chrLen])
                         .range([vm.width*(cumulativeLength / genomeLength), vm.width*((cumulativeLength + chrLen) / genomeLength)]);
@@ -229,7 +229,7 @@ export default {
             } else {
                 // SINGLE CHROMOSOME
                 chrName = vm.selectedChromosome.name;
-                chrLen = vm.$store.getters.chromosomeLength(chrName);
+                chrLen = CHROMOSOME_LENGTHS[chrName];
                 chr_x[chrName] = d3.scaleLinear()
                     .domain([vm.selectedChromosome.start, vm.selectedChromosome.end])
                     .range([0, vm.width]);
@@ -322,7 +322,7 @@ export default {
                 .attr("x", 0 - (vm.height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Donor");  
+                .text("Sample");  
              
             
             // white background rects to hide overflow-y
@@ -370,7 +370,7 @@ export default {
                             } else {
                                 chrOptions = {
                                     start: 0,
-                                    end: vm.$store.getters.chromosomeLength(vm.selectedChromosome.name),
+                                    end: CHROMOSOME_LENGTHS[vm.selectedChromosome.name],
                                     name: vm.selectedChromosome.name
                                 }
                                 vm.$store.commit('setSelectedChromosome', chrOptions)
