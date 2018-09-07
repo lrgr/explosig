@@ -50,7 +50,7 @@ export default {
     },
     watch: {
         geneInput: function(val) {
-            if(val.length >= 2) {
+            if(val.length >= 1) {
                 API.fetchAutocompleteGene(val)
                     .then((geneArray) => {
                         let oldListLength = this.geneAutocompleteList.length;
@@ -116,6 +116,7 @@ export default {
 #inactivating-events-dropdown {
     border-left: 1px solid gray;
     border-bottom: 1px solid gray;
+    background-color: white;
     .dropdown-input-wrapper {
         padding: 0.5em;
     }

@@ -47,6 +47,15 @@ export default class API {
             });
     }
 
+    static fetchGeneEventTrack(dataOptions) {
+        let url = API.api_base + "genome-event-track";
+        
+        return fetch(url, { method: "POST", body: JSON.stringify(dataOptions) })
+            .then(function(response) {
+                return response.json();
+            });
+    }
+
     // Fetches with cacheing
     static fetchChromosomes() {
         let url = API.api_base + "chromosomes";

@@ -4,7 +4,7 @@
             <GeneAutocomplete :submitGene="submitGene"/>
         </div>
 
-        <div :id="this.plotElemID" class="plot-component"></div>
+        <div :id="this.plotElemID" class="plot-component" :style="{'height': customHeight + 'px'}"></div>
 
         <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
@@ -80,6 +80,7 @@ export default {
     },
     data: function () {
         return {
+            customHeight: 450,
             margin: {
                 top: 20,
                 right: 30,
@@ -101,12 +102,13 @@ export default {
                 xScroll: true
             },
             sortByCategory: null,
-            sortByList: []
+            sortByList: [],
+            eventsData: {}
         };
     },
     computed: {
         height: function () {
-            return 450 - this.margin.top - this.margin.bottom;
+            return this.customHeight - this.margin.top - this.margin.bottom;
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
@@ -123,7 +125,16 @@ export default {
     },
     methods: {
         submitGene(geneId) {
-            console.log(geneId);
+            let vm = this;
+            let params = {
+                "gene_id": geneId,
+                "projects": this.selectedDatasets
+            };
+            API.fetchGeneEventTrack(params)
+                .then((eventData) => {
+                    vm.eventsData[geneId] = eventData;
+                    vm.drawPlot();
+                })
         },
         fileInput: function(files) {
             let vm = this;
@@ -194,10 +205,19 @@ export default {
             if(vm.plotData === null) {
                 return;
             }
+
             let marginX = 2;
-            let clinicalHeight = 10;
-            let clinicalMarginY = 2;
-            let totalClinicalHeight = vm.selectedClinicalVariables.length * (clinicalHeight + clinicalMarginY);
+
+            let clinicalRowMargin = 2;
+            let clinicalRowHeight = 10;
+
+            let signaturesHeight = 300;
+            let clinicalHeight = vm.selectedClinicalVariables.length * (clinicalRowHeight + clinicalRowMargin);
+            let eventsHeight = Object.keys(vm.eventsData).length * (clinicalRowHeight + clinicalRowMargin);
+            
+            vm.customHeight = signaturesHeight + eventsHeight + clinicalHeight + vm.margin.top + vm.margin.bottom;
+            
+
             let minBarWidth = (this.options.xScroll ? 20 : 0);
             let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
             // expand plot width to account for minimum bar width adjustments
@@ -256,7 +276,7 @@ export default {
                 .range([0, plotWidth]);
             let y = d3.scaleLinear()
                 .domain([0, maxCountSum])
-                .range([this.height - totalClinicalHeight, 0]);
+                .range([signaturesHeight, 0]);
             
             // stacked bar values
             let stack = d3.stack()
@@ -277,7 +297,7 @@ export default {
             vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", plotWidth + this.margin.left + this.margin.right)
-                .attr("height", this.height + this.margin.top + this.margin.bottom)
+                .attr("height", vm.height + this.margin.top + this.margin.bottom)
                 .append("g")
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
@@ -326,7 +346,7 @@ export default {
 
                 clinicalY[selectedCV.id] = d3.scaleBand()
                     .domain([selectedCV.name])
-                    .range([this.height - totalClinicalHeight + clinicalMarginY + (var_i+1)*(clinicalHeight + clinicalMarginY), this.height - totalClinicalHeight + clinicalMarginY + (var_i)*(clinicalHeight + clinicalMarginY)]);
+                    .range([signaturesHeight + clinicalRowMargin + (var_i+1)*(clinicalRowHeight + clinicalRowMargin), signaturesHeight + clinicalRowMargin + (var_i)*(clinicalRowHeight + clinicalRowMargin)]);
 
                 XContainer.append("g")
                     .attr("class", "clinical-group")
@@ -336,7 +356,7 @@ export default {
                     .attr("class", "clinical-rect")
                     .attr("x", (d) => { return x(d); })
                     .attr("y", clinicalY[selectedCV.id](selectedCV.name))
-                    .attr("height", clinicalHeight)
+                    .attr("height", clinicalRowHeight)
                     .attr("width", barWidth - marginX)
                     .style("cursor", "pointer")
                     .attr("fill", (d, i) => {
@@ -349,13 +369,48 @@ export default {
                         vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
                     });
             }
+
+            /**
+             * Genomic events tracks
+             */
+            let eventY = {};
+            let eventGenes = Object.keys(vm.eventsData);
+            for(var_i = 0; var_i < eventGenes.length; var_i++) {
+                let geneId = eventGenes[var_i];
+                let geneData = vm.eventsData[geneId];
+
+                eventY[geneId] = d3.scaleBand()
+                    .domain([geneId])
+                    .range([signaturesHeight + clinicalHeight + clinicalRowMargin + (var_i+1)*(clinicalRowHeight + clinicalRowMargin), signaturesHeight + clinicalHeight + clinicalRowMargin + (var_i)*(clinicalRowHeight + clinicalRowMargin)]);
+
+                XContainer.append("g")
+                    .attr("class", "event-group")
+                .selectAll(".event-rect")
+                    .data(sampleNames)
+                .enter().append("rect")
+                    .attr("class", "event-rect")
+                    .attr("x", (d) => { return x(d); })
+                    .attr("y", eventY[geneId](geneId))
+                    .attr("height", clinicalRowHeight)
+                    .attr("width", barWidth - marginX)
+                    .style("cursor", "pointer")
+                    .attr("fill", (d, i) => {
+                        return (geneData[d]["event"] !== "NA" ? "#000": "#FFF");
+                    })
+                    .on('mouseover', (d, i) => {
+                        vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, geneId, geneData[d]["event"]);
+                    })
+                    .on('click', (d, i) => {
+                        vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
+                    });
+            }
             
             /**
              * Axes
              */
             // x axis container
             let xAxis = XContainer.append("g")
-                .attr("transform", "translate(0," + (vm.height + clinicalMarginY) + ")")
+                .attr("transform", "translate(0," + (vm.height + clinicalRowMargin) + ")")
                 .attr("class", "x_axis");
 
             // x axis ticks
@@ -405,7 +460,7 @@ export default {
             vm.svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - vm.margin.left + 10)
-                .attr("x", 0 - ((vm.height - totalClinicalHeight) / 2))
+                .attr("x", 0 - ((vm.height - clinicalHeight) / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text("Signature Exposure");  
@@ -415,6 +470,19 @@ export default {
                 var axisCV = vm.selectedClinicalVariables[var_i];
                 vm.svg.append("g")
                     .call(d3.axisLeft(clinicalY[axisCV.id]).tickSizeOuter(0))
+                    .attr("transform", "translate(0,0)")
+                    .selectAll("text")	
+                        .style("text-anchor", "end")
+                        .attr("dx", "-.4em")
+                        .attr("dy", ".1em")
+                        .attr("transform", "rotate(-25)");
+            }
+
+            // y axis for event vars
+            for(var_i = 0; var_i < eventGenes.length; var_i++) {
+                var geneId = eventGenes[var_i];
+                vm.svg.append("g")
+                    .call(d3.axisLeft(eventY[geneId]).tickSizeOuter(0))
                     .attr("transform", "translate(0,0)")
                     .selectAll("text")	
                         .style("text-anchor", "end")
