@@ -333,10 +333,8 @@ export default {
             dispatch.on("link-donor." + this.plotElemID, (donorID) => {
                 let i = sampleNames.indexOf(donorID);
                 if(i != -1) {
-                    console.log(i);
                     // get x position of donor col
                     let donorTranslate = gHeatmap.selectAll(".donor-col").filter(":nth-child(" + (i+1) + ")").attr("transform");
-                    console.log(donorTranslate);
                     // move donor highlight group
                     donorHighlight
                         .attr("transform", donorTranslate);

@@ -34,6 +34,19 @@ export default class API {
             });
     }
 
+    static fetchAutocompleteGene(partialGeneId) {
+        let url = API.api_base + "autocomplete-gene";
+
+        let body = {
+            "gene_id_partial": partialGeneId
+        };
+        
+        return fetch(url, { method: "POST", body: JSON.stringify(body) })
+            .then(function(response) {
+                return response.json();
+            });
+    }
+
     // Fetches with cacheing
     static fetchChromosomes() {
         let url = API.api_base + "chromosomes";
@@ -148,4 +161,6 @@ export default class API {
             dataOptions
         );
     }
+
+    
 }

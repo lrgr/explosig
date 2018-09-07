@@ -5,8 +5,29 @@
                 <button v-on:click="toggleInactivatingDropdown()">Inactivating Events</button>
             </div>
             <div id="inactivating-events-dropdown" v-show="showDropdown">
-                <input type="text" placeholder="Gene" name="gene_id" autocomplete="off" v-model="geneInput" />
-                <button v-on:click="toggleInactivatingDropdown()">x</button>
+                <div class="dropdown-input-wrapper">
+                    <input 
+                        type="text" 
+                        placeholder="Gene" 
+                        name="gene_id" 
+                        autocomplete="off" 
+                        v-model="geneInput"
+                        @keyup.up="geneAutocompleteDec"
+                        @keyup.down="geneAutocompleteInc"
+                        @keyup.enter="geneAutocompleteEnter"
+                     />
+                    <button v-on:click="toggleInactivatingDropdown()">x</button>
+                </div>
+                <div>
+                    <span 
+                        v-for="(geneId, index) in geneAutocompleteList" 
+                        :key="geneId" 
+                        :class="[index === geneAutocompleteIndex ? 'selected-gene' : '']"
+                        @click="geneAutocompleteSelect(geneId)"
+                    >
+                        {{ geneId }}
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -107,7 +128,9 @@ export default {
             sortByCategory: null,
             sortByList: [],
             showDropdown: false,
-            geneInput: ""
+            geneInput: "",
+            geneAutocompleteList: [],
+            geneAutocompleteIndex: null
         };
     },
     computed: {
@@ -128,13 +151,47 @@ export default {
         },
         geneInput: function(val) {
             if(val.length >= 2) {
-                console.log(val);
+                API.fetchAutocompleteGene(val)
+                    .then((geneArray) => {
+                        let oldListLength = this.geneAutocompleteList.length;
+                        this.geneAutocompleteList = geneArray;
+                        if(this.geneAutocompleteList.length === 0) {
+                            this.geneAutocompleteIndex = null;
+                        } else {
+                            if(this.geneAutocompleteIndex === null) {
+                                this.geneAutocompleteIndex = 0;
+                            } else if(this.geneAutocompleteList.length < oldListLength && this.geneAutocompleteIndex >= this.geneAutocompleteList.length) {
+                                this.geneAutocompleteIndex = this.geneAutocompleteList.length - 1;
+                            }
+                        }
+                    });
             }
-        }
+        },
     },
     methods: {
         toggleInactivatingDropdown() {
             this.showDropdown = !this.showDropdown;
+            // reset
+            this.geneAutocompleteList = [];
+            this.geneInput = "";
+        },
+        geneAutocompleteInc() {
+            if(this.geneAutocompleteIndex < (this.geneAutocompleteList.length - 1)) {
+                this.geneAutocompleteIndex += 1;
+            }
+        },
+        geneAutocompleteDec() {
+            if(this.geneAutocompleteIndex > 0) {
+                this.geneAutocompleteIndex -= 1;
+            }
+        },
+        geneAutocompleteEnter() {
+            console.log(this.geneAutocompleteList[this.geneAutocompleteIndex]);
+            this.toggleInactivatingDropdown();
+        },
+        geneAutocompleteSelect(geneId) {
+            console.log(geneId);
+            this.toggleInactivatingDropdown();
         },
         fileInput: function(files) {
             let vm = this;
@@ -522,13 +579,23 @@ export default {
     #inactivating-events-dropdown {
         border-left: 1px solid gray;
         border-bottom: 1px solid gray;
-        padding: 0.5em;
+        .dropdown-input-wrapper {
+            padding: 0.5em;
+        }
+        div > span {
+            display: block;
+            padding: 0.5em;
+            border-top: 1px solid #ddd;
+            cursor: pointer;
+            &.selected-gene {
+                background-color: #ddd;
+            }
+        }
         input {
             position: relative;
         }
         button {
-            padding: 2px 2px;
-            top: -1px;
+            padding: 2px 4px;
             position: relative;
         }
     }
