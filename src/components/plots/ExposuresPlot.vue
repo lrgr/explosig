@@ -35,13 +35,17 @@
             &nbsp; &nbsp;
             Sort by
             &nbsp;
-            <select v-model="sortByCategory">
+            <select v-model="sortByType">
                 <option value="exposures">Signature Exposure</option>
                 <option value="clinical">Clinical Variable</option>
             </select>
             &nbsp;
-            <select v-model="options.sortBy" v-if="sortByCategory !== null">
-                <option v-for="sortByOption in sortByList" :key="sortByOption" :value="sortByOption">{{ sortByOption }}</option>
+            <select v-model="sortByCategory" v-show="sortByType !== null && sortByType !== undefined && sortByCategoryList.length > 0">
+                <option v-for="category in sortByCategoryList" :key="category" :value="category">{{ category }}</option>
+            </select>
+            &nbsp;
+            <select v-model="sortBySubcategory" v-show="sortByCategory !== null && sortByCategory !== undefined && sortBySubcategoryList.length > 0">
+                <option v-for="subcategory in sortBySubcategoryList" :key="subcategory" :value="subcategory">{{ subcategory }}</option>
             </select>
 
             <input type="checkbox" id="enableXScroll" v-model="options.xScroll">
@@ -96,11 +100,14 @@ export default {
             },
             options: {
                 normalizeExposures: false,
-                sortBy: null,
                 xScroll: true
             },
+            sortByType: null,
+            sortByTypeList: ["exposures", "clinical"],
             sortByCategory: null,
-            sortByList: [],
+            sortByCategoryList: [],
+            sortBySubcategory: null,
+            sortBySubcategoryList: [],
             eventsData: {}
         };
     },
@@ -113,11 +120,27 @@ export default {
         }
     },
     watch: {
+        sortByType: function(val) {
+            if(val === "exposures") {
+                this.sortByCategoryList = MUT_TYPES;
+            } else if(val === "clinical") {
+                this.sortByCategoryList = this.selectedClinicalVariables.map((el) => el.name);
+            }
+            this.sortByCategory = null;
+            this.sortBySubcategory = null;
+            this.sortBySubcategoryList = [];
+        },
         sortByCategory: function(val) {
-            if(val == "exposures") {
-                this.sortByList = this.selectedSignatures;
-            } else if(val == "clinical") {
-                this.sortByList = this.selectedClinicalVariables.map((el) => el.name);
+            if(this.sortByType === "exposures") {
+                this.sortBySubcategoryList = this.selectedSignatureNames[val];
+                this.sortBySubcategory = null;
+            } else if(val !== null && val !== undefined) {
+                this.drawPlot();
+            }
+        },
+        sortBySubcategory: function(val) {
+            if(val !== null && val !== undefined) {
+                this.drawPlot();
             }
         }
     },
@@ -210,20 +233,19 @@ export default {
                 });
             }
             // sort data if necessary
-            if(vm.sortByCategory != null && vm.options.sortBy != null && vm.sortByList.indexOf(vm.options.sortBy) >= 0) {
-                if(vm.sortByCategory == "exposures") {
+            if(vm.sortByType !== null && vm.sortByCategory !== null && vm.sortByCategory !== undefined) {
+                if(vm.sortByType == "exposures" && vm.sortBySubcategory !== null && vm.sortBySubcategory !== undefined) {
                     normalizedData.sort(function(a, b) {
-                        // TODO: take into account mutType
                         return d3.descending(
-                            (a[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +a[vm.sortByCategory][vm.options.sortBy]), 
-                            (b[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +b[vm.sortByCategory][vm.options.sortBy])
+                            (a[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory] === undefined ? -1 : +a[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory]), 
+                            (b[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory] === undefined ? -1 : +b[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory])
                         );
                     });
-                } else if(vm.sortByCategory == "clinical") {
+                } else if(vm.sortByType == "clinical") {
                     normalizedData.sort( (a, b) => 
-                        vm.getClinicalVariable(vm.options.sortBy).comparator(
-                            a[vm.sortByCategory][vm.options.sortBy], 
-                            b[vm.sortByCategory][vm.options.sortBy]
+                        vm.getClinicalVariable(vm.sortByCategory).comparator(
+                            a[vm.sortByType][vm.sortByCategory], 
+                            b[vm.sortByType][vm.sortByCategory]
                         )
                     );
                 }
@@ -581,7 +603,7 @@ export default {
 }
 
 .bottom-options {
-    select:nth-of-type(2) {
+    select:last-of-type {
         margin-right: 15px;
     }
 }
