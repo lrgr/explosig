@@ -8,6 +8,9 @@ import plots from './modules/plots'
 import clinicalVariables from './modules/clinical-variables'
 import mode from './modules/mode'
 import bib from './modules/bib'
+import mutationCategories from './modules/mutation-categories'
+import samples from './modules/samples'
+
 
 Vue.use(Vuex)
 
@@ -21,6 +24,8 @@ export default new Vuex.Store({
     clinicalVariables,
     internal,
     mode,
-    bib
+    bib,
+    mutationCategories,
+    samples
   }
 })
