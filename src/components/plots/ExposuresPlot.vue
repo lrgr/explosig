@@ -87,7 +87,7 @@ export default {
                 top: 20,
                 right: 30,
                 bottom: 100,
-                left: 90
+                left: 105
             },
             tooltipInfo: {
                 donorID: "",
@@ -267,14 +267,14 @@ export default {
             let clinicalRowMargin = 2;
             let clinicalRowHeight = 10;
 
-            let signaturesRowMargin = 4;
+            let signaturesRowMargin = 10;
 
             let signaturesHeightMax = 300;
             let totalSignaturesHeight = 0;
             let signaturesHeight = {};
             for(let mutType of MUT_TYPES) {
                 let ratio = maxCountSum[mutType] / maxCountSumAcrossMutTypes;
-                signaturesHeight[mutType] = ratio * signaturesHeightMax;
+                signaturesHeight[mutType] = Math.max(ratio * signaturesHeightMax, 80);
                 totalSignaturesHeight += signaturesHeight[mutType] + signaturesRowMargin;
             }
             let clinicalHeight = vm.selectedClinicalVariables.length * (clinicalRowHeight + clinicalRowMargin);
@@ -499,6 +499,23 @@ export default {
             for(let mutType of MUT_TYPES) {
                 if(maxCountSum[mutType] > 0) {
                     yAxis.append("g").call(d3.axisLeft(y[mutType]));
+                }
+            }
+
+            let prevSignaturesHeight = signaturesRowMargin;
+            for(var_i = MUT_TYPES.length - 1; var_i >= 0; var_i--) {
+                let mutType = MUT_TYPES[var_i];
+                if(maxCountSum[mutType] > 0) {
+                    let currSignaturesCenter = prevSignaturesHeight + (signaturesHeight[mutType] / 2);
+                    yAxis.append("g").append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 0 - vm.margin.left + 30)
+                        .attr("x", 0 - (vm.height - clinicalHeight - currSignaturesCenter))
+                        .attr("dy", "1em")
+                        .style("text-anchor", "middle")
+                        .style("font-size", "14px")
+                        .text(mutType); 
+                    prevSignaturesHeight += signaturesHeight[mutType] + signaturesRowMargin;
                 }
             }
             
