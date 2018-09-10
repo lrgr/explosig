@@ -166,7 +166,6 @@ export default {
             };
             API.fetchExposures(params).then((data) => {
                 vm.plotData = data;
-                console.log(data);
 
                 vm.drawPlot();
                 vm.loading = false;
@@ -262,7 +261,11 @@ export default {
                 maxCountSumAcrossMutTypes = Math.max(maxCountSum[mutType], maxCountSumAcrossMutTypes);
             }
 
+
             let marginX = 0;
+            if(vm.options.xScroll) {
+                marginX = 2;
+            }
 
             let clinicalRowMargin = 2;
             let clinicalRowHeight = 10;
@@ -273,8 +276,13 @@ export default {
             let totalSignaturesHeight = 0;
             let signaturesHeight = {};
             for(let mutType of MUT_TYPES) {
+                
                 let ratio = maxCountSum[mutType] / maxCountSumAcrossMutTypes;
-                signaturesHeight[mutType] = Math.max(ratio * signaturesHeightMax, 80);
+                if(maxCountSum[mutType] > 0) {
+                    signaturesHeight[mutType] = Math.max(ratio * signaturesHeightMax, 80);
+                } else {
+                    signaturesHeight[mutType] = 0;
+                }
                 totalSignaturesHeight += signaturesHeight[mutType] + signaturesRowMargin;
             }
             let clinicalHeight = vm.selectedClinicalVariables.length * (clinicalRowHeight + clinicalRowMargin);
@@ -302,7 +310,6 @@ export default {
                 .range([0, plotWidth]);
             
             let y = {};
-            console.log(signaturesHeight);
             let currMaxY = 0;
             for(let mut_i = 0; mut_i < MUT_TYPES.length; mut_i++) {
                 let mutType = MUT_TYPES[mut_i];
@@ -483,7 +490,7 @@ export default {
                 .attr("transform",
                         "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 70) + ")")
                 .style("text-anchor", "middle")
-                .text("Donor");
+                .text("Sample");
 
             // y axis container
             let yAxis = vm.svg.append("g");

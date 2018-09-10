@@ -34,6 +34,7 @@ export default {
             'selectedDatasets',
             'selectedDatasetNames',
             'selectedSignatures',
+            'selectedSignaturesFlat',
             'selectedSignatureNames',
             'selectedClinicalVariables',
             'selectedChromosome',

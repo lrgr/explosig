@@ -5,7 +5,7 @@
         <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
-                    <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
+                    <th>Sample</th><td>{{ this.tooltipInfo.sampleID }}</td>
                 </tr>
                 <tr>
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
@@ -42,6 +42,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { dispatch } from './../../plot-link.js';
+import { MUT_TYPES } from './../../constants.js';
 
 // child components
 import Spinner from './../Spinner.vue';
@@ -58,11 +59,11 @@ export default {
             margin: {
                 top: 20,
                 right: 30,
-                bottom: 100,
+                bottom: 20,
                 left: 90
             },
             tooltipInfo: {
-                donorID: "",
+                sampleID: "",
                 projID: "",
                 type: "",
                 signature: "",
@@ -104,8 +105,8 @@ export default {
         showSubset: function() {
             return (this.clusteringSubset !== undefined && this.clusteringSubset !== null);
         },
-        tooltip: function(donorID, projID, signature, exposure, clinicalKey, clinicalValue) {
-            this.tooltipInfo.donorID = donorID || this.tooltipInfo.donorID;
+        tooltip: function(sampleID, projID, signature, exposure, clinicalKey, clinicalValue) {
+            this.tooltipInfo.sampleID = sampleID || this.tooltipInfo.sampleID;
             this.tooltipInfo.projID = projID || this.tooltipInfo.projID;
 
             if(signature != null || exposure != null) {
@@ -119,9 +120,9 @@ export default {
             }
 
             this.tooltipPosition.left = d3.event.x;
-            this.tooltipPosition.top = this.height + 30;
+            this.tooltipPosition.top = this.height - 30;
             
-            dispatch.call("link-donor", null, this.tooltipInfo.donorID);
+            dispatch.call("link-donor", null, this.tooltipInfo.sampleID);
             dispatch.call("link-project", null, this.tooltipInfo.projID);
             dispatch.call("link-signature", null, this.tooltipInfo.signature);
         },
@@ -151,7 +152,7 @@ export default {
             // Set x and y of clustered values for exposure/clinical values
             let leaves = root.descendants().filter((el) => (!el.children));
             for(let leaf of leaves) {
-                let exposureIndex = vm.exposuresData.findIndex((el) => (leaf.data.name === el.donor_id));
+                let exposureIndex = vm.exposuresData.findIndex((el) => (leaf.data.name === el.sample_id));
                 vm.exposuresData[exposureIndex].x = leaf.x;
                 vm.exposuresData[exposureIndex].y = leaf.y;
             }
@@ -160,27 +161,34 @@ export default {
             var filteredData;
             if(vm.showSubset()) {
                 filteredData = vm.exposuresData.filter((dataEl) => {
-                    return (leaves.findIndex((leafEl) => (dataEl.donor_id === leafEl.data.name)) > -1);
+                    return (leaves.findIndex((leafEl) => (dataEl.sample_id === leafEl.data.name)) > -1);
                 });
             } else {
                 filteredData = vm.exposuresData;
             }
 
             // normalize data
+            // TODO: extract this duplicated code - ClusterPlot, ExposuresPlot, etc...
             var normalizedData = filteredData;
             normalizedData = normalizedData.map((d) => {
                 // deep copy of exposures objects
                 d = Object.assign({}, d);
                 d["exposures"] = Object.assign({}, d["exposures"]);
 
-                let dMax = d3.sum(Object.values(d["exposures"]));
-                Object.keys(d["exposures"]).map((sigName) => {
-                    d["exposures"][sigName] = d["exposures"][sigName] / parseFloat(dMax);
-                });
+                for(let mutType of MUT_TYPES) {
+                    d["exposures"][mutType] = Object.assign({}, d["exposures"][mutType]);
+                    let dMax = d3.sum(Object.values(d["exposures"][mutType]));
+                    if(dMax > 0) {
+                        Object.keys(d["exposures"][mutType]).map((sigName) => {
+                            d["exposures"][mutType][sigName] = d["exposures"][mutType][sigName] / parseFloat(dMax);
+                        });
+                    }
+                }
                 return d;
             });
+            
 
-            let sampleNames = normalizedData.map((el) => el.donor_id);
+            let sampleNames = normalizedData.map((el) => el.sample_id);
 
 
             // create svg elements
@@ -265,9 +273,20 @@ export default {
             let gHeatmap = vm.svg.append("g").attr("transform", "translate(0,0)");
 
             let heatmapColWidth = vm.width / normalizedData.length / 2;
-            let signaturesY = d3.scaleBand()
-                .domain(vm.selectedSignatures)
-                .range([0, (vm.height / 2)]);
+
+            let numSignaturesTotal = vm.selectedSignaturesFlat.length;
+            let signaturesSpaceHeight = 2 * vm.height / 3;
+
+            let signaturesY = {};
+            let signaturesHeightTotal = 0;
+            for(let mutType of MUT_TYPES) {
+                let numSignatures = vm.selectedSignatureNames[mutType].length;
+                let signaturesHeight = (numSignatures / numSignaturesTotal) * signaturesSpaceHeight;
+                signaturesY[mutType] = d3.scaleBand()
+                    .domain(vm.selectedSignatureNames[mutType])
+                    .range([signaturesHeightTotal, signaturesHeightTotal + signaturesHeight]);
+                signaturesHeightTotal += signaturesHeight;
+            }
 
 
             let donorCols = gHeatmap.selectAll(".donor-col")
@@ -276,32 +295,37 @@ export default {
                 .attr("class", "donor-col")
                 .attr("transform", (d) => "translate(" + d.x + "," + d.y + ")")
                 .on("mouseover", (d) => {
-                    vm.tooltip(d.donor_id, d.proj_id, null, null, null, null);
+                    vm.tooltip(d.sample_id, d.proj_id, null, null, null, null);
                 })
                 .on("click", (d) => {
-                    vm.enterSingleDonorMode(d.donor_id, d.proj_id);
+                    vm.enterSingleDonorMode(d.sample_id, d.proj_id);
                 });
             
-            donorCols.selectAll(".signature-cell")
-                    .data((d) => d3.entries(d.exposures))
-                    .enter().append("rect")
-                        .attr("class", "signature-cell")
-                        .attr("width", heatmapColWidth)
-                        .attr("height", signaturesY.bandwidth())
-                        .attr("x", -(heatmapColWidth / 2))
-                        .attr("y", (d) => signaturesY(d.key))
-                        .attr("fill", (d) => vm.$store.getters.signatureColor(d.key) )
-                        .attr("fill-opacity", (d) => d.value)
-                        .style("cursor", "pointer")
-                        .on("mouseover", (d) => {
-                            vm.tooltip(null, null, d.key, d.value, null, null);
-                        });
+            for(let mutType of MUT_TYPES) {
+                donorCols.append("g").selectAll(".signature-cell")
+                        .data((d) => d3.entries(d.exposures[mutType]))
+                        .enter().append("rect")
+                            .attr("class", "signature-cell")
+                            .attr("width", heatmapColWidth)
+                            .attr("height", signaturesY[mutType].bandwidth())
+                            .attr("x", -(heatmapColWidth / 2))
+                            .attr("y", (d) => signaturesY[mutType](d.key))
+                            .attr("fill", (d) => vm.$store.getters.signatureColor(d.key, mutType) )
+                            .attr("fill-opacity", (d) => d.value)
+                            .style("cursor", "pointer")
+                            .on("mouseover", (d) => {
+                                vm.tooltip(null, null, d.key, d.value, null, null);
+                            });
+            }
             
             // y Axis for signature names
             let yAxis = vm.svg.append("g")
                 .attr("transform", "translate(0," + normalizedData[0].y + ")");
             
-            yAxis.call(d3.axisLeft(signaturesY).tickSizeOuter(0));
+            for(let mutType of MUT_TYPES) {
+                yAxis.append("g")
+                    .call(d3.axisLeft(signaturesY[mutType]).tickSizeOuter(0));
+            }
             
             /**
              * Dispatch indicators
