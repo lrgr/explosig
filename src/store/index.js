@@ -22,7 +22,6 @@ export default new Vuex.Store({
     datasets,
     plots,
     clinicalVariables,
-    internal,
     mode,
     bib,
     mutationCategories,

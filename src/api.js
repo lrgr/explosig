@@ -162,8 +162,8 @@ export default class API {
         );
     }
 
-    static fetchSingleDonorExposures(dataOptions) {
-        let url = API.api_base + "exposures-single-donor";
+    static fetchSingleSampleExposures(dataOptions) {
+        let url = API.api_base + "exposures-single-sample";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -192,8 +192,8 @@ export default class API {
         );
     }
 
-    static fetchSingleDonorGenomeSignatureBins(dataOptions) {
-        let url = API.api_base + "signature-genome-bins-single-donor";
+    static fetchSingleSampleGenomeSignatureBins(dataOptions) {
+        let url = API.api_base + "signature-genome-bins-single-sample";
         dataOptions['regionWidth'] = 5000000;
 
         return API.request(

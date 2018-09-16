@@ -82,7 +82,7 @@ export default {
                 "sample_id": vm.plotOptions.donor_id,
                 "proj_id": vm.plotOptions.proj_id
             };
-            API.fetchSingleDonorGenomeSignatureBins(params).then(function (data) {
+            API.fetchSingleSampleGenomeSignatureBins(params).then(function (data) {
                 vm.plotData = data;
 
                 vm.drawPlot();

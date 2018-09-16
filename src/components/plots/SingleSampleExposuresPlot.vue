@@ -25,7 +25,7 @@
 
         <div class="plot-info" v-if="showInfo">
             <h3>Info</h3>
-            <p>This plot displays exposures to selected signatures for the selected donor, along with clinical data such as alcohol and tobacco usage.</p>
+            <p>This plot displays exposures to selected signatures for the selected sample, along with clinical data such as alcohol and tobacco usage for the donor.</p>
         </div>
     </div>
 </template>
@@ -35,12 +35,13 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { dispatch } from './../../plot-link.js';
+import { MUT_TYPES } from './../../constants.js';
 
 // child components
 import Spinner from './../Spinner.vue';
 
 export default {
-    name: 'SingleDonorExposuresPlot',
+    name: 'SingleSampleExposuresPlot',
     mixins: [plotMixin],
     props: [],
     components: {
@@ -96,7 +97,7 @@ export default {
                 "sample_id": vm.plotOptions.donor_id,
                 "proj_id": vm.plotOptions.proj_id
             };
-            API.fetchSingleDonorExposures(params).then((data) => {
+            API.fetchSingleSampleExposures(params).then((data) => {
                 vm.plotData = data[0];
 
                 vm.drawPlot();
@@ -135,16 +136,37 @@ export default {
                 return;
             }
 
-            let maxExposure = d3.max(Object.values(vm.plotData.exposures));
-            let halfWidth = vm.width / 3;
+            let maxExposure = {};
+            for(let mutType of MUT_TYPES) {
+                maxExposure[mutType] = d3.max(Object.values(vm.plotData.exposures[mutType])) || 1;
+            }
 
-            let y = d3.scaleLinear()
-                .domain([0, maxExposure])
-                .range([vm.height, 0]);
+            let halfWidth = vm.width / 2;
 
-            let x = d3.scaleBand()
-                .domain(vm.selectedSignatures)
-                .range([0, halfWidth]);
+
+            let signaturesWidthMargin = 30;
+            let totalSignatures = vm.selectedSignaturesFlat.length;
+            let signaturesWidth = {};
+            for(let mutType of MUT_TYPES) {
+                signaturesWidth[mutType] = vm.selectedSignatureNames[mutType].length / totalSignatures * (halfWidth - signaturesWidthMargin * MUT_TYPES.length);
+            }
+
+
+            let y = {};
+            for(let mutType of MUT_TYPES) {
+                y[mutType] = d3.scaleLinear()
+                    .domain([0, maxExposure[mutType]])
+                    .range([vm.height, 0]);
+            }
+
+            let x = {};
+            let currMaxWidth = 0;
+            for(let mutType of MUT_TYPES) {
+                x[mutType] = d3.scaleBand()
+                    .domain(vm.selectedSignatureNames[mutType])
+                    .range([currMaxWidth, currMaxWidth + signaturesWidth[mutType]]);
+                currMaxWidth += signaturesWidth[mutType] + signaturesWidthMargin;
+            }
             
             d3.select(this.plotSelector).select("svg").remove();
             
@@ -156,31 +178,59 @@ export default {
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
                 .on('mouseleave', vm.tooltipDestroy);
-                        
-            vm.svg.append("g")
-                .selectAll(".exposure-bar")
-                .data(vm.selectedSignatures)
-            .enter()
-                .append("rect")
-                .attr("class", "exposure-bar")
-                .attr("width", x.bandwidth() - 2)
-                .attr("height", (d) => (vm.height - y(vm.plotData.exposures[d])))
-                .attr("x", (d) => x(d) + 1)
-                .attr("y", (d) => y(vm.plotData.exposures[d]))
-                .attr("fill", (d) => vm.$store.getters.signatureColor(d))
-                .on('mouseover', (d) => {
-                    vm.tooltip(d, vm.plotData.exposures[d], null, null); 
-                });
-            
-            // x axis
-            vm.svg.append("g")
-                .attr("transform", "translate(0," + (vm.height) + ")")
-                .call(d3.axisBottom(x))
-                    .selectAll("text")	
-                        .style("text-anchor", "end")
-                        .attr("x", "-.8em")
-                        .attr("y", ".15em")
-                        .attr("transform", "rotate(-65)");
+
+            for(let mutType of MUT_TYPES) {
+                if(vm.selectedSignatureNames[mutType].length === 0) {
+                    continue
+                }
+                vm.svg.append("g")
+                    .selectAll(".exposure-bar")
+                    .data(vm.selectedSignatureNames[mutType])
+                .enter()
+                    .append("rect")
+                    .attr("class", "exposure-bar")
+                    .attr("width", x[mutType].bandwidth() - 2)
+                    .attr("height", (d) => (vm.height - y[mutType](vm.plotData.exposures[mutType][d])))
+                    .attr("x", (d) => x[mutType](d) + 1)
+                    .attr("y", (d) => y[mutType](vm.plotData.exposures[mutType][d]))
+                    .attr("fill", (d) => vm.$store.getters.signatureColor(d, mutType))
+                    .on('mouseover', (d) => {
+                        vm.tooltip(d, vm.plotData.exposures[mutType][d], null, null); 
+                    });
+                
+                // x axis
+                vm.svg.append("g")
+                    .attr("transform", "translate(0," + (vm.height) + ")")
+                    .call(d3.axisBottom(x[mutType]).tickSizeOuter(0))
+                        .selectAll("text")	
+                            .style("text-anchor", "end")
+                            .attr("x", "-.8em")
+                            .attr("y", ".15em")
+                            .attr("transform", "rotate(-65)");
+                
+                // text label for the x axis
+                vm.svg.append("text")
+                    .attr("transform",
+                            "translate(" + ((x[mutType].range()[0] + x[mutType].range()[1])/2) + " ," + (vm.height + vm.margin.top + 50) + ")")
+                    .style("text-anchor", "middle")
+                    .text(mutType);
+                
+                // y axis
+                vm.svg.append("g")
+                    .attr("transform", "translate(" + x[mutType].range()[0] + ",0)")
+                    .call(d3.axisLeft(y[mutType]));
+                
+             
+            }
+
+               // text label for the y axis
+                vm.svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0 - vm.margin.left + 10)
+                    .attr("x", 0 - (vm.height / 2))
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Signature Exposures");
             
             // text label for the x axis
             vm.svg.append("text")
@@ -188,19 +238,6 @@ export default {
                         "translate(" + (halfWidth/2) + " ," + (vm.height + vm.margin.top + 70) + ")")
                 .style("text-anchor", "middle")
                 .text("Signatures");
-            
-            // y axis
-            vm.svg.append("g")
-                .call(d3.axisLeft(y));
-            
-            // text label for the y axis
-            vm.svg.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - vm.margin.left + 10)
-                .attr("x", 0 - (vm.height / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .text("Signature Exposures");
             
             // clinical variables
             let clinicalSize = 20;
@@ -235,8 +272,8 @@ export default {
             
             // text label for clinical variables
             vm.svg.append("text")
-                .attr("transform", "translate(" + (halfWidth + (halfWidth/2) + vm.margin.left) + "," + (clinicalMarginTop/2) + ")")
-                .style("text-anchor", "middle")
+                .attr("transform", "translate(" + (halfWidth + vm.margin.left) + "," + (clinicalMarginTop/2) + ")")
+                .style("text-anchor", "start")
                 .text("Clinical Variables");
             
         }
