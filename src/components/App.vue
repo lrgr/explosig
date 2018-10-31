@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <NavBar/>
+    <Explorer/>
   </div>
 </template>
 
@@ -11,11 +12,13 @@ import API from './../api.js';
 
 // child components
 import NavBar from './NavBar.vue';
+import Explorer from './Explorer.vue';
 
 export default {
   name: 'app',
   components: {
-    NavBar
+    NavBar,
+    Explorer
   },
   mounted: function() {
     let vm = this;

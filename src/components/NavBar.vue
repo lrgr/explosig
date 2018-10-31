@@ -3,8 +3,8 @@
         <div class="navbar">
             <span class="title"><a href="/">iMuSE</a></span>
             <div class="right-button-group">
-                <span class="button button-inverse" v-on:click="showDataPicker('signatures')">Signatures</span>
-                <span class="button button-inverse" v-on:click="showDataPicker('samples')">Samples</span>
+                <span class="button button-inverse" @click="showDataPicker('signatures')">Signatures</span>
+                <span class="button button-inverse" @click="showDataPicker('samples')">Samples</span>
             </div>
         </div>
         
@@ -21,7 +21,7 @@
 <script>
 
 // child components
-import DataPicker from './DataPicker.vue'
+import DataPicker from './DataPicker.vue';
 
 export default {
   name: 'NavBar',
