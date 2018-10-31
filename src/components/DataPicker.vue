@@ -3,7 +3,7 @@
         <SignaturesPicker v-show="signaturesVisible" @choose="updateSignatures" />
         <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
         <div class="actions-bar">
-            <span class="button button-secondary" v-on:click="emitUpdate()">Update</span>
+            <span class="button button-secondary" @click="$emit('update')">Update</span>
             <span class="button" v-on:click="setDataPicker('samples')" v-bind:class="{ 'button-selected': this.samplesVisible }">Samples</span>
             <span class="button" v-on:click="setDataPicker('signatures')"  v-bind:class="{ 'button-selected': this.signaturesVisible }">Signatures</span>
         </div>
@@ -36,11 +36,14 @@ export default {
       }
   },
   methods: {
-      setDataPicker: function(selection) {
+      setDataPicker(selection) {
           this.innerDataPicker = selection;
       },
-      emitUpdate: function() {
-        
+      updateSignatures() {
+
+      },
+      updateSamples() {
+          
       }
   }
 }

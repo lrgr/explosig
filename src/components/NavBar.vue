@@ -10,16 +10,15 @@
         
         <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
-                <span class="modal-close" v-on:click="closeModal()">Close</span>
-                <DataPicker ref="dataPicker"></DataPicker>
+                <span class="modal-close" @click="closeModal">Close</span>
+                <DataPicker ref="dataPicker" @update="closeModal"></DataPicker>
             </div>
         </div>
-        <div class="modal-background" v-show="modalVisible" v-on:click="closeModal()"></div>
+        <div class="modal-background" v-show="modalVisible" @click="closeModal"></div>
   </div>
 </template>
 
 <script>
-import { DataOptionsBus } from './../buses.js';
 
 // child components
 import DataPicker from './DataPicker.vue'
@@ -34,12 +33,6 @@ export default {
   },
   components: {
       DataPicker
-  },
-  mounted: function() {
-      var vm = this;
-      DataOptionsBus.$on('updateDataOptions', function() {
-          vm.closeModal();
-      });
   },
   methods: {
       showDataPicker: function(selection) {

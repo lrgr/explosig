@@ -36,7 +36,7 @@ export default {
       // check for data in hash
       var paramStr = window.location.hash.substring(1) // remove the initial "#"
       if(paramStr.length > 0 && paramStr.substring(0, 3) != "bib") {
-        // Load history stack from param
+        // TODO: Load history stack from param
       }
     }
   }
