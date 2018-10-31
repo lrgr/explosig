@@ -1,7 +1,12 @@
 <template>
     <div>
         <div class="data-picker-main" :style="{ 'height': (windowHeight*0.8 - 64) + 'px' }">
-            <SignaturesPicker v-show="signaturesVisible" @choose="updateSignatures" />
+            <SignaturesPicker 
+                v-show="signaturesVisible" 
+                @choose-sbs="updateSignaturesSbs"
+                @choose-dbs="updateSignaturesDbs"
+                @choose-indel="updateSignaturesIndel"
+             />
             <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
         </div>
         <div class="actions-bar">
@@ -46,7 +51,9 @@ export default {
   data: function() {
       return {
           innerDataPicker: null,
-          chosenSignatures: [],
+          chosenSignaturesSbs: [],
+          chosenSignaturesDbs: [],
+          chosenSignaturesIndel: [],
           chosenSamples: []
       };
   },
@@ -63,8 +70,14 @@ export default {
     setDataPicker(selection) {
         this.innerDataPicker = selection;
     },
-    updateSignatures(chosenSignatures) {
-        console.log(chosenSignatures)
+    updateSignaturesSbs(chosenSignatures) {
+        this.chosenSignaturesSbs = chosenSignatures;
+    },
+    updateSignaturesDbs(chosenSignatures) {
+        this.chosenSignaturesDbs = chosenSignatures;
+    },
+    updateSignaturesIndel(chosenSignatures) {
+        this.chosenSignaturesIndel = chosenSignatures;
     },
     updateSamples(chosenSamples) {
         this.chosenSamples = chosenSamples;

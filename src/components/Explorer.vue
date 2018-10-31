@@ -27,15 +27,15 @@ export default {
         overflow-y: scroll;
     }
     .explorer-main {
-        flex-grow: 2;
+        flex-grow: 5;
         background-color: lightblue;
     }
     .explorer-overview {
-        flex-grow: 1;
+        flex-grow: 3;
         background-color: lightcoral;
     }
     .explorer-legend {
-        flex-grow: 1;
+        flex-grow: 2;
         background-color: bisque;
     }
 }
