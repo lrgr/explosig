@@ -1,26 +1,30 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import chromosomes from './modules/chromosomes'
-import signatures from './modules/signatures'
+
 import internal from './modules/internal'
-import datasets from './modules/datasets'
-import plots from './modules/plots'
-import clinicalVariables from './modules/clinical-variables'
-import mode from './modules/mode'
 import bib from './modules/bib'
+import history from './modules/history'
+
+import signaturesSbs from './modules/signatures-sbs'
+import signaturesDbs from './modules/signatures-dbs'
+import signaturesIndel from './modules/signatures-indel'
+import samples from './modules/samples'
+import clinicalVariables from './modules/clinical-variables'
+import genes from './modules/genes'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    chromosomes,
-    signatures,
     internal,
-    datasets,
-    plots,
+    bib,
+    history,
+
+    signaturesSbs,
+    signaturesDbs,
+    signaturesIndel,
+    samples,
     clinicalVariables,
-    internal,
-    mode,
-    bib
+    genes
   }
 })
