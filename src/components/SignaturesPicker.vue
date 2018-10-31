@@ -1,6 +1,6 @@
 <template>
     <div>
-       Signatures
+       <h3>Signatures</h3>
     </div>
 </template>
 

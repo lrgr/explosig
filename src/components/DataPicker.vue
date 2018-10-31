@@ -1,24 +1,47 @@
 <template>
     <div>
-        <SignaturesPicker v-show="signaturesVisible" @choose="updateSignatures" />
-        <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
+        <div class="data-picker-main" :style="{ 'height': (windowHeight*0.8 - 64) + 'px' }">
+            <SignaturesPicker v-show="signaturesVisible" @choose="updateSignatures" />
+            <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
+        </div>
         <div class="actions-bar">
-            <span class="button button-secondary" @click="$emit('update')">Update</span>
-            <span class="button" v-on:click="setDataPicker('samples')" v-bind:class="{ 'button-selected': this.samplesVisible }">Samples</span>
-            <span class="button" v-on:click="setDataPicker('signatures')"  v-bind:class="{ 'button-selected': this.signaturesVisible }">Signatures</span>
+            <VButton 
+                @click="emitUpdate"
+            >
+                Update
+            </VButton>
+            <VButton 
+                @click="setDataPicker('samples')" 
+                :btn-secondary="true" 
+                :btn-selected="this.samplesVisible"
+            >
+                Samples
+            </VButton>
+            <VButton 
+                @click="setDataPicker('signatures')" 
+                :btn-secondary="true" 
+                :btn-selected="this.signaturesVisible"
+            >
+                Signatures
+            </VButton>
+            <div class="clearfix"></div>
         </div>
     </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 import SignaturesPicker from './SignaturesPicker.vue';
 import SamplesPicker from './SamplesPicker.vue';
+import VButton from './VButton.vue';
 
 export default {
   name: 'DataPicker',
   components: {
     SignaturesPicker,
-    SamplesPicker
+    SamplesPicker,
+    VButton
   },
   data: function() {
       return {
@@ -28,23 +51,28 @@ export default {
       };
   },
   computed: {
-      samplesVisible: function() {
-          return this.innerDataPicker == 'samples';
-      },
-      signaturesVisible: function() {
-          return this.innerDataPicker == 'signatures';
-      }
+    samplesVisible: function() {
+        return this.innerDataPicker == 'samples';
+    },
+    signaturesVisible: function() {
+        return this.innerDataPicker == 'signatures';
+    },
+    ...mapGetters(['windowHeight'])
   },
   methods: {
-      setDataPicker(selection) {
-          this.innerDataPicker = selection;
-      },
-      updateSignatures() {
-
-      },
-      updateSamples() {
-          
-      }
+    setDataPicker(selection) {
+        this.innerDataPicker = selection;
+    },
+    updateSignatures(chosenSignatures) {
+        console.log(chosenSignatures)
+    },
+    updateSamples(chosenSamples) {
+        this.chosenSamples = chosenSamples;
+    },
+    emitUpdate() {
+        // TODO: update samples/signatures in vuex store
+        this.$emit('update');
+    }
   }
 }
 </script>
@@ -52,10 +80,13 @@ export default {
 <style scoped lang="scss">
 
 @import './../style/variables.scss';
-
+.data-picker-main {
+    padding: 0 1rem;
+    overflow-y: scroll;
+}
 .actions-bar {
     padding: 1rem;
-    .button {
+    .btn {
         float: right;
         margin: 0rem 0rem 0rem 1rem;
     }

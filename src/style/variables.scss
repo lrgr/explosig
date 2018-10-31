@@ -6,3 +6,9 @@ $color-gray: #648381;
 $color-purple: #575761;
 $color-yellow: #ffbf46;
 $color-white: #ffffff;
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
