@@ -1,11 +1,13 @@
 // initial state
 const state = {
-    selected: []
+    data: {}
 }
 
 // getters
 const getters = {
-    selectedSamples: state => state.selected
+    getData: (state) => (key) => {
+        return state.data[key];
+    }
 }
 
 // actions
@@ -15,8 +17,8 @@ const actions = {
 
 // mutations
 const mutations = {
-    setSelectedSamples (state, selectedSamples) {
-        state.selected = selectedSamples.slice();
+    setData(state, { key, datum }) {
+        state.data[key] = datum;
     }
 }
 

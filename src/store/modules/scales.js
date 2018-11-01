@@ -1,11 +1,13 @@
 // initial state
 const state = {
-    selected: []
+    scales: {}
 }
 
 // getters
 const getters = {
-    selectedSamples: state => state.selected
+    getScale: (state) => (key) => {
+        return state.scales[key];
+    }
 }
 
 // actions
@@ -15,8 +17,8 @@ const actions = {
 
 // mutations
 const mutations = {
-    setSelectedSamples (state, selectedSamples) {
-        state.selected = selectedSamples.slice();
+    setScale(state, { key, scale }) {
+        state.scales[key] = scale;
     }
 }
 

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 import SignaturesPicker from './SignaturesPicker.vue';
 import SamplesPicker from './SamplesPicker.vue';
@@ -83,15 +83,25 @@ export default {
         this.chosenSamples = chosenSamples;
     },
     emitUpdate() {
-        // TODO: update samples/signatures in vuex store
+        // Update samples/signatures in store
+        this.setSelectedSamples(this.chosenSamples);
+        this.setSelectedSignaturesSbs(this.chosenSignaturesSbs);
+        this.setSelectedSignaturesDbs(this.chosenSignaturesDbs);
+        this.setSelectedSignaturesIndel(this.chosenSignaturesIndel);
+        // Notify parent to close modal
         this.$emit('update');
-    }
+    },
+    ...mapMutations([
+        'setSelectedSamples',
+        'setSelectedSignaturesSbs',
+        'setSelectedSignaturesDbs',
+        'setSelectedSignaturesIndel',
+    ])
   }
 }
 </script>
 
 <style scoped lang="scss">
-
 @import './../style/variables.scss';
 .data-picker-main {
     padding: 0 1rem;

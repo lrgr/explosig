@@ -4,6 +4,9 @@ import Vuex from 'vuex'
 import internal from './modules/internal'
 import bib from './modules/bib'
 import history from './modules/history'
+import data from './modules/data'
+import scales from './modules/scales'
+
 
 import signaturesSbs from './modules/signatures-sbs'
 import signaturesDbs from './modules/signatures-dbs'
@@ -19,7 +22,8 @@ export default new Vuex.Store({
     internal,
     bib,
     history,
-
+    data,
+    scales,
     signaturesSbs,
     signaturesDbs,
     signaturesIndel,
