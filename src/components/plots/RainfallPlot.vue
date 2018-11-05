@@ -54,7 +54,7 @@ import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { LegendListBus } from './../../buses.js';
-import { CHROMOSOMES, CHROMOSOME_LENGTHS } from './../../constants.js';
+import { CHROMOSOMES, CHROMOSOME_LENGTHS, MUTATION_CATEGORIES_SBS } from './../../constants.js';
 import { dispatch } from './../../plot-link.js';
 
 // child components
@@ -251,25 +251,25 @@ export default {
                 .attr('r', 3)
                 .style('fill', function(d){
                     // map hashed value to value between 0 and 1
-                    return d3.interpolateRainbow(+d.cat_index / 96); 
+                    return d3.interpolateRainbow(MUTATION_CATEGORIES_SBS[d.cat] / 96); 
                 })
                 .on("mouseover", function(d) {
                     vm.tooltip(d.cat, d.pos, d.mut_dist, d.chr);
                 });
             
             // TODO: move this out of component
-            /*var legendInfo = {
+            var legendInfo = {
                 "meta": {
                     "title": "Mutation Categories"
                 },
                 "data": []
             };
 
-            let catNames = Object.keys(CATEGORY_INDEX['SBS_96']);
+            let catNames = Object.keys(MUTATION_CATEGORIES_SBS);
             for(var i = 0; i < catNames.length; i++) {
-                legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(CATEGORY_INDEX['SBS_96'][catNames[i]] / 96) });
+                legendInfo["data"].push({ "name":catNames[i], "color": d3.interpolateRainbow(MUTATION_CATEGORIES_SBS[catNames[i]] / 96) });
             }
-            LegendListBus.$emit("contexts", legendInfo); */
+            LegendListBus.$emit("contexts", legendInfo); 
             
             // x Axis
             var xAxis;

@@ -1,5 +1,5 @@
 <template>
-    <div class="legend-wrapper">
+    <div class="legend-wrapper-inner">
         <div class="legend" v-if="legendInfo != null && legendInfo.data.length > 0">
             <span class="legend-key">{{ legendInfo.meta.title }}</span>
             <div v-if="legendInfo.meta.type === undefined || legendInfo.meta.type === abstractScale._type.DISCRETE">
@@ -54,7 +54,7 @@ export default {
 <style scoped lang="scss">
 
 @import './../style/variables.scss';
-.legend-wrapper {
+.legend-wrapper-inner {
     width: 100%;
     display: block;
     position: relative;

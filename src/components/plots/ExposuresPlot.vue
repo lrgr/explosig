@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div class="top-options">
+       <!-- <div class="top-options">
             <GeneAutocomplete :submitGene="submitGene"/>
-        </div>
+        </div> -->
 
         <div :id="this.plotElemID" class="plot-component" :style="{'height': outerHeight + 'px'}"></div>
 

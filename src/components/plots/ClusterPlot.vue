@@ -140,7 +140,8 @@ export default {
 
             // Prepare data
             let tree = d3.cluster()
-                .size([vm.width, vm.height / 3]);
+                .size([vm.width, vm.height / 3])
+                .separation(() => 1);
             var root;
             if(vm.showSubset()) {
                 root = vm.clusteringSubset;
@@ -272,7 +273,7 @@ export default {
             // Add heatmap below tree
             let gHeatmap = vm.svg.append("g").attr("transform", "translate(0,0)");
 
-            let heatmapColWidth = vm.width / normalizedData.length / 2;
+            let heatmapColWidth = vm.width / normalizedData.length;
 
             let numSignaturesTotal = vm.selectedSignaturesFlat.length;
             let signaturesSpaceHeight = 2 * vm.height / 3;

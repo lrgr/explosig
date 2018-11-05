@@ -8,12 +8,12 @@ const state = {
         'type': 'RainfallPlot',
         'title': 'Rainfall',
         'id': 'single-donor-rainfall-plot'
-    },
+    }/*,
     {
         'type': 'SignatureGenomeBinsPlot',
         'title': 'Manhattan Plot with Signatures',
         'id': 'single-donor-manhattan-signatures-plot'
-    }],
+    }*/],
     allDonorsMode: [{
         'type': 'ExposuresPlot',
         'title': 'Signature Exposures with Clinical Data',
