@@ -3,14 +3,14 @@ const state = {
     mode: "all-donors",
     title: "All Donors",
     allModes: [
-        {
+        /*{
             mode: "signatures",
             title: "Signatures"
         },
         {
             mode: "overview",
             title: "Overview"
-        }, {
+        },*/ {
             mode: "all-donors",
             title: "All Donors"
         }, {

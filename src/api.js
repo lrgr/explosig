@@ -1,5 +1,11 @@
 import * as d3 from 'd3';
 import { getHashCode } from './helpers';
+import { MUT_TYPES } from './constants';
+
+import Signature from './classes/Signature';
+import Project from './classes/Project';
+import SignatureGroup from './classes/SignatureGroup';
+import CancerType from './classes/CancerType';
 
 const globalPlotData = {};
 
@@ -31,22 +37,80 @@ export default class API {
         return fetch(url, { method: "POST" })
             .then(function(response) {
                 return response.json();
+            })
+            .then(function(allData) {
+                let signatures = {};
+                for(let mutType of MUT_TYPES) {
+                    signatures[mutType] = allData['sigs'][mutType].map((sigData) => {
+                        return new Signature(
+                            sigData['name'],
+                            sigData['description'],
+                            sigData['index'],
+                            sigData['publication'],
+                            mutType
+                        );
+                    });
+                }
+                let projects = {};
+                for(var projID of Object.keys(allData['projects'])) {
+                    let projData = allData['projects'][projID];
+                    projects[projID] = new Project(
+                        projID,
+                        projData['name'],
+                        projData['num_donors'],
+                        projData['source'],
+                        projData['has_clinical'],
+                        projData['has_extended'],
+                        projData['has_counts']
+                    );
+                }
+                let sigGroups = [];
+                for(let sigGroupData of allData['sigs_per_cancer_type']) {
+                    let sigGroup = new SignatureGroup(
+                        sigGroupData['id'], 
+                        sigGroupData['group']
+                    );
+                    for(let cancerTypeData of sigGroupData['cancer-types']) {
+                        let cancerType = new CancerType(
+                            cancerTypeData['id'], 
+                            cancerTypeData['name'],
+                            cancerTypeData['signatures']
+                        );
+                        sigGroup.addCancerType(cancerType);
+                    }
+                    sigGroups.push(sigGroup);
+                }
+                return {
+                    'sigs': signatures,
+                    'projects': projects,
+                    'sigs_per_cancer_type': sigGroups
+                };
+            });
+    }
+
+    static fetchAutocompleteGene(partialGeneId) {
+        let url = API.api_base + "autocomplete-gene";
+
+        let body = {
+            "gene_id_partial": partialGeneId
+        };
+        
+        return fetch(url, { method: "POST", body: JSON.stringify(body) })
+            .then(function(response) {
+                return response.json();
+            });
+    }
+
+    static fetchGeneEventTrack(dataOptions) {
+        let url = API.api_base + "genome-event-track";
+        
+        return fetch(url, { method: "POST", body: JSON.stringify(dataOptions) })
+            .then(function(response) {
+                return response.json();
             });
     }
 
     // Fetches with cacheing
-    static fetchChromosomes() {
-        let url = API.api_base + "chromosomes";
-
-        return API.request(
-            fetch(url, { method: "POST" })
-                .then(function(response) {
-                    return response.json();
-                }), 
-            url,
-            null
-        );
-    }
 
     static fetchKaryotype() {
         let url = API.api_base + "karyotype";
@@ -98,8 +162,8 @@ export default class API {
         );
     }
 
-    static fetchSingleDonorExposures(dataOptions) {
-        let url = API.api_base + "exposures-single-donor";
+    static fetchSingleSampleExposures(dataOptions) {
+        let url = API.api_base + "exposures-single-sample";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -128,8 +192,8 @@ export default class API {
         );
     }
 
-    static fetchSingleDonorGenomeSignatureBins(dataOptions) {
-        let url = API.api_base + "signature-genome-bins-single-donor";
+    static fetchSingleSampleGenomeSignatureBins(dataOptions) {
+        let url = API.api_base + "signature-genome-bins-single-sample";
         dataOptions['regionWidth'] = 5000000;
 
         return API.request(
@@ -148,4 +212,6 @@ export default class API {
             dataOptions
         );
     }
+
+    
 }

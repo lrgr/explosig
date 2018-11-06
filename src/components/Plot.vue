@@ -32,7 +32,7 @@ import SignatureGenomeBinsPlot from './plots/SignatureGenomeBinsPlot.vue'
 import KataegisPlot from './plots/KataegisPlot.vue'
 import ExposuresPlot from './plots/ExposuresPlot.vue'
 import RainfallPlot from './plots/RainfallPlot.vue'
-import SingleDonorExposuresPlot from './plots/SingleDonorExposuresPlot.vue'
+import SingleSampleExposuresPlot from './plots/SingleSampleExposuresPlot.vue'
 import SignaturePlot from './plots/SignaturePlot.vue'
 import SamplesWithSignaturesPlot from './plots/SamplesWithSignaturesPlot.vue'
 import ClusterPlot from './plots/ClusterPlot.vue'
@@ -106,7 +106,7 @@ export default {
       KataegisPlot,
       ExposuresPlot,
       RainfallPlot,
-      SingleDonorExposuresPlot,
+      SingleSampleExposuresPlot,
       SignaturePlot,
       SamplesWithSignaturesPlot,
       ClusterPlot

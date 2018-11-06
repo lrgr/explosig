@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import AbstractBinaryCV from './AbstractBinaryCV';
+import AbstractBinaryScale from '../AbstractBinaryScale';
 
-export default class AlcoholCV extends AbstractBinaryCV {
+export default class AlcoholCV extends AbstractBinaryScale {
     
     get id () {
         return "Alcohol Binary";

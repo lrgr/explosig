@@ -1,6 +1,6 @@
-import AbstractContinuousCV from './AbstractContinuousCV';
+import AbstractContinuousScale from '../AbstractContinuousScale';
 
-export default class AgeCV extends AbstractContinuousCV {
+export default class AgeCV extends AbstractContinuousScale {
     
     get id () {
         return "Diagnosis Age";

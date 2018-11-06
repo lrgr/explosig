@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 import { LegendListBus } from '../../../buses.js';
 
-export default class AbstractCV {
+export default class AbstractScale {
 
-    static type = Object.freeze({ DISCRETE:1, CONTINUOUS:2 });
+    static _type = Object.freeze({ DISCRETE:1, CONTINUOUS:2 });
     static unknownColor = "#E3E3E3";
     
     get id () {
@@ -36,7 +36,7 @@ export default class AbstractCV {
     }
 
     transform (domainValue) {
-        if(AbstractCV.isUnknown(domainValue)) {
+        if(AbstractScale.isUnknown(domainValue)) {
             return "Unknown";
         }
         return this.scale(domainValue);

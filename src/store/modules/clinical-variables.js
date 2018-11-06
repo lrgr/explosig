@@ -1,8 +1,8 @@
-import TobaccoCV from './clinical-variables/TobaccoCV';
-import AlcoholCV from './clinical-variables/AlcoholCV';
-import AgeCV from './clinical-variables/AgeCV';
-import SexCV from './clinical-variables/SexCV';
-import VitalStatusCV from './clinical-variables/VitalStatusCV';
+import TobaccoCV from './scales/clinical-variables/TobaccoCV';
+import AlcoholCV from './scales/clinical-variables/AlcoholCV';
+import AgeCV from './scales/clinical-variables/AgeCV';
+import SexCV from './scales/clinical-variables/SexCV';
+import VitalStatusCV from './scales/clinical-variables/VitalStatusCV';
 
 // initial state
 const state = {

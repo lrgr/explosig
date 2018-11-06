@@ -1,31 +1,31 @@
 // initial state
 const state = {
     singleDonorMode: [{
-        'type': 'SingleDonorExposuresPlot',
+        'type': 'SingleSampleExposuresPlot',
         'title': 'Signature Exposures with Clinical Data',
-        'id': 'single-donor-exposures-plot'
+        'id': 'single-sample-exposures-plot'
     }, {
         'type': 'RainfallPlot',
         'title': 'Rainfall',
         'id': 'single-donor-rainfall-plot'
-    },
+    }/*,
     {
         'type': 'SignatureGenomeBinsPlot',
         'title': 'Manhattan Plot with Signatures',
         'id': 'single-donor-manhattan-signatures-plot'
-    }],
+    }*/],
     allDonorsMode: [{
         'type': 'ExposuresPlot',
         'title': 'Signature Exposures with Clinical Data',
         'id': 'all-donors-exposures-plot'
     }, {
-        'type': 'KataegisPlot',
-        'title': 'Kataegis',
-        'id': 'all-donors-kataegis-plot'
-    }, {
         'type': 'ClusterPlot',
         'title': 'Hierarchical Clustering',
         'id': 'all-donors-cluster-plot'
+    }, {
+        'type': 'KataegisPlot',
+        'title': 'Kataegis',
+        'id': 'all-donors-kataegis-plot'
     }],
     overviewMode: [
         {

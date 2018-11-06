@@ -24,7 +24,7 @@
 import * as d3 from 'd3';
 import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
-import { CHROMOSOMES } from './../../constants.js';
+import { CHROMOSOMES, CHROMOSOME_LENGTHS } from './../../constants.js';
 import { dispatch } from './../../plot-link.js';
  
 // child components
@@ -77,12 +77,12 @@ export default {
             var vm = this;
             vm.loading = true;
             let params = {
-                "sources": vm.selectedDatasets,
-                "signatures": vm.selectedSignatures,
-                "donor_id": vm.plotOptions.donor_id,
+                "projects": vm.selectedDatasetNames,
+                "signatures": vm.selectedSignatureNames,
+                "sample_id": vm.plotOptions.donor_id,
                 "proj_id": vm.plotOptions.proj_id
             };
-            API.fetchSingleDonorGenomeSignatureBins(params).then(function (data) {
+            API.fetchSingleSampleGenomeSignatureBins(params).then(function (data) {
                 vm.plotData = data;
 
                 vm.drawPlot();
@@ -144,11 +144,11 @@ export default {
             var chr_i, chrLen, chrName;
             
             if(vm.showAllChromosomes) {
-                let genomeLength = CHROMOSOMES.map((name) => vm.$store.getters.chromosomeLength(name)).reduce((a, h) => a + h);
+                let genomeLength = CHROMOSOMES.map((name) => CHROMOSOME_LENGTHS[name]).reduce((a, h) => a + h);
                 var cumulativeLength = 0;
                 for(chr_i = 0; chr_i < CHROMOSOMES.length; chr_i++) {
                     chrName = CHROMOSOMES[chr_i];
-                    chrLen = vm.$store.getters.chromosomeLength(chrName);
+                    chrLen = CHROMOSOME_LENGTHS[chrName];
                     chr_x[chrName] = d3.scaleBand()
                         .domain(Object.keys(vm.plotData[chrName]))
                         .range([vm.width*(cumulativeLength / genomeLength), vm.width*((cumulativeLength + chrLen) / genomeLength)]);
@@ -158,7 +158,7 @@ export default {
             } else {
                 // SINGLE CHROMOSOME
                 chrName = vm.selectedChromosome.name;
-                chrLen = vm.$store.getters.chromosomeLength(chrName);
+                chrLen = CHROMOSOME_LENGTHS[chrName];
                 chr_x[chrName] = d3.scaleBand()
                     .domain(Object.keys(vm.plotData[chrName]))
                     .range([0, vm.width]);
@@ -208,7 +208,7 @@ export default {
             } else {
                 // SINGLE CHROMOSOME
                 chrName = vm.selectedChromosome.name;
-                chrLen = vm.$store.getters.chromosomeLength(chrName);
+                chrLen = CHROMOSOME_LENGTHS[chrName];
                 vm.svg.append("g")
                         .attr("transform", "translate(0," + vm.height + ")")
                         .call(

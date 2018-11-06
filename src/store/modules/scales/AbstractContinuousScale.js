@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import AbstractCV from './AbstractCV.js';
+import AbstractScale from './AbstractScale.js';
 
-export default class AbstractContinuousCV extends AbstractCV {
+export default class AbstractContinuousScale extends AbstractScale {
     
     get id() {
         throw new Error('You have to implement the getter id!');
@@ -18,7 +18,7 @@ export default class AbstractContinuousCV extends AbstractCV {
     }
 
     get scaleType() {
-        return AbstractCV.type.CONTINUOUS;
+        return AbstractScale._type.CONTINUOUS;
     }
 
     get range() {
@@ -38,8 +38,8 @@ export default class AbstractContinuousCV extends AbstractCV {
     }
 
     color(domainValue) {
-        if(AbstractCV.isUnknown(domainValue)) {
-            return AbstractCV.unknownColor;
+        if(AbstractScale.isUnknown(domainValue)) {
+            return AbstractScale.unknownColor;
         }
         return this.colorScale((domainValue - this.domain[0]) / parseFloat(this.domain[1] - this.domain[0]));
     }

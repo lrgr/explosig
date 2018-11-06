@@ -1,11 +1,15 @@
 <template>
     <div>
-        <div :id="this.plotElemID" class="plot-component"></div>
+       <!-- <div class="top-options">
+            <GeneAutocomplete :submitGene="submitGene"/>
+        </div> -->
+
+        <div :id="this.plotElemID" class="plot-component" :style="{'height': outerHeight + 'px'}"></div>
 
         <div :id="this.tooltipElemID" class="tooltip" :style="this.tooltipPositionAttribute">
             <table>
                 <tr>
-                    <th>Donor</th><td>{{ this.tooltipInfo.donorID }}</td>
+                    <th>Sample</th><td>{{ this.tooltipInfo.donorID }}</td>
                 </tr>
                 <tr>
                     <th>Project</th><td>{{ this.tooltipInfo.projID }}</td>
@@ -31,13 +35,17 @@
             &nbsp; &nbsp;
             Sort by
             &nbsp;
-            <select v-model="sortByCategory">
+            <select v-model="sortByType">
                 <option value="exposures">Signature Exposure</option>
                 <option value="clinical">Clinical Variable</option>
             </select>
             &nbsp;
-            <select v-model="options.sortBy" v-if="sortByCategory !== null">
-                <option v-for="sortByOption in sortByList" :key="sortByOption" :value="sortByOption">{{ sortByOption }}</option>
+            <select v-model="sortByCategory" v-show="sortByType !== null && sortByType !== undefined && sortByCategoryList.length > 0">
+                <option v-for="category in sortByCategoryList" :key="category" :value="category">{{ category }}</option>
+            </select>
+            &nbsp;
+            <select v-model="sortBySubcategory" v-show="sortByCategory !== null && sortByCategory !== undefined && sortBySubcategoryList.length > 0">
+                <option v-for="subcategory in sortBySubcategoryList" :key="subcategory" :value="subcategory">{{ subcategory }}</option>
             </select>
 
             <input type="checkbox" id="enableXScroll" v-model="options.xScroll">
@@ -46,11 +54,8 @@
 
         <div class="plot-info" v-if="showInfo">
             <h3>Info</h3>
-            <p>This plot displays exposures to selected signatures for each donor in the selected dataset, along with clinical data such as alcohol and tobacco usage.</p>
-            <p>Drag along the x axis to pan across additional donors.</p>
-            <h3>Settings</h3>
-            <label>Use local file: &nbsp;</label>
-            <input type="file" accept=".csv" v-on:input="fileInput($event.target.files)">
+            <p>This plot displays exposures to selected signatures for each sample in the selected dataset, along with clinical data such as alcohol and tobacco usage.</p>
+            <p>Drag along the x axis to pan across additional samples.</p>
         </div>
     </div>
 </template>
@@ -61,24 +66,28 @@ import plotMixin from './../../mixins/plot-mixin.js';
 import API from './../../api.js';
 import { getTranslation } from './../../helpers.js';
 import { dispatch } from './../../plot-link.js';
+import { MUT_TYPES } from './../../constants.js';
 
 // child components
 import Spinner from './../Spinner.vue';
+import GeneAutocomplete from './../GeneAutocomplete.vue';
 
 export default {
     name: 'ExposuresPlot',
     mixins: [plotMixin],
     props: [],
     components: {
-        Spinner
+        Spinner,
+        GeneAutocomplete
     },
     data: function () {
         return {
+            outerHeight: 450,
             margin: {
                 top: 20,
                 right: 30,
                 bottom: 100,
-                left: 90
+                left: 105
             },
             tooltipInfo: {
                 donorID: "",
@@ -91,57 +100,69 @@ export default {
             },
             options: {
                 normalizeExposures: false,
-                sortBy: null,
                 xScroll: true
             },
+            sortByType: null,
+            sortByTypeList: ["exposures", "clinical"],
             sortByCategory: null,
-            sortByList: []
+            sortByCategoryList: [],
+            sortBySubcategory: null,
+            sortBySubcategoryList: [],
+            eventsData: {}
         };
     },
     computed: {
         height: function () {
-            return 450 - this.margin.top - this.margin.bottom;
+            return this.outerHeight - this.margin.top - this.margin.bottom;
         },
         width: function() {
             return (this.windowWidth*0.8) - 40 - this.margin.left - this.margin.right;
         }
     },
     watch: {
+        sortByType: function(val) {
+            if(val === "exposures") {
+                this.sortByCategoryList = MUT_TYPES;
+            } else if(val === "clinical") {
+                this.sortByCategoryList = this.selectedClinicalVariables.map((el) => el.name);
+            }
+            this.sortByCategory = null;
+            this.sortBySubcategory = null;
+            this.sortBySubcategoryList = [];
+        },
         sortByCategory: function(val) {
-            if(val == "exposures") {
-                this.sortByList = this.selectedSignatures;
-            } else if(val == "clinical") {
-                this.sortByList = this.selectedClinicalVariables.map((el) => el.name);
+            if(this.sortByType === "exposures") {
+                this.sortBySubcategoryList = this.selectedSignatureNames[val];
+                this.sortBySubcategory = null;
+            } else if(val !== null && val !== undefined) {
+                this.drawPlot();
+            }
+        },
+        sortBySubcategory: function(val) {
+            if(val !== null && val !== undefined) {
+                this.drawPlot();
             }
         }
     },
     methods: {
-        fileInput: function(files) {
+        submitGene(geneId) {
             let vm = this;
-            vm.loading = true;
-
-            let file = files[0];
-            if(file) {
-                var reader = new FileReader();
-                reader.onloadend = function(evt) {
-                    var dataUrl = evt.target.result;
-                    d3.json(dataUrl).then((data) => {
-                        vm.plotData = data;
-
-                        vm.drawPlot();
-                        vm.loading = false;
-                        vm.showInfo = false;
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
+            let params = {
+                "gene_id": geneId,
+                "projects": this.selectedDatasetNames
+            };
+            API.fetchGeneEventTrack(params)
+                .then((eventData) => {
+                    vm.eventsData[geneId] = eventData;
+                    vm.drawPlot();
+                })
         },
         updatePlot: function () {
             let vm = this;
             vm.loading = true;
             let params = {
-                "sources": vm.selectedDatasets,
-                "signatures": vm.selectedSignatures
+                "projects": vm.selectedDatasetNames,
+                "signatures": vm.selectedSignatureNames
             };
             API.fetchExposures(params).then((data) => {
                 vm.plotData = data;
@@ -185,15 +206,8 @@ export default {
             if(vm.plotData === null) {
                 return;
             }
-            let marginX = 2;
-            let clinicalHeight = 10;
-            let clinicalMarginY = 2;
-            let totalClinicalHeight = vm.selectedClinicalVariables.length * (clinicalHeight + clinicalMarginY);
-            let minBarWidth = (this.options.xScroll ? 20 : 0);
-            let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
-            // expand plot width to account for minimum bar width adjustments
-            let plotWidth = barWidth * this.plotData.length;
-            
+
+           
             /**
              * Data preparation
              */
@@ -205,27 +219,32 @@ export default {
                     d = Object.assign({}, d);
                     d["exposures"] = Object.assign({}, d["exposures"]);
 
-                    let dMax = d3.sum(Object.values(d["exposures"]));
-                    Object.keys(d["exposures"]).map((sigName) => {
-                        d["exposures"][sigName] = d["exposures"][sigName] / parseFloat(dMax);
-                    });
+                    for(let mutType of MUT_TYPES) {
+                        d["exposures"][mutType] = Object.assign({}, d["exposures"][mutType]);
+                        let dMax = d3.sum(Object.values(d["exposures"][mutType]));
+                        if(dMax > 0) {
+                            Object.keys(d["exposures"][mutType]).map((sigName) => {
+                                d["exposures"][mutType][sigName] = d["exposures"][mutType][sigName] / parseFloat(dMax);
+                            });
+                        }
+                    }
                     return d;
                 });
             }
             // sort data if necessary
-            if(vm.sortByCategory != null && vm.options.sortBy != null && vm.sortByList.indexOf(vm.options.sortBy) >= 0) {
-                if(vm.sortByCategory == "exposures") {
+            if(vm.sortByType !== null && vm.sortByCategory !== null && vm.sortByCategory !== undefined) {
+                if(vm.sortByType == "exposures" && vm.sortBySubcategory !== null && vm.sortBySubcategory !== undefined) {
                     normalizedData.sort(function(a, b) {
                         return d3.descending(
-                            (a[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +a[vm.sortByCategory][vm.options.sortBy]), 
-                            (b[vm.sortByCategory][vm.options.sortBy] == "nan" ? -1 : +b[vm.sortByCategory][vm.options.sortBy])
+                            (a[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory] === undefined ? -1 : +a[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory]), 
+                            (b[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory] === undefined ? -1 : +b[vm.sortByType][vm.sortByCategory][vm.sortBySubcategory])
                         );
                     });
-                } else if(vm.sortByCategory == "clinical") {
+                } else if(vm.sortByType == "clinical") {
                     normalizedData.sort( (a, b) => 
-                        vm.getClinicalVariable(vm.options.sortBy).comparator(
-                            a[vm.sortByCategory][vm.options.sortBy], 
-                            b[vm.sortByCategory][vm.options.sortBy]
+                        vm.getClinicalVariable(vm.sortByCategory).comparator(
+                            a[vm.sortByType][vm.sortByCategory], 
+                            b[vm.sortByType][vm.sortByCategory]
                         )
                     );
                 }
@@ -233,11 +252,55 @@ export default {
             }
 
             // compute max for y axis
-            let maxCountSum = d3.max(normalizedData.map((d) => {
-                return d3.sum(Object.values(d["exposures"]));
-            }));
+            let maxCountSum = {};
+            let maxCountSumAcrossMutTypes = 0;
+            for(let mutType of MUT_TYPES) {
+                maxCountSum[mutType] = d3.max(normalizedData.map((d) => {
+                    return d3.sum(Object.values(d["exposures"][mutType]));
+                }));
+                maxCountSumAcrossMutTypes = Math.max(maxCountSum[mutType], maxCountSumAcrossMutTypes);
+            }
 
-            let sampleNames = normalizedData.map((d) => { return d["donor_id"]; });
+
+            let marginX = 0;
+            if(vm.options.xScroll) {
+                marginX = 2;
+            }
+
+            let clinicalRowMargin = 2;
+            let clinicalRowHeight = 10;
+
+            let signaturesRowMargin = 10;
+
+            let signaturesHeightMax = 300;
+            let totalSignaturesHeight = 0;
+            let signaturesHeight = {};
+            for(let mutType of MUT_TYPES) {
+                
+                let ratio = maxCountSum[mutType] / maxCountSumAcrossMutTypes;
+                if(maxCountSum[mutType] > 0) {
+                    signaturesHeight[mutType] = Math.max(ratio * signaturesHeightMax, 80);
+                } else {
+                    signaturesHeight[mutType] = 0;
+                }
+                totalSignaturesHeight += signaturesHeight[mutType] + signaturesRowMargin;
+            }
+            let clinicalHeight = vm.selectedClinicalVariables.length * (clinicalRowHeight + clinicalRowMargin);
+            let eventsHeight = Object.keys(vm.eventsData).length * (clinicalRowHeight + clinicalRowMargin);
+            
+            vm.outerHeight = totalSignaturesHeight + eventsHeight + clinicalHeight + vm.margin.top + vm.margin.bottom;
+            
+
+            let minBarWidth = (this.options.xScroll ? 20 : 0);
+            let barWidth = Math.max(minBarWidth, this.width / this.plotData.length);
+            // expand plot width to account for minimum bar width adjustments
+            let plotWidth = barWidth * this.plotData.length;
+            
+
+
+
+
+            let sampleNames = normalizedData.map((d) => { return d["sample_id"]; });
 
             /**
              * Scales
@@ -245,18 +308,30 @@ export default {
             let x = d3.scaleBand()
                 .domain(sampleNames)
                 .range([0, plotWidth]);
-            let y = d3.scaleLinear()
-                .domain([0, maxCountSum])
-                .range([this.height - totalClinicalHeight, 0]);
+            
+            let y = {};
+            let currMaxY = 0;
+            for(let mut_i = 0; mut_i < MUT_TYPES.length; mut_i++) {
+                let mutType = MUT_TYPES[mut_i];
+                let minY = currMaxY;
+                let maxY = minY + signaturesHeight[mutType];
+                y[mutType] = d3.scaleLinear()
+                    .domain([0, maxCountSum[mutType]])
+                    .range([maxY, minY]);
+                currMaxY = maxY + signaturesRowMargin;
+            }
             
             // stacked bar values
-            let stack = d3.stack()
-                .keys(vm.selectedSignatures.slice().reverse())
-                .value((d, key) => { return d["exposures"][key]; })
-                .order(d3.stackOrderNone)
-                .offset(d3.stackOffsetNone);
+            let series = {};
+            for(let mutType of MUT_TYPES) {
+                let stack = d3.stack()
+                    .keys(vm.selectedSignatureNames[mutType].slice().reverse())
+                    .value((d, key) => { return d["exposures"][mutType][key] || 0; })
+                    .order(d3.stackOrderNone)
+                    .offset(d3.stackOffsetNone);
 
-            let series = stack(normalizedData);
+                series[mutType] = stack(normalizedData);
+            }
 
             /**
              * SVG Elements
@@ -268,7 +343,7 @@ export default {
             vm.svg = d3.select(this.plotSelector)
                 .append("svg")
                 .attr("width", plotWidth + this.margin.left + this.margin.right)
-                .attr("height", this.height + this.margin.top + this.margin.bottom)
+                .attr("height", vm.height + this.margin.top + this.margin.bottom)
                 .append("g")
                 .attr("transform",
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")")
@@ -280,32 +355,35 @@ export default {
             /**
              * Signature exposure stacked bars
              */
-            let layer = XContainer.selectAll(".layer")
-                .data(series)
-            .enter().append("g")
-                .attr("class", "layer")
-                .style("fill", (d) => { 
-                    return vm.$store.getters.signatureColor(d["key"]); 
-                })
-                .on('mousemove', (d) => {
-                    vm.tooltip(null, null, d["key"], null); 
-                });
-            
-            layer.selectAll("rect")
-                .data((d) => { return d; })
-            .enter().append("rect")
-                .attr("class", "exposure-bar")
-                .attr("x", (d, i) => { return x(normalizedData[i]["donor_id"]); })
-                .attr("y", (d) => { return y(d[1]); })
-                .attr("height", (d) => { return y(d[0]) - y(d[1]); })
-                .attr("width", barWidth - marginX)
-                .style("cursor", "pointer")
-                .on('mouseover', (d, i) => { 
-                    vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0]), null, null); 
-                })
-                .on('click', (d, i) => {
-                    vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
-                });
+            for(let mutType of MUT_TYPES) {
+
+                let layer = XContainer.append("g").selectAll(".layer")
+                    .data(series[mutType])
+                .enter().append("g")
+                    .attr("class", "layer")
+                    .style("fill", (d) => {
+                        return vm.$store.getters.signatureColor(d["key"], mutType); 
+                    })
+                    .on('mousemove', (d) => {
+                        vm.tooltip(null, null, d["key"], null); 
+                    });
+                
+                layer.selectAll("rect")
+                    .data((d) => { return d; })
+                .enter().append("rect")
+                    .attr("class", "exposure-bar")
+                    .attr("x", (d, i) => { return x(normalizedData[i]["sample_id"]); })
+                    .attr("y", (d) => { return y[mutType](d[1]); })
+                    .attr("height", (d) => { return y[mutType](d[0]) - y[mutType](d[1]); })
+                    .attr("width", barWidth - marginX)
+                    .style("cursor", "pointer")
+                    .on('mouseover', (d, i) => { 
+                        vm.tooltip(normalizedData[i]["sample_id"], normalizedData[i]["proj_id"], null, (d[1] - d[0]), null, null); 
+                    })
+                    .on('click', (d, i) => {
+                        vm.enterSingleDonorMode(normalizedData[i]["sample_id"], normalizedData[i]["proj_id"]);
+                    });
+            }
         
             /**
              * Clinical variable heatmap
@@ -317,7 +395,7 @@ export default {
 
                 clinicalY[selectedCV.id] = d3.scaleBand()
                     .domain([selectedCV.name])
-                    .range([this.height - totalClinicalHeight + clinicalMarginY + (var_i+1)*(clinicalHeight + clinicalMarginY), this.height - totalClinicalHeight + clinicalMarginY + (var_i)*(clinicalHeight + clinicalMarginY)]);
+                    .range([totalSignaturesHeight + clinicalRowMargin + (var_i+1)*(clinicalRowHeight + clinicalRowMargin), totalSignaturesHeight + clinicalRowMargin + (var_i)*(clinicalRowHeight + clinicalRowMargin)]);
 
                 XContainer.append("g")
                     .attr("class", "clinical-group")
@@ -327,17 +405,52 @@ export default {
                     .attr("class", "clinical-rect")
                     .attr("x", (d) => { return x(d); })
                     .attr("y", clinicalY[selectedCV.id](selectedCV.name))
-                    .attr("height", clinicalHeight)
+                    .attr("height", clinicalRowHeight)
                     .attr("width", barWidth - marginX)
                     .style("cursor", "pointer")
                     .attr("fill", (d, i) => {
                         return selectedCV.color(normalizedData[i]["clinical"][selectedCV.id]);
                     })
                     .on('mouseover', (d, i) => {
-                        vm.tooltip(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"], null, null, selectedCV.name, selectedCV.transform(normalizedData[i]["clinical"][selectedCV.id]));
+                        vm.tooltip(normalizedData[i]["sample_id"], normalizedData[i]["proj_id"], null, null, selectedCV.name, selectedCV.transform(normalizedData[i]["clinical"][selectedCV.id]));
                     })
                     .on('click', (d, i) => {
-                        vm.enterSingleDonorMode(normalizedData[i]["donor_id"], normalizedData[i]["proj_id"]);
+                        vm.enterSingleDonorMode(normalizedData[i]["sample_id"], normalizedData[i]["proj_id"]);
+                    });
+            }
+
+            /**
+             * Genomic events tracks
+             */
+            let eventY = {};
+            let eventGenes = Object.keys(vm.eventsData);
+            for(var_i = 0; var_i < eventGenes.length; var_i++) {
+                let geneId = eventGenes[var_i];
+                let geneData = vm.eventsData[geneId];
+
+                eventY[geneId] = d3.scaleBand()
+                    .domain([geneId])
+                    .range([totalSignaturesHeight + clinicalHeight + clinicalRowMargin + (var_i+1)*(clinicalRowHeight + clinicalRowMargin), totalSignaturesHeight + clinicalHeight + clinicalRowMargin + (var_i)*(clinicalRowHeight + clinicalRowMargin)]);
+
+                XContainer.append("g")
+                    .attr("class", "event-group")
+                .selectAll(".event-rect")
+                    .data(sampleNames)
+                .enter().append("rect")
+                    .attr("class", "event-rect")
+                    .attr("x", (d) => { return x(d); })
+                    .attr("y", eventY[geneId](geneId))
+                    .attr("height", clinicalRowHeight)
+                    .attr("width", barWidth - marginX)
+                    .style("cursor", "pointer")
+                    .attr("fill", (d, i) => {
+                        return (geneData[d]["event"] !== "NA" ? "#000": "#FFF");
+                    })
+                    .on('mouseover', (d, i) => {
+                        vm.tooltip(normalizedData[i]["sample_id"], normalizedData[i]["proj_id"], null, null, geneId, geneData[d]["event"]);
+                    })
+                    .on('click', (d, i) => {
+                        vm.enterSingleDonorMode(normalizedData[i]["sample_id"], normalizedData[i]["proj_id"]);
                     });
             }
             
@@ -346,7 +459,7 @@ export default {
              */
             // x axis container
             let xAxis = XContainer.append("g")
-                .attr("transform", "translate(0," + (vm.height + clinicalMarginY) + ")")
+                .attr("transform", "translate(0," + (vm.height + clinicalRowMargin) + ")")
                 .attr("class", "x_axis");
 
             // x axis ticks
@@ -377,7 +490,7 @@ export default {
                 .attr("transform",
                         "translate(" + (vm.width/2) + " ," + (vm.height + vm.margin.top + 70) + ")")
                 .style("text-anchor", "middle")
-                .text("Donor");
+                .text("Sample");
 
             // y axis container
             let yAxis = vm.svg.append("g");
@@ -390,13 +503,34 @@ export default {
                     .attr("fill", (vm.options.xScroll ? "#FFF" : "transparent"));
             
             // y axis exposures ticks
-            yAxis.call(d3.axisLeft(y));
+            for(let mutType of MUT_TYPES) {
+                if(maxCountSum[mutType] > 0) {
+                    yAxis.append("g").call(d3.axisLeft(y[mutType]));
+                }
+            }
+
+            let prevSignaturesHeight = signaturesRowMargin;
+            for(var_i = MUT_TYPES.length - 1; var_i >= 0; var_i--) {
+                let mutType = MUT_TYPES[var_i];
+                if(maxCountSum[mutType] > 0) {
+                    let currSignaturesCenter = prevSignaturesHeight + (signaturesHeight[mutType] / 2);
+                    yAxis.append("g").append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 0 - vm.margin.left + 30)
+                        .attr("x", 0 - (vm.height - clinicalHeight - currSignaturesCenter))
+                        .attr("dy", "1em")
+                        .style("text-anchor", "middle")
+                        .style("font-size", "14px")
+                        .text(mutType); 
+                    prevSignaturesHeight += signaturesHeight[mutType] + signaturesRowMargin;
+                }
+            }
             
             // y axis text label
             vm.svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - vm.margin.left + 10)
-                .attr("x", 0 - ((vm.height - totalClinicalHeight) / 2))
+                .attr("x", 0 - ((vm.height - clinicalHeight) / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text("Signature Exposure");  
@@ -406,6 +540,19 @@ export default {
                 var axisCV = vm.selectedClinicalVariables[var_i];
                 vm.svg.append("g")
                     .call(d3.axisLeft(clinicalY[axisCV.id]).tickSizeOuter(0))
+                    .attr("transform", "translate(0,0)")
+                    .selectAll("text")	
+                        .style("text-anchor", "end")
+                        .attr("dx", "-.4em")
+                        .attr("dy", ".1em")
+                        .attr("transform", "rotate(-25)");
+            }
+
+            // y axis for event vars
+            for(var_i = 0; var_i < eventGenes.length; var_i++) {
+                var geneId = eventGenes[var_i];
+                vm.svg.append("g")
+                    .call(d3.axisLeft(eventY[geneId]).tickSizeOuter(0))
                     .attr("transform", "translate(0,0)")
                     .selectAll("text")	
                         .style("text-anchor", "end")
@@ -480,9 +627,15 @@ export default {
 }
 
 .bottom-options {
-    select:nth-of-type(2) {
+    select:last-of-type {
         margin-right: 15px;
     }
+}
+
+.top-options {
+    right: 0;
+    top: 0;
+    position: absolute;
 }
 
 </style>

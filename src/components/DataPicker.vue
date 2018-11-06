@@ -6,13 +6,20 @@
                 <button class="inline" v-on:click="toggleSignatures()">Toggle All</button>
                 <span id="preset-source">
                     <label>Source: </label>
-                    <select v-model="options.perCancerTypeGroup">
-                        <option v-for="pctg in signaturesPerCancerType" :key="pctg.id" :value="pctg.id" :selected="pctg.id == options.perCancerTypeGroup ? 'selected' : ''">{{ pctg.group }}</option>
+                    <select v-model="options.signatureGroup">
+                        <option 
+                            v-for="sigGroup in signatureGroups" 
+                            :key="sigGroup.id" 
+                            :value="sigGroup.id" 
+                            :selected="sigGroup.id == options.signatureGroup.id ? 'selected' : ''"
+                        >
+                            {{ sigGroup.name }}
+                        </option>
                     </select>
                 </span>
                 <div id="signaturePicker" v-show="!loading">
                     <div id="signaturePickerCheckboxes">
-                        <div v-for="signature in allSignatures" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
+                        <div v-for="signature in allSignaturesFlat" :key="signature.name" class="tooltip" :style="{ height: rowHeight + 'px'}">
                             <label :for="signature.name" :data-tooltip="signature.description + ' (' + signature.publication + ')'" :style="{ lineHeight: rowHeight + 'px'}">{{ signature.name }}</label>
                             <input type="checkbox" :value="signature.name" :id="signature.name" name="signatures" v-model="options.signatures">
                         </div>
@@ -30,11 +37,11 @@
                     <table>
                     <tr v-for="(sourceData, sourceName) in allDatasets" :key="sourceName">
                         <td>
-                        <input type="checkbox" :value="sourceName" :id="sourceName" name="sources" v-model="options.sources">
+                        <input type="checkbox" :value="sourceName" :id="sourceName" name="sources" v-model="options.projects">
                         <label :for="sourceName" class="sample-label">{{ sourceName }}</label>
                         </td>
                         <td class="cell-gray">{{ sourceData.name }}</td>
-                        <td class="cell-gray">({{ sourceData.num_donors }} donors)</td>
+                        <td class="cell-gray">({{ sourceData.numDonors }} donors)</td>
                     </tr>
                     </table>
                     <Spinner v-if="loading" class="spinner"></Spinner>
@@ -54,6 +61,7 @@ import * as d3 from 'd3';
 import { mapGetters } from 'vuex';
 import { DataOptionsBus } from './../buses.js';
 import API from './../api.js';
+import { MUT_TYPES } from './../constants.js';
 
 // child components
 import Spinner from './Spinner.vue';
@@ -68,9 +76,9 @@ export default {
           innerDataPicker: null,
           loading: true,
           options: {
-            sources: [],
+            projects: [],
             signatures: [],
-            perCancerTypeGroup: 'COSMIC'
+            signatureGroup: 'COSMIC'
           },
           rowHeight: 0,
           svg: null,
@@ -85,12 +93,12 @@ export default {
   mounted: function() {
         var vm = this;
         API.fetchDataListing().then(function(listing) {
-            vm.$store.commit('setAllSignatures', listing.sigs);
-            vm.$store.commit('setAllDatasets', listing.sources);
-            vm.$store.commit('setSignaturesPerCancerType', listing.sig_presets);
+            vm.$store.commit('setAllSignatures', listing['sigs']);
+            vm.$store.commit('setAllDatasets', listing['projects']);
+            vm.$store.commit('setSignatureGroups', listing['sigs_per_cancer_type']);
 
-            vm.options.signatures = vm.selectedSignatures;
-            vm.options.sources = vm.selectedDatasets;
+            vm.options.signatures = vm.selectedSignaturesFlat.map((el) => el.name);
+            vm.options.projects = vm.selectedDatasets.map((el) => el.id);
             
             vm.loading = false;
 
@@ -123,58 +131,75 @@ export default {
       },
       ...mapGetters([
         'allSignatures',
+        'allSignaturesFlat',
         'allDatasets',
-        'signaturesPerCancerType',
+        'signatureGroups',
         'selectedSignatures',
+        'selectedSignaturesFlat',
         'selectedDatasets',
         'windowWidth'
       ])
   },
   methods: {
       toggleSources: function() {
-          if(this.options.sources.length == Object.keys(this.allDatasets).length) {
-              this.options.sources = [];
+          if(this.options.projects.length == Object.keys(this.allDatasets).length) {
+              this.options.projects = [];
           } else {
-              this.options.sources = Object.keys(this.allDatasets);
+              this.options.projects = Object.keys(this.allDatasets);
           }
       },
       toggleSignatures: function() {
-          if(this.options.signatures.length == this.allSignatures.length) {
-              this.options.signatures = [];
-          } else {
-              this.options.signatures = this.allSignatures.map((x) => x.name);
-          }
+        if(this.options.signatures.length == this.allSignaturesFlat.length) {
+            this.options.signatures = [];
+        } else {
+            this.options.signatures = this.allSignaturesFlat.map((x) => x.name);
+        }
       },
       setDataPicker: function(selection) {
           this.innerDataPicker = selection;
       },
       emitUpdate: function() {
-        this.$store.commit('setSelectedSignatures', this.options.signatures);
-        this.$store.commit('setSelectedDatasets', this.options.sources);
+        let signatures = this.options.signatures.map((sigName) => {
+            return this.allSignaturesFlat.find(el => (el.name === sigName));
+        });
+        let datasets = this.options.projects.map((projName) => {
+            return this.allDatasets[projName];
+        })
+        this.$store.commit('setSelectedSignaturesFlat', signatures);
+        this.$store.commit('setSelectedDatasets', datasets);
         DataOptionsBus.$emit('updateDataOptions');
       },
       drawPlot: function () {
             var vm = this;
 
-            if(vm.signaturesPerCancerType.length == 0) {
+            if(vm.signatureGroups.length == 0) {
                 return;
             }
 
-            var perCancerTypeGroup = vm.signaturesPerCancerType.find((el) => (el.id == vm.options.perCancerTypeGroup));
-            var presets = perCancerTypeGroup['cancer-types'];
 
-            let sigNames = vm.allSignatures.map((sig) => sig.name);
-            let cancerTypes = presets.map((preset) => preset.name);
+            var sigGroup = vm.signatureGroups.find((el) => (el.id == vm.options.signatureGroup));
+            var cancerTypes = sigGroup.cancerTypes;
+            
+            let allSignaturesFlat = vm.allSignaturesFlat;
+            let sigNames = allSignaturesFlat.map((el) => el.name);
+            let cancerTypeNames = cancerTypes.map((el) => el.name);
+
+            let mutTypeRowColors = {
+                'SBS': '#8acb88',
+                'DBS': '#3e6990',
+                'INDEL': '#f39b6d'
+            };
+
 
             // axis scales
             var x = d3.scaleBand()
-                .domain(Array.from(Array(presets.length).keys()))
+                .domain(Array.from(Array(cancerTypeNames.length).keys()))
                 .range([0, vm.width]);
             
             
             let yStep = 10.8888889;
             vm.rowHeight = yStep * 0.705;
-            let totalHeight = yStep*sigNames.length
+            let totalHeight = yStep*sigNames.length;
 
             var y = d3.scaleBand()
                 .domain(sigNames)
@@ -192,7 +217,7 @@ export default {
                     "translate(" + vm.margin.left + "," + vm.margin.top + ")");
             
             vm.svg.selectAll(".signatureRow")
-                .data(vm.allSignatures)
+                .data(allSignaturesFlat)
             .enter().append("g")
                 .attr("class", "signatureRow")
                 .append("rect")
@@ -200,18 +225,18 @@ export default {
                     .attr("height", yStep)
                     .attr("x", 0)
                     .attr("y", (d) => y(d.name))
-                    .attr("fill", "#8acb88")
+                    .attr("fill", (d) => mutTypeRowColors[d.mutType])
                     .attr("fill-opacity", (d, i) => {
                         return (i % 2 == 0 ? 0.2 : 0);
                     });
             
             vm.svg.selectAll(".cancerTypeColumn")
-                .data(presets)
+                .data(cancerTypes)
             .enter().append("g")
                 .attr("class", "cancerTypeColumn")
                 .attr("transform", (d, i) => "translate(" + x(i) + ",0)")
                     .selectAll(".perCancerTypeCell")
-                    .data((d) => d.signatures)
+                    .data((d) => d.signaturesFlat)
                 .enter().append("rect")
                     .attr("class", "perCancerTypeCell")
                     .attr("x", 0)
@@ -224,7 +249,7 @@ export default {
             let xAxis = vm.svg.append("g");
             
             // x Axis ticks
-            xAxis.call(d3.axisTop(x).tickSizeOuter(0).tickSizeInner(4).tickFormat((d) => cancerTypes[d]))
+            xAxis.call(d3.axisTop(x).tickSizeOuter(0).tickSizeInner(4).tickFormat((d) => cancerTypeNames[d]))
                 .selectAll("text")	
                     .style("text-anchor", "end")
                     .style("cursor", "pointer")
@@ -232,7 +257,7 @@ export default {
                     .attr("dy", "0.3em")
                     .attr("transform", "rotate(45)")
                     .on("click", (d) => {
-                        vm.options.signatures = presets[d].signatures;  
+                        vm.options.signatures = cancerTypes[d].signaturesFlat;  
                     })
                     .on("mouseover", (d) => {
                         vm.svg.selectAll(".perCancerTypeCell")

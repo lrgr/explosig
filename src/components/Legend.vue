@@ -1,13 +1,13 @@
 <template>
-    <div class="legend-wrapper">
+    <div class="legend-wrapper-inner">
         <div class="legend" v-if="legendInfo != null && legendInfo.data.length > 0">
             <span class="legend-key">{{ legendInfo.meta.title }}</span>
-            <div v-if="legendInfo.meta.type === undefined || legendInfo.meta.type === abstractCV.type.DISCRETE">
+            <div v-if="legendInfo.meta.type === undefined || legendInfo.meta.type === abstractScale._type.DISCRETE">
                 <div v-for="item in legendInfo.data" :key="item.name">
                     <span class="item-color" :style="{ backgroundColor: item.color }"></span><span class="item-name">{{ item.name }}</span>
                 </div>
             </div>
-            <div v-if="legendInfo.meta.type === abstractCV.type.CONTINUOUS">
+            <div v-if="legendInfo.meta.type === abstractScale._type.CONTINUOUS">
                 <div v-for="item in legendInfo.data" :key="item.name">
                     <span class="item-color" :style="{ backgroundColor: item.color }"></span><span class="item-name">{{ item.name }}</span>
                 </div>
@@ -21,7 +21,7 @@
 import * as d3 from 'd3';
 import { LegendListBus } from './../buses.js';
 import { mapGetters } from 'vuex';
-import AbstractCV from '../store/modules/clinical-variables/AbstractCV.js';
+import AbstractScale from '../store/modules/scales/AbstractScale.js';
 
 export default {
   name: 'Legend',
@@ -29,7 +29,7 @@ export default {
   data: function() {
       return {
           legendInfo: null,
-          abstractCV: AbstractCV
+          abstractScale: AbstractScale
       };
   },
   computed: {
@@ -54,7 +54,7 @@ export default {
 <style scoped lang="scss">
 
 @import './../style/variables.scss';
-.legend-wrapper {
+.legend-wrapper-inner {
     width: 100%;
     display: block;
     position: relative;
