@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h3>Signatures</h3>
+      <h3>Select signatures</h3>
       <span id="preset-source">
         <label>Source: </label>
         <select v-model="selectedCancerTypeMapGroup">

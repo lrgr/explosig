@@ -1,40 +1,45 @@
 <template>
-    <div class="explorer" :style="{ 'height': (windowHeight-49) + 'px' }">
-        <div class="explorer-main explorer-col">
-            <div class="explorer-col-title">
-                <h3>Main</h3>
+    <div>
+        <div class="explorer-control" :style="{ 'height': 26 + 'px' }"> 
+            <HistoryButtons />
+        </div> 
+        <div class="explorer" :style="{ 'height': (windowHeight-75) + 'px' }">
+            <div class="explorer-main explorer-col">
+                <div class="explorer-col-title">
+                    <h3>Main</h3>
+                </div>
             </div>
-        </div>
-        <div class="explorer-overview explorer-col">
-            <div class="explorer-col-title">
-                <h3>Overview</h3>
+            <div class="explorer-overview explorer-col">
+                <div class="explorer-col-title">
+                    <h3>Overview</h3>
+                </div>
             </div>
-        </div>
-        <div class="explorer-legend explorer-col">
-            <div class="explorer-col-title">
-                <h3>Legend</h3>
+            <div class="explorer-legend explorer-col">
+                <div class="explorer-col-title">
+                    <h3>Legend</h3>
+                </div>
+                <CategoricalLegend
+                    variable="sig_sbs"
+                    lStyle="bar"
+                    :lWidth="widthLegend"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CategoricalLegend
+                    variable="sig_dbs"
+                    lStyle="bar"
+                    :lWidth="widthLegend"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CategoricalLegend
+                    variable="sig_indel"
+                    lStyle="bar"
+                    :lWidth="widthLegend"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
             </div>
-            <CategoricalLegend
-                variable="sig_sbs"
-                lStyle="bar"
-                :lWidth="widthLegend"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <CategoricalLegend
-                variable="sig_dbs"
-                lStyle="bar"
-                :lWidth="widthLegend"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <CategoricalLegend
-                variable="sig_indel"
-                lStyle="bar"
-                :lWidth="widthLegend"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
         </div>
     </div>
 </template>
@@ -44,8 +49,13 @@ import { mapGetters, mapMutations } from 'vuex';
 import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
+import HistoryButtons from './HistoryButtons.vue';
+
 export default {
-  name: 'Explorer',
+    name: 'Explorer',
+    components: {
+        HistoryButtons,
+    },
     computed: {
         widthMain() {
             return this.windowWidth * (5/10) - 25;
@@ -125,5 +135,9 @@ export default {
             margin-left: 10px;
         }
     }
+}
+
+.explorer-control {
+    background-color: #FAFAFA;
 }
 </style>

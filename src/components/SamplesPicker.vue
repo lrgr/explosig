@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Samples</h3>
+    <h3>Select samples</h3>
     <button class="inline" v-on:click="toggleSources()">Toggle All</button>
     <div class="option-group">
       <table>
