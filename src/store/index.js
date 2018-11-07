@@ -3,17 +3,7 @@ import Vuex from 'vuex'
 
 import internal from './modules/internal'
 import bib from './modules/bib'
-import history from './modules/history'
-import data from './modules/data'
-import scales from './modules/scales'
-
-
-import signaturesSbs from './modules/signatures-sbs'
-import signaturesDbs from './modules/signatures-dbs'
-import signaturesIndel from './modules/signatures-indel'
-import samples from './modules/samples'
-import clinicalVariables from './modules/clinical-variables'
-import genes from './modules/genes'
+import explorer from './modules/explorer'
 
 Vue.use(Vuex)
 
@@ -21,14 +11,6 @@ export default new Vuex.Store({
   modules: {
     internal,
     bib,
-    history,
-    data,
-    scales,
-    signaturesSbs,
-    signaturesDbs,
-    signaturesIndel,
-    samples,
-    clinicalVariables,
-    genes
+    explorer
   }
 })

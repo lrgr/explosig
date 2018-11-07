@@ -26,14 +26,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
-import { 
-    CategoricalScale, 
-    HistoryStack
-} from 'vue-declarative-plots';
-
-
-const stack = new HistoryStack();
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Explorer',
@@ -52,30 +45,14 @@ export default {
             'windowWidth',
             'getStack',
             'getData',
-            'getScale',
-            'selectedSignaturesSbs'
+            'getScale'
         ])
     },
     watch: {
-        selectedSignaturesSbs(val) {
-            this.getScale("signature_sbs").setDomain(val);
-            this.getScale("signature_sbs").setDomainFiltered(val);
-            this.getScale("signature_sbs").emitUpdate();
-        }
-    },
-    created() {
-        this.setStack(stack);
-        this.setScale({
-            key: 'signature_sbs', 
-            scale: new CategoricalScale("signature_sbs", "SBS Signatures", [])
-        });
+        
     },
     methods: {
-        ...mapMutations([
-            'setStack',
-            'setData',
-            'setScale'
-        ])
+        
     }
 }
 </script>

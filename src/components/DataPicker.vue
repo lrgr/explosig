@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters } from 'vuex';
 
 import SignaturesPicker from './SignaturesPicker.vue';
 import SamplesPicker from './SamplesPicker.vue';
@@ -84,19 +84,14 @@ export default {
     },
     emitUpdate() {
         // Update samples/signatures in store
-        this.setSelectedSamples(this.chosenSamples);
+        // TODO: do thru config
+        /*this.setSelectedSamples(this.chosenSamples);
         this.setSelectedSignaturesSbs(this.chosenSignaturesSbs);
         this.setSelectedSignaturesDbs(this.chosenSignaturesDbs);
-        this.setSelectedSignaturesIndel(this.chosenSignaturesIndel);
+        this.setSelectedSignaturesIndel(this.chosenSignaturesIndel);*/
         // Notify parent to close modal
         this.$emit('update');
-    },
-    ...mapMutations([
-        'setSelectedSamples',
-        'setSelectedSignaturesSbs',
-        'setSelectedSignaturesDbs',
-        'setSelectedSignaturesIndel',
-    ])
+    }
   }
 }
 </script>

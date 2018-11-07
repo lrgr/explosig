@@ -1,0 +1,68 @@
+import { dispatch as d3_dispatch } from "d3-dispatch";
+
+const DISPATCH_EVENT_UPDATE = "update";
+
+/**
+ * Configuration class with selected signatures, samples, genes, clinical variables.
+ */
+export default class Config {
+
+    constructor() {
+        this._dispatch = d3_dispatch(DISPATCH_EVENT_UPDATE);
+
+        this._samples = [];
+        this._signaturesSbs = [];
+        this._signaturesDbs = [];
+        this._signaturesIndel = [];
+        this._genes = [];
+        this._clinicalVariables = [];
+    }
+
+    /**
+     * @returns {boolean} Whether anything has been selected yet.
+     */
+    isEmpty() {
+        return (
+            this._samples.length === 0 &&
+            this._signaturesSbs.length === 0 &&
+            this._signaturesDbs.length === 0 &&
+            this._signaturesIndel.length === 0 &&
+            this._genes.length === 0 &&
+            this._clinicalVariables.length === 0
+        )
+    }
+    
+    
+
+    /**
+     * Reset the configuration.
+     */
+    resetConfig() {
+        this._samples = [];
+        this._signaturesSbs = [];
+        this._signaturesDbs = [];
+        this._signaturesIndel = [];
+        this._genes = [];
+        this._clinicalVariables = [];
+
+        this.emitUpdate();
+    }
+
+     /**
+     * Subscribe to update events.
+     * @param {string} componentId 
+     * @param {function} callback 
+     */
+    onUpdate(componentId, callback) {
+        this._dispatch.on(DISPATCH_EVENT_UPDATE + "." + componentId, callback);
+    }
+
+    /**
+     * Emit the update event.
+     */
+    emitUpdate() {
+        this._dispatch.call(DISPATCH_EVENT_UPDATE);
+    }
+
+
+}
