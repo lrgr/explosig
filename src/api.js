@@ -88,8 +88,8 @@ export default class API {
         );
     }
 
-    static fetchExposures(dataOptions) {
-        let url = API.api_base + "exposures";
+    static fetchDataExposures(dataOptions) {
+        let url = API.api_base + "data-exposures";
 
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -118,8 +118,18 @@ export default class API {
         );
     }
 
-    static fetchSamplesWithSignatures(dataOptions) {
-        let url = API.api_base + "samples-with-signatures";
+    static fetchSamples(dataOptions) {
+        let url = API.api_base + "samples";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleExposures(dataOptions) {
+        let url = API.api_base + "scale-exposures";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),

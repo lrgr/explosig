@@ -7,6 +7,48 @@
             <div class="explorer-main explorer-col">
                 <div class="explorer-col-title">
                     <h3>Main</h3>
+                    <div class="explorer-plot-container">
+                        <Axis 
+                            variable="exposure_sbs"
+                            side="left"
+                            :pWidth="(widthMain-150-5)"
+                            :pHeight="300"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="150"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <StackedBarPlot 
+                            data="exposure_sbs"
+                            x="sample_id"
+                            y="exposure_sbs"
+                            c="sig_sbs"
+                            :pWidth="(widthMain-150-10)"
+                            :pHeight="300"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="150"
+                            :getData="getData"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <Axis 
+                            variable="sample_id"
+                            side="bottom"
+                            :tickRotation="-65"
+                            :pWidth="(widthMain-150-5)"
+                            :pHeight="300"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="150"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                    </div>
                 </div>
             </div>
             <div class="explorer-overview explorer-col">
@@ -18,6 +60,13 @@
                 <div class="explorer-col-title">
                     <h3>Legend</h3>
                 </div>
+                <CategoricalLegend
+                    variable="project"
+                    lStyle="bar"
+                    :lWidth="widthLegend"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
                 <CategoricalLegend
                     variable="sig_sbs"
                     lStyle="bar"
@@ -50,6 +99,8 @@ import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPES, EVENT_SUBTYPE_RESETS } from 
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
 import HistoryButtons from './HistoryButtons.vue';
+
+import API from './../api.js';
 
 export default {
     name: 'Explorer',
@@ -92,6 +143,9 @@ export default {
             this.setStack(stack);
         },
         initScalesAndData() {
+            const projectsScale = new CategoricalScale("project", "Project", this.getConfig().selectedSamples);
+            this.setScale({key: "project", scale: projectsScale});
+
             const sigsSbsScale = new CategoricalScale("sig_sbs", "SBS Signature", this.getConfig().selectedSignaturesSbs);
             this.setScale({key: "sig_sbs", scale: sigsSbsScale});
 
@@ -100,6 +154,23 @@ export default {
 
             const sigsIndelScale = new CategoricalScale("sig_indel", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
             this.setScale({key: "sig_indel", scale: sigsIndelScale});
+
+            const samplesScale = new CategoricalScale("sample_id", "Sample", API.fetchSamples({"projects": this.getConfig().selectedSamples}));
+            this.setScale({key: "sample_id", scale: samplesScale});
+
+            const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", API.fetchScaleExposures({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setScale({key: "exposure_sbs", scale: exposureSbsScale});
+
+            const exposureSbsData = new DataContainer("exposure_sbs", "SBS Exposure", API.fetchDataExposures({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setData({key: "exposure_sbs", data: exposureSbsData});
         },
         ...mapMutations([
             'setStack',
@@ -121,6 +192,10 @@ export default {
         overflow-y: scroll;
         .explorer-col-title {
             margin-left: 10px;
+            h3 {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
         }
     }
     .explorer-main {
@@ -139,5 +214,12 @@ export default {
 
 .explorer-control {
     background-color: #FAFAFA;
+    &>div {
+        margin-left: 5px;
+    }
+}
+
+.explorer-plot-container {
+    position: relative;
 }
 </style>

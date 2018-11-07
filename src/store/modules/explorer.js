@@ -35,8 +35,8 @@ const mutations = {
     setStack(state, stack) {
         state.stack = stack;
     },
-    setData(state, { key, datum }) {
-        state.data[key] = datum;
+    setData(state, { key, data }) {
+        state.data[key] = data;
     },
     setScale(state, { key, scale }) {
         state.scales[key] = scale;
