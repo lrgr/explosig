@@ -2,7 +2,7 @@
   <div id="app">
     <NavBar/>
     <Intro v-if="showIntro" />
-    <Explorer v-if="!showIntro" />
+    <Explorer v-if="!showIntro" :key="explorerKey" />
   </div>
 </template>
 
@@ -10,10 +10,7 @@
 import debounce from 'lodash/debounce';
 import { mapMutations, mapGetters } from 'vuex';
 
-import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
-import { IMUSE_EVENT_TYPE_CONFIG, IMUSE_EVENT_SUBTYPE_CONFIG, IMUSE_EVENT_SUBTYPE_RESET_CONFIG } from './../vdp/imuse-events.js';
 import Config from './../vdp/Config.js';
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
 import API from './../api.js';
 
@@ -30,27 +27,19 @@ export default {
     Intro,
     Explorer
   },
+  data() {
+    return {
+      explorerKey: 1
+    };
+  },
   mounted() {
     const vm = this;
-    // Initialize the history stack
-    const stack = new HistoryStack(
-      {
-        [EVENT_TYPES.SCALE]: vm.getScale,
-        [EVENT_TYPES.DATA]: vm.getData,
-        [IMUSE_EVENT_TYPE_CONFIG]: vm.getConfig
-      }, 
-      {
-        [IMUSE_EVENT_SUBTYPE_CONFIG]: IMUSE_EVENT_SUBTYPE_RESET_CONFIG,
-        ...EVENT_SUBTYPE_RESETS
-      }
-    );
-    vm.setStack(stack);
+    
     // Initialize the config
     const config = new Config();
-    config.onUpdate(vm.name, vm.updateScalesAndData);
+    config.onUpdate(vm.name, vm.rerender);
     vm.setConfig(config);
-    // Initialize all scales and data
-    vm.initScalesAndData();
+   
 
     vm.checkHash();
 
@@ -68,9 +57,6 @@ export default {
       return (this.getConfig() === null || this.getConfig().isEmpty());
     },
     ...mapGetters([
-      'getData',
-      'getScale',
-      'getStack',
       'getConfig'
     ])
   },
@@ -83,23 +69,13 @@ export default {
         // TODO: Load history stack from param
       }
     },
-    initScalesAndData() {
-      const vm = this;
-
-      const sigsSbsScale = new CategoricalScale("sig_sbs", "SBS Signature", []);
-      vm.setScale({key: "sig_sbs", scale: sigsSbsScale});
-      
-    },
-    updateScalesAndData() {
-      const vm = this;
-
+    rerender() {
+       // Force a re-render by updating the key prop
+      this.explorerKey++;
       
     },
     ...mapMutations([
-      'setConfig',
-      'setStack',
-      'setData',
-      'setScale'
+      'setConfig'
     ])
   }
 }

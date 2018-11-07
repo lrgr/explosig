@@ -31,8 +31,40 @@ export default class Config {
             this._clinicalVariables.length === 0
         )
     }
+
+    updateConfig(samples, signaturesSbs, signaturesDbs, signaturesIndel, genes, clinicalVariables) {
+        this._samples = samples;
+        this._signaturesSbs = signaturesSbs;
+        this._signaturesDbs = signaturesDbs;
+        this._signaturesIndel = signaturesIndel;
+        this._genes = genes;
+        this._clinicalVariables = clinicalVariables;
+        this.emitUpdate();
+    }
     
-    
+    get selectedSamples() {
+        return this._samples;
+    }
+
+    get selectedSignaturesSbs() {
+        return this._signaturesSbs;
+    }
+
+    get selectedSignaturesDbs() {
+        return this._signaturesDbs;
+    }
+
+    get selectedSignaturesIndel() {
+        return this._signaturesIndel;
+    }
+
+    get selectedGenes() {
+        return this._genes;
+    }
+
+    get selectedClinicalVariables() {
+        return this._clinicalVariables;
+    }
 
     /**
      * Reset the configuration.

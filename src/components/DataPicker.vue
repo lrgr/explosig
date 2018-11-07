@@ -64,7 +64,10 @@ export default {
     signaturesVisible: function() {
         return this.innerDataPicker == 'signatures';
     },
-    ...mapGetters(['windowHeight'])
+    ...mapGetters([
+        'windowHeight',
+        'getConfig'
+    ])
   },
   methods: {
     setDataPicker(selection) {
@@ -83,12 +86,8 @@ export default {
         this.chosenSamples = chosenSamples;
     },
     emitUpdate() {
-        // Update samples/signatures in store
-        // TODO: do thru config
-        /*this.setSelectedSamples(this.chosenSamples);
-        this.setSelectedSignaturesSbs(this.chosenSignaturesSbs);
-        this.setSelectedSignaturesDbs(this.chosenSignaturesDbs);
-        this.setSelectedSignaturesIndel(this.chosenSignaturesIndel);*/
+        // Update samples/signatures in config
+        this.getConfig().updateConfig(this.chosenSamples, this.chosenSignaturesSbs, this.chosenSignaturesDbs, this.chosenSignaturesIndel, [], []);
         // Notify parent to close modal
         this.$emit('update');
     }

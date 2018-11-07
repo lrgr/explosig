@@ -1,3 +1,0 @@
-export const IMUSE_EVENT_TYPE_CONFIG = 100;
-export const IMUSE_EVENT_SUBTYPE_CONFIG = 100;
-export const IMUSE_EVENT_SUBTYPE_RESET_CONFIG = "resetConfig";
