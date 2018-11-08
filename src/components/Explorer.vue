@@ -7,16 +7,18 @@
             <div class="explorer-main explorer-col">
                 <div class="explorer-col-title">
                     <h3>Main</h3>
-                    <div class="explorer-plot-container">
+                </div>
+                <div class="explorer-plot-container">
+                    <div :style="{ 'height': (5+200+5) + 'px' }">
                         <Axis 
                             variable="exposure_sbs"
                             side="left"
                             :pWidth="(widthMain-150-5)"
-                            :pHeight="300"
+                            :pHeight="200"
                             :pMarginTop="5"
                             :pMarginLeft="150"
                             :pMarginRight="5"
-                            :pMarginBottom="150"
+                            :pMarginBottom="5"
                             :getScale="getScale"
                             :getStack="getStack"
                         />
@@ -26,7 +28,7 @@
                             y="exposure_sbs"
                             c="sig_sbs"
                             :pWidth="(widthMain-150-10)"
-                            :pHeight="300"
+                            :pHeight="200"
                             :pMarginTop="5"
                             :pMarginLeft="150"
                             :pMarginRight="5"
@@ -35,12 +37,72 @@
                             :getScale="getScale"
                             :getStack="getStack"
                         />
+                    </div>
+                    <div :style="{ 'height': (5+200+5) + 'px' }">
+                        <Axis 
+                            variable="exposure_dbs"
+                            side="left"
+                            :pWidth="(widthMain-150-5)"
+                            :pHeight="200"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="5"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <StackedBarPlot 
+                            data="exposure_dbs"
+                            x="sample_id"
+                            y="exposure_dbs"
+                            c="sig_dbs"
+                            :pWidth="(widthMain-150-10)"
+                            :pHeight="200"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="150"
+                            :getData="getData"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                    </div>
+                    <div :style="{ 'height': (5+200+5) + 'px' }">
+                        <Axis 
+                            variable="exposure_indel"
+                            side="left"
+                            :pWidth="(widthMain-150-5)"
+                            :pHeight="200"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="5"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <StackedBarPlot 
+                            data="exposure_indel"
+                            x="sample_id"
+                            y="exposure_indel"
+                            c="sig_indel"
+                            :pWidth="(widthMain-150-10)"
+                            :pHeight="200"
+                            :pMarginTop="5"
+                            :pMarginLeft="150"
+                            :pMarginRight="5"
+                            :pMarginBottom="150"
+                            :getData="getData"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                    </div>
+                    <div :style="{ 'height': (150) + 'px' }">
                         <Axis 
                             variable="sample_id"
                             side="bottom"
                             :tickRotation="-65"
                             :pWidth="(widthMain-150-5)"
-                            :pHeight="300"
+                            :pHeight="0"
                             :pMarginTop="5"
                             :pMarginLeft="150"
                             :pMarginRight="5"
@@ -54,6 +116,117 @@
             <div class="explorer-overview explorer-col">
                 <div class="explorer-col-title">
                     <h3>Overview</h3>
+                </div>
+                <div class="explorer-plot-container">
+                    <PlotContainer
+                        :pWidth="(widthOverview-130-5)"
+                        :pHeight="300"
+                        :pMarginTop="10"
+                        :pMarginLeft="130"
+                        :pMarginRight="5"
+                        :pMarginBottom="180"
+                        >
+                        <Axis
+                            slot="axisLeft"
+                            variable="exposure_sbs"
+                            side="left" 
+                            :tickRotation="-35"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <MultiBoxPlot
+                            slot="plot"
+                            data="exposure_sbs"
+                            x="sig_sbs"
+                            y="exposure_sbs"
+                            o="sample_id"
+                            :getData="getData"
+                            :getScale="getScale"
+                            :drawOutliers="true"
+                        />
+                        <Axis
+                            slot="axisBottom"
+                            variable="sig_sbs"
+                            side="bottom" 
+                            :tickRotation="-65"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                    </PlotContainer>
+                </div>
+                <div class="explorer-plot-container">
+                    <PlotContainer
+                        :pWidth="(widthOverview-130-5)"
+                        :pHeight="300"
+                        :pMarginTop="10"
+                        :pMarginLeft="130"
+                        :pMarginRight="5"
+                        :pMarginBottom="180"
+                        >
+                        <Axis
+                            slot="axisLeft"
+                            variable="exposure_dbs"
+                            side="left" 
+                            :tickRotation="-35"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <MultiBoxPlot
+                            slot="plot"
+                            data="exposure_dbs"
+                            x="sig_dbs"
+                            y="exposure_dbs"
+                            o="sample_id"
+                            :getData="getData"
+                            :getScale="getScale"
+                            :drawOutliers="true"
+                        />
+                        <Axis
+                            slot="axisBottom"
+                            variable="sig_dbs"
+                            side="bottom" 
+                            :tickRotation="-65"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                    </PlotContainer>
+                    <div class="explorer-plot-container">
+                    <PlotContainer
+                        :pWidth="(widthOverview-130-5)"
+                        :pHeight="300"
+                        :pMarginTop="10"
+                        :pMarginLeft="130"
+                        :pMarginRight="5"
+                        :pMarginBottom="180"
+                        >
+                        <Axis
+                            slot="axisLeft"
+                            variable="exposure_indel"
+                            side="left" 
+                            :tickRotation="-35"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                        <MultiBoxPlot
+                            slot="plot"
+                            data="exposure_indel"
+                            x="sig_indel"
+                            y="exposure_indel"
+                            o="sample_id"
+                            :getData="getData"
+                            :getScale="getScale"
+                            :drawOutliers="true"
+                        />
+                        <Axis
+                            slot="axisBottom"
+                            variable="sig_indel"
+                            side="bottom" 
+                            :tickRotation="-65"
+                            :getScale="getScale"
+                            :getStack="getStack"
+                        />
+                    </PlotContainer>
+                </div>
                 </div>
             </div>
             <div class="explorer-legend explorer-col">
@@ -171,6 +344,34 @@ export default {
                 "mut_type": "SBS"
             }));
             this.setData({key: "exposure_sbs", data: exposureSbsData});
+
+            const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setScale({key: "exposure_dbs", scale: exposureDbsScale});
+
+            const exposureDbsData = new DataContainer("exposure_dbs", "DBS Exposure", API.fetchDataExposures({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setData({key: "exposure_dbs", data: exposureDbsData});
+
+            const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setScale({key: "exposure_indel", scale: exposureIndelScale});
+
+            const exposureIndelData = new DataContainer("exposure_indel", "INDEL Exposure", API.fetchDataExposures({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setData({key: "exposure_indel", data: exposureIndelData});
         },
         ...mapMutations([
             'setStack',
@@ -221,5 +422,8 @@ export default {
 
 .explorer-plot-container {
     position: relative;
+    &>div {
+        position: relative;
+    }
 }
 </style>
