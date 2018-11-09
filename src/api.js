@@ -35,20 +35,9 @@ export default class API {
     }
 
     // Fetches with cacheing
-    static fetchChromosomes() {
-        let url = API.api_base + "chromosomes";
 
-        return API.request(
-            fetch(url, { method: "POST" })
-                .then(function(response) {
-                    return response.json();
-                }), 
-            url,
-            null
-        );
-    }
-
-    static fetchKaryotype() {
+   /* 
+   static fetchKaryotype() {
         let url = API.api_base + "karyotype";
 
         return API.request(
@@ -57,8 +46,10 @@ export default class API {
             null
         );
     }
+    */
 
-    static fetchGenomeSignatureBins(dataOptions) {
+   /* 
+   static fetchGenomeSignatureBins(dataOptions) {
         let url = API.api_base + "signature-genome-bins";
         dataOptions['regionWidth'] = 5000000;
 
@@ -68,6 +59,8 @@ export default class API {
                 dataOptions
             );
     }
+    */
+    /*
     static fetchKataegis(dataOptions) {
         let url = API.api_base + "kataegis";
 
@@ -77,7 +70,8 @@ export default class API {
                 dataOptions
             );
     }
-
+    */
+    /*
     static fetchRainfall(dataOptions) {
         let url = API.api_base + "kataegis-rainfall";
 
@@ -87,9 +81,10 @@ export default class API {
             dataOptions
         );
     }
+    */
 
-    static fetchDataExposures(dataOptions) {
-        let url = API.api_base + "data-exposures";
+    static fetchPlotExposures(dataOptions) {
+        let url = API.api_base + "plot-exposures";
 
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -98,6 +93,16 @@ export default class API {
         );
     }
 
+    static fetchPlotExposuresNormalized(dataOptions) {
+        let url = API.api_base + "plot-exposures-normalized";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+    /*
     static fetchSingleDonorExposures(dataOptions) {
         let url = API.api_base + "exposures-single-donor";
         
@@ -107,7 +112,8 @@ export default class API {
             dataOptions
         );
     }
-
+    */
+    /*
     static fetchSignature(dataOptions) {
         let url = API.api_base + "signature";
         
@@ -117,6 +123,7 @@ export default class API {
             dataOptions
         );
     }
+    */
 
     static fetchSamples(dataOptions) {
         let url = API.api_base + "samples";
@@ -138,6 +145,26 @@ export default class API {
         );
     }
 
+    static fetchScaleExposuresSum(dataOptions) {
+        let url = API.api_base + "scale-exposures-sum";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleExposuresNormalized(dataOptions) {
+        let url = API.api_base + "scale-exposures-normalized";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+    /*
     static fetchSingleDonorGenomeSignatureBins(dataOptions) {
         let url = API.api_base + "signature-genome-bins-single-donor";
         dataOptions['regionWidth'] = 5000000;
@@ -148,6 +175,7 @@ export default class API {
             dataOptions
         );
     }
+    */
 
     static fetchClustering(dataOptions) {
         let url = API.api_base + "clustering";

@@ -99,12 +99,36 @@ export default {
             }));
             this.setScale({key: "exposure_sbs", scale: exposureSbsScale});
 
-            const exposureSbsData = new DataContainer("exposure_sbs", "SBS Exposure", API.fetchDataExposures({
+            const exposureSumSbsScale = new ContinuousScale("exposure_sum_sbs", "SBS Exposure", API.fetchScaleExposuresSum({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setScale({key: "exposure_sum_sbs", scale: exposureSumSbsScale});
+
+            const exposureSbsNormalizedScale = new ContinuousScale("exposure_sbs_normalized", "Normalized SBS Exposure", API.fetchScaleExposuresNormalized({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setScale({key: "exposure_sbs_normalized", scale: exposureSbsNormalizedScale});
+
+            const exposureSbsSumNormalizedScale = new ContinuousScale("exposure_sum_sbs_normalized", "Normalized SBS Exposure", [0, 1]);
+            this.setScale({key: "exposure_sum_sbs_normalized", scale: exposureSbsSumNormalizedScale});
+
+            const exposureSbsData = new DataContainer("exposure_sbs", "SBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS"
             }));
             this.setData({key: "exposure_sbs", data: exposureSbsData});
+
+            const exposureSbsNormalizedData = new DataContainer("exposure_sbs_normalized", "Normalized SBS Exposure", API.fetchPlotExposuresNormalized({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setData({key: "exposure_sbs_normalized", data: exposureSbsNormalizedData});
 
             const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
@@ -113,12 +137,36 @@ export default {
             }));
             this.setScale({key: "exposure_dbs", scale: exposureDbsScale});
 
-            const exposureDbsData = new DataContainer("exposure_dbs", "DBS Exposure", API.fetchDataExposures({
+            const exposureSumDbsScale = new ContinuousScale("exposure_sum_dbs", "DBS Exposure", API.fetchScaleExposuresSum({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setScale({key: "exposure_sum_dbs", scale: exposureSumDbsScale});
+
+            const exposureDbsNormalizedScale = new ContinuousScale("exposure_dbs_normalized", "Normalized DBS Exposure", API.fetchScaleExposuresNormalized({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setScale({key: "exposure_dbs_normalized", scale: exposureDbsNormalizedScale});
+
+            const exposureDbsSumNormalizedScale = new ContinuousScale("exposure_sum_dbs_normalized", "Normalized DBS Exposure", [0, 1]);
+            this.setScale({key: "exposure_sum_dbs_normalized", scale: exposureDbsSumNormalizedScale});
+
+            const exposureDbsData = new DataContainer("exposure_dbs", "DBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS"
             }));
             this.setData({key: "exposure_dbs", data: exposureDbsData});
+
+            const exposureDbsNormalizedData = new DataContainer("exposure_dbs_normalized", "Normalized DBS Exposure", API.fetchPlotExposuresNormalized({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setData({key: "exposure_dbs_normalized", data: exposureDbsNormalizedData});
 
             const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
@@ -127,12 +175,38 @@ export default {
             }));
             this.setScale({key: "exposure_indel", scale: exposureIndelScale});
 
-            const exposureIndelData = new DataContainer("exposure_indel", "INDEL Exposure", API.fetchDataExposures({
+            const exposureSumIndelScale = new ContinuousScale("exposure_sum_indel", "INDEL Exposure", API.fetchScaleExposuresSum({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setScale({key: "exposure_sum_indel", scale: exposureSumIndelScale});
+
+            const exposureIndelNormalizedScale = new ContinuousScale("exposure_indel_normalized", "Normalized INDEL Exposure", API.fetchScaleExposuresNormalized({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setScale({key: "exposure_indel_normalized", scale: exposureIndelNormalizedScale});
+
+            const exposureIndelSumNormalizedScale = new ContinuousScale("exposure_sum_indel_normalized", "Normalized INDEL Exposure", [0, 1]);
+            this.setScale({key: "exposure_sum_indel_normalized", scale: exposureIndelSumNormalizedScale});
+
+            const exposureIndelData = new DataContainer("exposure_indel", "INDEL Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL"
             }));
             this.setData({key: "exposure_indel", data: exposureIndelData});
+
+            const exposureIndelNormalizedData = new DataContainer("exposure_indel_normalized", "Normalized INDEL Exposure", API.fetchPlotExposuresNormalized({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
+
+            
         },
         ...mapMutations([
             'setStack',
