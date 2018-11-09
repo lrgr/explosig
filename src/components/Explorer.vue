@@ -80,6 +80,9 @@ export default {
             const projectsScale = new CategoricalScale("project", "Project", this.getConfig().selectedSamples);
             this.setScale({key: "project", scale: projectsScale});
 
+            const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
+            this.setScale({key: "mut_type", scale: mutTypeScale});
+
             const sigsSbsScale = new CategoricalScale("sig_sbs", "SBS Signature", this.getConfig().selectedSignaturesSbs);
             this.setScale({key: "sig_sbs", scale: sigsSbsScale});
 
@@ -92,6 +95,23 @@ export default {
             const samplesScale = new CategoricalScale("sample_id", "Sample", API.fetchSamples({"projects": this.getConfig().selectedSamples}));
             this.setScale({key: "sample_id", scale: samplesScale});
 
+            /* MUTATION COUNTS */
+            const countScale = new ContinuousScale("mut_count", "Mutation Count", API.fetchScaleCounts({
+                "projects": this.getConfig().selectedSamples
+            }));
+            this.setScale({key: "mut_count", scale: countScale});
+
+            const countSumScale = new ContinuousScale("mut_count_sum", "Mutation Count", API.fetchScaleCountsSum({
+                "projects": this.getConfig().selectedSamples
+            }));
+            this.setScale({key: "mut_count_sum", scale: countSumScale});
+
+            const countData = new DataContainer("mut_count", "Mutation Count", API.fetchPlotCounts({
+                "projects": this.getConfig().selectedSamples
+            }));
+            this.setData({key: "mut_count", data: countData});
+
+            /* SIGNATURE EXPOSURES: SBS */
             const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
@@ -130,6 +150,7 @@ export default {
             }));
             this.setData({key: "exposure_sbs_normalized", data: exposureSbsNormalizedData});
 
+            /* SIGNATURE EXPOSURES: DBS */
             const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
@@ -168,6 +189,7 @@ export default {
             }));
             this.setData({key: "exposure_dbs_normalized", data: exposureDbsNormalizedData});
 
+            /* SIGNATURE EXPOSURES: INDEL */
             const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,

@@ -8,6 +8,13 @@
             :getStack="getStack"
         />
         <CategoricalLegend
+            variable="mut_type"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
+        <CategoricalLegend
             variable="sig_sbs"
             lStyle="bar"
             :lWidth="colWidth"

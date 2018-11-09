@@ -1,5 +1,42 @@
 <template>
     <div>
+        <!-- Counts -->
+        <PlotContainer
+            :pWidth="(colWidth-130-5)"
+            :pHeight="300"
+            :pMarginTop="10"
+            :pMarginLeft="130"
+            :pMarginRight="5"
+            :pMarginBottom="100"
+            >
+            <Axis
+                slot="axisLeft"
+                variable="mut_count"
+                side="left" 
+                :tickRotation="-35"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <MultiBoxPlot
+                slot="plot"
+                data="mut_count"
+                x="mut_type"
+                y="mut_count"
+                o="sample_id"
+                :getData="getData"
+                :getScale="getScale"
+                :drawOutliers="true"
+            />
+            <Axis
+                slot="axisBottom"
+                variable="mut_type"
+                side="bottom" 
+                :tickRotation="-65"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+        </PlotContainer>
         <!-- Exposures -->
         <PlotContainer
             :pWidth="(colWidth-130-5)"

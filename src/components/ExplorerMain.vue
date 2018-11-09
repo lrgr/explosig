@@ -1,5 +1,41 @@
 <template>
     <div>
+        <!-- Counts -->
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="200"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="150"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="mut_count_sum"
+                side="left"
+                
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <StackedBarPlot 
+                slot="plot"
+                data="mut_count"
+                x="sample_id"
+                y="mut_count_sum"
+                c="mut_type"
+                :getData="getData"
+                :getScale="getScale"
+            />
+            <Axis 
+                slot="axisBottom"
+                variable="sample_id"
+                side="bottom"
+                :tickRotation="-65"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+        </PlotContainer>
+
         <!-- Exposures -->
         <PlotContainer
             :pWidth="(colWidth-150-5)"
