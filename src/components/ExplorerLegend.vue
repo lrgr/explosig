@@ -1,7 +1,7 @@
 <template>
     <div>
         <CategoricalLegend
-            variable="project"
+            variable="proj_id"
             lStyle="bar"
             :lWidth="colWidth"
             :getScale="getScale"

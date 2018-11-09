@@ -77,8 +77,8 @@ export default {
             this.setStack(stack);
         },
         initScalesAndData() {
-            const projectsScale = new CategoricalScale("project", "Project", this.getConfig().selectedSamples);
-            this.setScale({key: "project", scale: projectsScale});
+            const projectsScale = new CategoricalScale("proj_id", "Project", this.getConfig().selectedSamples);
+            this.setScale({key: "proj_id", scale: projectsScale});
 
             const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
             this.setScale({key: "mut_type", scale: mutTypeScale});
@@ -92,7 +92,16 @@ export default {
             const sigsIndelScale = new CategoricalScale("sig_indel", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
             this.setScale({key: "sig_indel", scale: sigsIndelScale});
 
-            const samplesScale = new CategoricalScale("sample_id", "Sample", API.fetchSamples({"projects": this.getConfig().selectedSamples}));
+            /* SAMPLES METADATA  */
+            const samplesMetaScale = new CategoricalScale("sample_meta", "Sample Metadata", ["sample_id"], ["Sample ID"]);
+            this.setScale({key: "sample_meta", scale: samplesMetaScale});
+
+            const samplesMetaData = new DataContainer("sample_meta", "Sample Metadata", API.fetchPlotSamplesMeta({
+                "projects": this.getConfig().selectedSamples
+            }));
+            this.setData({key: "sample_meta", data: samplesMetaData});
+
+            const samplesScale = new CategoricalScale("sample_id", "Sample", API.fetchScaleSamples({"projects": this.getConfig().selectedSamples}));
             this.setScale({key: "sample_id", scale: samplesScale});
 
             /* MUTATION COUNTS */
@@ -228,7 +237,17 @@ export default {
             }));
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
 
-            
+
+            /* EXPLICIT LINKING IF NECESSARY */
+            samplesScale.onHighlight("explorer", (sample_id) => {
+                const sampleMetaForHighlight = samplesMetaData._data.find((el) => el["sample_id"] === sample_id);
+                projectsScale.emitHighlight(sampleMetaForHighlight["proj_id"]);
+            });
+
+            samplesScale.onHighlightDestroy("explorer", () => {
+                projectsScale.emitHighlightDestroy();
+            });
+
         },
         ...mapMutations([
             'setStack',

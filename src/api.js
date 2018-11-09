@@ -82,8 +82,16 @@ export default class API {
         );
     }
     */
+    static fetchPlotSamplesMeta(dataOptions) {
+        let url = API.api_base + "plot-samples-meta";
 
-   static fetchPlotCounts(dataOptions) {
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+    static fetchPlotCounts(dataOptions) {
         let url = API.api_base + "plot-counts";
 
         return API.request(
@@ -135,8 +143,8 @@ export default class API {
     }
     */
 
-    static fetchSamples(dataOptions) {
-        let url = API.api_base + "samples";
+    static fetchScaleSamples(dataOptions) {
+        let url = API.api_base + "scale-samples";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
