@@ -1,0 +1,130 @@
+<template>
+    <div>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="200"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="exposure_sbs"
+                side="left"
+                
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <StackedBarPlot 
+                slot="plot"
+                data="exposure_sbs"
+                x="sample_id"
+                y="exposure_sbs"
+                c="sig_sbs"
+                :getData="getData"
+                :getScale="getScale"
+            />
+        </PlotContainer>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="200"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="exposure_dbs"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <StackedBarPlot 
+                slot="plot"
+                data="exposure_dbs"
+                x="sample_id"
+                y="exposure_dbs"
+                c="sig_dbs"
+                :getData="getData"
+                :getScale="getScale"
+            />
+        </PlotContainer>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="200"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="exposure_indel"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <StackedBarPlot 
+                slot="plot"
+                data="exposure_indel"
+                x="sample_id"
+                y="exposure_indel"
+                c="sig_indel"
+                :getData="getData"
+                :getScale="getScale"
+            />
+        </PlotContainer>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="0"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="150"
+        >
+            <Axis 
+                slot="axisBottom"
+                variable="sample_id"
+                side="bottom"
+                :tickRotation="-65"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+        </PlotContainer>
+    </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+export default {
+    name: 'ExplorerMain',
+    props: {
+        'widthProportion': {
+            type: Number
+        }
+    },
+    computed: {
+        colWidth() {
+            return this.windowWidth * this.widthProportion - 25;
+        },
+        ...mapGetters([
+            'windowHeight', 
+            'windowWidth',
+            'getConfig',
+            'getStack',
+            'getData',
+            'getScale'
+        ])
+    }
+}
+</script>
+
+<style scoped lang="scss">
+@import './../style/variables.scss';
+@import '~vue-declarative-plots/dist/vue-declarative-plots.css';
+
+
+</style>

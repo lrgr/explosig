@@ -8,259 +8,19 @@
                 <div class="explorer-col-title">
                     <h3>Main</h3>
                 </div>
-                <div class="explorer-plot-container">
-                    <div :style="{ 'height': (5+200+5) + 'px' }">
-                        <Axis 
-                            variable="exposure_sbs"
-                            side="left"
-                            :pWidth="(widthMain-150-5)"
-                            :pHeight="200"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="5"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                        <StackedBarPlot 
-                            data="exposure_sbs"
-                            x="sample_id"
-                            y="exposure_sbs"
-                            c="sig_sbs"
-                            :pWidth="(widthMain-150-10)"
-                            :pHeight="200"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="150"
-                            :getData="getData"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </div>
-                    <div :style="{ 'height': (5+200+5) + 'px' }">
-                        <Axis 
-                            variable="exposure_dbs"
-                            side="left"
-                            :pWidth="(widthMain-150-5)"
-                            :pHeight="200"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="5"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                        <StackedBarPlot 
-                            data="exposure_dbs"
-                            x="sample_id"
-                            y="exposure_dbs"
-                            c="sig_dbs"
-                            :pWidth="(widthMain-150-10)"
-                            :pHeight="200"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="150"
-                            :getData="getData"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </div>
-                    <div :style="{ 'height': (5+200+5) + 'px' }">
-                        <Axis 
-                            variable="exposure_indel"
-                            side="left"
-                            :pWidth="(widthMain-150-5)"
-                            :pHeight="200"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="5"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                        <StackedBarPlot 
-                            data="exposure_indel"
-                            x="sample_id"
-                            y="exposure_indel"
-                            c="sig_indel"
-                            :pWidth="(widthMain-150-10)"
-                            :pHeight="200"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="150"
-                            :getData="getData"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </div>
-                    <div :style="{ 'height': (150) + 'px' }">
-                        <Axis 
-                            variable="sample_id"
-                            side="bottom"
-                            :tickRotation="-65"
-                            :pWidth="(widthMain-150-5)"
-                            :pHeight="0"
-                            :pMarginTop="5"
-                            :pMarginLeft="150"
-                            :pMarginRight="5"
-                            :pMarginBottom="150"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </div>
-                </div>
+                <ExplorerMain :widthProportion="(5/10)"/>
             </div>
             <div class="explorer-overview explorer-col">
                 <div class="explorer-col-title">
                     <h3>Overview</h3>
                 </div>
-                <div class="explorer-plot-container">
-                    <PlotContainer
-                        :pWidth="(widthOverview-130-5)"
-                        :pHeight="300"
-                        :pMarginTop="10"
-                        :pMarginLeft="130"
-                        :pMarginRight="5"
-                        :pMarginBottom="180"
-                        >
-                        <Axis
-                            slot="axisLeft"
-                            variable="exposure_sbs"
-                            side="left" 
-                            :tickRotation="-35"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                        <MultiBoxPlot
-                            slot="plot"
-                            data="exposure_sbs"
-                            x="sig_sbs"
-                            y="exposure_sbs"
-                            o="sample_id"
-                            :getData="getData"
-                            :getScale="getScale"
-                            :drawOutliers="true"
-                        />
-                        <Axis
-                            slot="axisBottom"
-                            variable="sig_sbs"
-                            side="bottom" 
-                            :tickRotation="-65"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </PlotContainer>
-                </div>
-                <div class="explorer-plot-container">
-                    <PlotContainer
-                        :pWidth="(widthOverview-130-5)"
-                        :pHeight="300"
-                        :pMarginTop="10"
-                        :pMarginLeft="130"
-                        :pMarginRight="5"
-                        :pMarginBottom="180"
-                        >
-                        <Axis
-                            slot="axisLeft"
-                            variable="exposure_dbs"
-                            side="left" 
-                            :tickRotation="-35"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                        <MultiBoxPlot
-                            slot="plot"
-                            data="exposure_dbs"
-                            x="sig_dbs"
-                            y="exposure_dbs"
-                            o="sample_id"
-                            :getData="getData"
-                            :getScale="getScale"
-                            :drawOutliers="true"
-                        />
-                        <Axis
-                            slot="axisBottom"
-                            variable="sig_dbs"
-                            side="bottom" 
-                            :tickRotation="-65"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </PlotContainer>
-                    <div class="explorer-plot-container">
-                    <PlotContainer
-                        :pWidth="(widthOverview-130-5)"
-                        :pHeight="300"
-                        :pMarginTop="10"
-                        :pMarginLeft="130"
-                        :pMarginRight="5"
-                        :pMarginBottom="180"
-                        >
-                        <Axis
-                            slot="axisLeft"
-                            variable="exposure_indel"
-                            side="left" 
-                            :tickRotation="-35"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                        <MultiBoxPlot
-                            slot="plot"
-                            data="exposure_indel"
-                            x="sig_indel"
-                            y="exposure_indel"
-                            o="sample_id"
-                            :getData="getData"
-                            :getScale="getScale"
-                            :drawOutliers="true"
-                        />
-                        <Axis
-                            slot="axisBottom"
-                            variable="sig_indel"
-                            side="bottom" 
-                            :tickRotation="-65"
-                            :getScale="getScale"
-                            :getStack="getStack"
-                        />
-                    </PlotContainer>
-                </div>
-                </div>
+                <ExplorerOverview :widthProportion="(3/10)"/>
             </div>
             <div class="explorer-legend explorer-col">
                 <div class="explorer-col-title">
                     <h3>Legend</h3>
                 </div>
-                <CategoricalLegend
-                    variable="project"
-                    lStyle="bar"
-                    :lWidth="widthLegend"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <CategoricalLegend
-                    variable="sig_sbs"
-                    lStyle="bar"
-                    :lWidth="widthLegend"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <CategoricalLegend
-                    variable="sig_dbs"
-                    lStyle="bar"
-                    :lWidth="widthLegend"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <CategoricalLegend
-                    variable="sig_indel"
-                    lStyle="bar"
-                    :lWidth="widthLegend"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
+                <ExplorerLegend :widthProportion="(2/10)"/>
             </div>
         </div>
     </div>
@@ -272,6 +32,10 @@ import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPES, EVENT_SUBTYPE_RESETS } from 
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
 import HistoryButtons from './HistoryButtons.vue';
+import ExplorerLegend from './ExplorerLegend.vue';
+import ExplorerOverview from './ExplorerOverview.vue';
+import ExplorerMain from './ExplorerMain.vue';
+
 
 import API from './../api.js';
 
@@ -279,16 +43,13 @@ export default {
     name: 'Explorer',
     components: {
         HistoryButtons,
+        ExplorerLegend,
+        ExplorerOverview,
+        ExplorerMain
     },
     computed: {
         widthMain() {
             return this.windowWidth * (5/10) - 25;
-        },
-        widthOverview() {
-            return this.windowWidth * (3/10) - 25;
-        },
-        widthLegend() {
-            return this.windowWidth * (2/10) - 25;
         },
         ...mapGetters([
             'windowHeight', 
@@ -391,6 +152,7 @@ export default {
     flex-direction: row;
     .explorer-col {
         overflow-y: scroll;
+        overflow-x: hidden;
         .explorer-col-title {
             margin-left: 10px;
             h3 {
@@ -420,10 +182,4 @@ export default {
     }
 }
 
-.explorer-plot-container {
-    position: relative;
-    &>div {
-        position: relative;
-    }
-}
 </style>
