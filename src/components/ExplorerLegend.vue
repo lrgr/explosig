@@ -14,21 +14,21 @@
             :getScale="getScale"
             :getStack="getStack"
         />
-        <CategoricalLegend
+        <CategoricalLegend v-if="showSbs"
             variable="sig_sbs"
             lStyle="bar"
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
         />
-        <CategoricalLegend
+        <CategoricalLegend v-if="showDbs"
             variable="sig_dbs"
             lStyle="bar"
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
         />
-        <CategoricalLegend
+        <CategoricalLegend v-if="showIndel"
             variable="sig_indel"
             lStyle="bar"
             :lWidth="colWidth"
@@ -51,6 +51,15 @@ export default {
     computed: {
         colWidth() {
             return this.windowWidth * this.widthProportion - 25;
+        },
+        showSbs() {
+            return (this.getConfig().selectedSignaturesSbs.length > 0);
+        },
+        showDbs() {
+            return (this.getConfig().selectedSignaturesDbs.length > 0);
+        },
+        showIndel() {
+            return (this.getConfig().selectedSignaturesIndel.length > 0);
         },
         ...mapGetters([
             'windowHeight', 

@@ -87,7 +87,14 @@ export default {
     },
     emitUpdate() {
         // Update samples/signatures in config
-        this.getConfig().updateConfig(this.chosenSamples, this.chosenSignaturesSbs, this.chosenSignaturesDbs, this.chosenSignaturesIndel, [], []);
+        this.getConfig().updateConfig(
+            this.chosenSamples.slice(), 
+            this.chosenSignaturesSbs.slice(), 
+            this.chosenSignaturesDbs.slice(), 
+            this.chosenSignaturesIndel.slice(), 
+            [], 
+            []
+        );
         // Notify parent to close modal
         this.$emit('update');
     }

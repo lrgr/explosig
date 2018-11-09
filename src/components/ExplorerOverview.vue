@@ -13,7 +13,6 @@
                 slot="axisLeft"
                 variable="mut_count"
                 side="left" 
-                :tickRotation="-35"
                 :getScale="getScale"
                 :getStack="getStack"
             />
@@ -38,19 +37,18 @@
             />
         </PlotContainer>
         <!-- Exposures -->
-        <PlotContainer
+        <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-130-5)"
             :pHeight="300"
             :pMarginTop="10"
             :pMarginLeft="130"
             :pMarginRight="5"
-            :pMarginBottom="100"
+            :pMarginBottom="5"
             >
             <Axis
                 slot="axisLeft"
                 variable="exposure_sbs"
                 side="left" 
-                :tickRotation="-35"
                 :getScale="getScale"
                 :getStack="getStack"
             />
@@ -64,94 +62,11 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
-            <Axis
-                slot="axisBottom"
-                variable="sig_sbs"
-                side="bottom" 
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
         </PlotContainer>
-        <PlotContainer
+        <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-130-5)"
             :pHeight="300"
-            :pMarginTop="10"
-            :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="100"
-            >
-            <Axis
-                slot="axisLeft"
-                variable="exposure_dbs"
-                side="left" 
-                :tickRotation="-35"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <MultiBoxPlot
-                slot="plot"
-                data="exposure_dbs"
-                x="sig_dbs"
-                y="exposure_dbs"
-                o="sample_id"
-                :getData="getData"
-                :getScale="getScale"
-                :drawOutliers="true"
-            />
-            <Axis
-                slot="axisBottom"
-                variable="sig_dbs"
-                side="bottom" 
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
-        </PlotContainer>
-        <PlotContainer
-            :pWidth="(colWidth-130-5)"
-            :pHeight="300"
-            :pMarginTop="10"
-            :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="100"
-            >
-            <Axis
-                slot="axisLeft"
-                variable="exposure_indel"
-                side="left" 
-                :tickRotation="-35"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <MultiBoxPlot
-                slot="plot"
-                data="exposure_indel"
-                x="sig_indel"
-                y="exposure_indel"
-                o="sample_id"
-                :getData="getData"
-                :getScale="getScale"
-                :drawOutliers="true"
-            />
-            <Axis
-                slot="axisBottom"
-                variable="sig_indel"
-                side="bottom" 
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
-        </PlotContainer>
-
-        <!-- Normalized Exposures -->
-        <PlotContainer
-            :pWidth="(colWidth-130-5)"
-            :pHeight="300"
-            :pMarginTop="10"
+            :pMarginTop="0"
             :pMarginLeft="130"
             :pMarginRight="5"
             :pMarginBottom="100"
@@ -160,7 +75,6 @@
                 slot="axisLeft"
                 variable="exposure_sbs_normalized"
                 side="left" 
-                :tickRotation="-35"
                 :getScale="getScale"
                 :getStack="getStack"
             />
@@ -184,10 +98,36 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer
+        <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-130-5)"
             :pHeight="300"
             :pMarginTop="10"
+            :pMarginLeft="130"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+            >
+            <Axis
+                slot="axisLeft"
+                variable="exposure_dbs"
+                side="left" 
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <MultiBoxPlot
+                slot="plot"
+                data="exposure_dbs"
+                x="sig_dbs"
+                y="exposure_dbs"
+                o="sample_id"
+                :getData="getData"
+                :getScale="getScale"
+                :drawOutliers="true"
+            />
+        </PlotContainer>
+        <PlotContainer v-if="showDbs"
+            :pWidth="(colWidth-130-5)"
+            :pHeight="300"
+            :pMarginTop="0"
             :pMarginLeft="130"
             :pMarginRight="5"
             :pMarginBottom="100"
@@ -196,7 +136,6 @@
                 slot="axisLeft"
                 variable="exposure_dbs_normalized"
                 side="left" 
-                :tickRotation="-35"
                 :getScale="getScale"
                 :getStack="getStack"
             />
@@ -220,10 +159,36 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer
+        <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-130-5)"
             :pHeight="300"
-            :pMarginTop="10"
+            :pMarginTop="0"
+            :pMarginLeft="130"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+            >
+            <Axis
+                slot="axisLeft"
+                variable="exposure_indel"
+                side="left" 
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <MultiBoxPlot
+                slot="plot"
+                data="exposure_indel"
+                x="sig_indel"
+                y="exposure_indel"
+                o="sample_id"
+                :getData="getData"
+                :getScale="getScale"
+                :drawOutliers="true"
+            />
+        </PlotContainer>
+        <PlotContainer v-if="showIndel"
+            :pWidth="(colWidth-130-5)"
+            :pHeight="300"
+            :pMarginTop="0"
             :pMarginLeft="130"
             :pMarginRight="5"
             :pMarginBottom="100"
@@ -232,7 +197,6 @@
                 slot="axisLeft"
                 variable="exposure_indel_normalized"
                 side="left" 
-                :tickRotation="-35"
                 :getScale="getScale"
                 :getStack="getStack"
             />
@@ -256,6 +220,10 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
+
+        
+        
+        
     </div>
 </template>
 
@@ -272,6 +240,15 @@ export default {
     computed: {
         colWidth() {
             return this.windowWidth * this.widthProportion - 25;
+        },
+        showSbs() {
+            return (this.getConfig().selectedSignaturesSbs.length > 0);
+        },
+        showDbs() {
+            return (this.getConfig().selectedSignaturesDbs.length > 0);
+        },
+        showIndel() {
+            return (this.getConfig().selectedSignaturesIndel.length > 0);
         },
         ...mapGetters([
             'windowHeight', 
