@@ -55,10 +55,10 @@
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="0"
         >
             <Axis 
                 slot="axisLeft"
@@ -81,10 +81,10 @@
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="0"
         >
             <Axis 
                 slot="axisLeft"
@@ -107,10 +107,10 @@
         <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="0"
         >
             <Axis 
                 slot="axisLeft"
@@ -132,10 +132,10 @@
         <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="0"
         >
             <Axis 
                 slot="axisLeft"
@@ -157,10 +157,10 @@
         <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="0"
         >
             <Axis 
                 slot="axisLeft"
@@ -182,10 +182,10 @@
          <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="0"
         >
             <Axis 
                 slot="axisLeft"
@@ -205,31 +205,14 @@
             />
         </PlotContainer>
 
-        <!-- Meta -->
         <PlotContainer
             :pWidth="(colWidth-150-5)"
-            :pHeight="20"
+            :pHeight="0"
             :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="150"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="sample_meta"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
-            <TrackPlot 
-                slot="plot"
-                data="sample_meta"
-                x="sample_id"
-                c="proj_id"
-                :getData="getData"
-                :getScale="getScale"
-            />
             <Axis 
                 slot="axisBottom"
                 variable="sample_id"
@@ -239,6 +222,60 @@
                 :getStack="getStack"
             />
         </PlotContainer>
+
+        <!-- Meta -->
+        <div v-if="showMeta">
+            <PlotInfo title="Sample Metadata">
+                <p slot="info">
+                    This plot shows metadata for each sample.
+                </p>
+            </PlotInfo>
+            <PlotContainer
+                :pWidth="(colWidth-150-5)"
+                :pHeight="20"
+                :pMarginTop="0"
+                :pMarginLeft="150"
+                :pMarginRight="5"
+                :pMarginBottom="5"
+            >
+                <TrackPlot 
+                    slot="plot"
+                    data="sample_meta"
+                    x="sample_id"
+                    c="proj_id"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+            </PlotContainer>
+        </div>
+
+        <!-- Gene Alterations -->
+        <div v-if="showGenes">
+            <PlotInfo title="Gene Mutation Classification">
+                <p slot="info">
+                    This plot shows mutation classification for each selected gene for each sample.
+                </p>
+            </PlotInfo>
+            <div v-for="geneId in selectedGenes" :key="geneId">
+                <PlotContainer
+                    :pWidth="(colWidth-150-5)"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <TrackPlot 
+                        slot="plot"
+                        :data="('gene_' + geneId)"
+                        x="sample_id"
+                        c="mut_class"
+                        :getData="getData"
+                        :getScale="getScale"
+                    />
+                </PlotContainer>
+            </div>
+        </div>
 
         <!-- Hierarchical Clustering -->
         <PlotInfo title="Hierarchical Clustering of Normalized Mutation Signature Exposures">
@@ -383,6 +420,12 @@ export default {
         showIndel() {
             return (this.getConfig().selectedSignaturesIndel.length > 0);
         },
+        showMeta() {
+            return (this.getConfig().selectedSamples.length > 1);
+        },
+        showGenes() {
+            return (this.getConfig().selectedGenes.length > 0);
+        },
         numSbs() {
             return (this.getConfig().selectedSignaturesSbs.length);
         },
@@ -391,6 +434,9 @@ export default {
         },
         numIndel() {
             return (this.getConfig().selectedSignaturesIndel.length);
+        },
+        selectedGenes() {
+            return (this.getConfig().selectedGenes);
         },
         ...mapGetters([
             'windowHeight', 

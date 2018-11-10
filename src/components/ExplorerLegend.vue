@@ -35,6 +35,13 @@
             :getScale="getScale"
             :getStack="getStack"
         />
+        <CategoricalLegend v-if="showGenes"
+            variable="mut_class"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
     </div>
 </template>
 
@@ -60,6 +67,9 @@ export default {
         },
         showIndel() {
             return (this.getConfig().selectedSignaturesIndel.length > 0);
+        },
+        showGenes() {
+            return (this.getConfig().selectedGenes.length > 0);
         },
         ...mapGetters([
             'windowHeight', 

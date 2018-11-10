@@ -256,6 +256,46 @@ export default {
             }));
             this.setData({key: "exposures_clustering", data: exposuresClusteringData});
 
+            /* GENE ALTERATION DATA */
+            const geneScale = new CategoricalScale("gene", "Gene", this.getConfig().selectedGenes);
+            this.setScale({key: "gene", scale: geneScale});
+
+            const geneEventScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations());
+            this.setScale({key: "mut_class", scale: geneEventScale});
+
+            for(const geneId of this.getConfig().selectedGenes) {
+                this.setData({key: ("gene_" + geneId), data: new DataContainer("gene_" + geneId, geneId + " Mutation Type", API.fetchGeneEventTrack({
+                    "projects": this.getConfig().selectedSamples,
+                    "gene_id": geneId
+                }))});
+            }
+
+            /* CLINICAL DATA */
+            const clinicalVariableScale = new CategoricalScale("clinical_variable", "Clinical Variable", this.getConfig().selectedClinicalVariables);
+            this.setScale({key:"clinical_variable", scale: clinicalVariableScale});
+
+            // TODO: figure out a better way to do this
+            const continuousClinicalVars = ["Diagnosis Age", "Tobacco Intensity", "Alcohol Intensity"];
+
+            for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
+                if(continuousClinicalVars.includes(clinicalVar)) {
+                    this.setScale({key: ("cv_" + clinicalVar), data: new ContinuousScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
+                        "projects": this.getConfig().selectedSamples,
+                        "clinical_variable": clinicalVar
+                    }))});
+                } else {
+                    this.setScale({key: ("cv_" + clinicalVar), data: new CategoricalScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
+                        "projects": this.getConfig().selectedSamples,
+                        "clinical_variable": clinicalVar
+                    }))});
+                }
+                
+                this.setData({key: ("cv_" + clinicalVar), data: new DataContainer("cv_" + clinicalVar, clinicalVar, API.fetchClinicalTrack({
+                    "projects": this.getConfig().selectedSamples,
+                    "clinical_variable": clinicalVar
+                }))});
+            }
+
 
             /* EXPLICIT LINKING IF NECESSARY */
             samplesScale.onHighlight("explorer", (sample_id) => {

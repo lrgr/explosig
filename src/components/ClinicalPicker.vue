@@ -4,10 +4,10 @@
     <button class="inline" v-on:click="toggleAll()">Toggle All</button>
     <div class="option-group">
       <table>
-        <tr v-for="clinicalVariable in allClinicalVariables" :key="clinicalVariable.id">
+        <tr v-for="clinicalVariable in allClinicalVariables" :key="clinicalVariable">
             <td>
-            <input type="checkbox" :value="clinicalVariable.id" :id="clinicalVariable.id" name="clinical" v-model="selectedClinicalVariables">
-            <label :for="clinicalVariable.id" class="sample-label">{{ clinicalVariable.name }}</label>
+            <input type="checkbox" :value="clinicalVariable" :id="clinicalVariable" name="clinical" v-model="selectedClinicalVariables">
+            <label :for="clinicalVariable" class="sample-label">{{ clinicalVariable }}</label>
             </td>
         </tr>
       </table>
@@ -39,9 +39,9 @@ export default {
   },
   mounted: function() {
         var vm = this;
-        API.fetchDataListing().then(function(listing) {
-            vm.allClinicalVariables = listing["clinical_variables"];
-            
+        API.fetchClinicalVariableList().then(function(listing) {
+            vm.allClinicalVariables = listing;
+            vm.selectedClinicalVariables = vm.allClinicalVariables.slice()
             vm.loading = false;
         });
   },
@@ -50,7 +50,7 @@ export default {
         if(this.selectedClinicalVariables.length == this.allClinicalVariables.length) {
             this.selectedClinicalVariables = [];
         } else {
-            this.selectedClinicalVariables = this.allClinicalVariables.map((el) => el.id);
+            this.selectedClinicalVariables = this.allClinicalVariables.slice();
         }
     },
   }

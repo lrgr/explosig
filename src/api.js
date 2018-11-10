@@ -52,7 +52,7 @@ export default class API {
     // Fetches with cacheing
 
     static fetchGeneEventTrack(dataOptions) {
-        let url = API.api_base + "gene-event-track";
+        let url = API.api_base + "plot-gene-event-track";
 
         return API.request(
                 d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -61,14 +61,44 @@ export default class API {
             );
     }
 
-    static fetchClinicalVariableList(dataOptions) {
+    static fetchClinicalVariableList() {
         let url = API.api_base + "clinical-variable-list";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST" }),
             url,
-            dataOptions
+            {}
         );
+    }
+
+    static fetchScaleGeneAlterations() {
+        let url = API.api_base + "scale-gene-alterations";
+        
+        return API.request(
+            d3.json(url, { method: "POST" }),
+            url,
+            {}
+        );
+    }
+
+    static fetchClinicalTrack(dataOptions) {
+        let url = API.api_base + "plot-clinical-track";
+
+        return API.request(
+                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+                url,
+                dataOptions
+            );
+    }
+
+    static fetchScaleClinicalTrack(dataOptions) {
+        let url = API.api_base + "scale-clinical-track";
+
+        return API.request(
+                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+                url,
+                dataOptions
+            );
     }
 
    /* 
