@@ -8243,8 +8243,8 @@ vm-browserify@0.0.4:
     indexof "0.0.1"
 
 vue-declarative-plots@^1.0.0:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/vue-declarative-plots/-/vue-declarative-plots-1.2.2.tgz#30a64f10cb119da47a73f192fce47c38ffc3aad1"
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/vue-declarative-plots/-/vue-declarative-plots-1.2.3.tgz#16907b223c459c5676050dc2fd5c5bbdc55d209f"
   dependencies:
     colorjoe "^4.1.0"
     d3 "^5.7.0"

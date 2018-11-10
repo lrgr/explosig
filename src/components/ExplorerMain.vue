@@ -225,7 +225,45 @@
             />
         </PlotContainer>
 
-    
+        <!-- Hierarchical Clustering -->
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="500"
+            :pMarginTop="200"
+            :pMarginLeft="150"
+            :pMarginRight="20"
+            :pMarginBottom="20"
+        >
+            <DendrogramAxis
+                slot="axisTop"
+                variable="sample_id"
+                h="exposures_clustering"
+                side="top"
+                :getScale="getScale"
+                :getStack="getStack"
+                :getData="getData"
+            />
+            <Axis
+                slot="axisLeft"
+                variable="sig_sbs"
+                side="left"
+                :tickRotation="-45"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <HierarchicalMultiTrackPlot
+                slot="plot"
+                data="exposure_sbs_normalized"
+                h="exposures_clustering"
+                x="sample_id"
+                y="sig_sbs"
+                c="exposure_sbs_normalized"
+                :getScale="getScale"
+                :getStack="getStack"
+                :getData="getData"
+            />
+        </PlotContainer>
+
     </div>
 </template>
 

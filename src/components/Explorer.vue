@@ -245,6 +245,17 @@ export default {
             }));
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
 
+            /* CLUSTERING  */
+            const exposuresClusteringData = new DataContainer("exposures_clustering", "Clustering by Exposure", API.fetchClustering({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": {
+                    "SBS": this.getConfig().selectedSignaturesSbs,
+                    "DBS": this.getConfig().selectedSignaturesDbs,
+                    "INDEL": this.getConfig().selectedSignaturesIndel
+                }
+            }));
+            this.setData({key: "exposures_clustering", data: exposuresClusteringData});
+
 
             /* EXPLICIT LINKING IF NECESSARY */
             samplesScale.onHighlight("explorer", (sample_id) => {
