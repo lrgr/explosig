@@ -1,6 +1,13 @@
 <template>
     <div>
         <!-- Counts -->
+        <PlotInfo title="Number of Mutations per Sample">
+            <p slot="info">
+                This plot displays mutation counts for each sample, stacked by mutation type (single base substitution, doublet base substitution, indel).<br>
+                Samples are on the x-axis and counts are on the y-axis.<br>
+                Bar color signifies mutation type.
+            </p>
+        </PlotInfo>
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -37,6 +44,14 @@
         </PlotContainer>
 
         <!-- Exposures -->
+        <PlotInfo title="Mutation Signature Exposures per Sample">
+            <p slot="info">
+                This group of plots displays mutation signature exposures for each sample.<br>
+                Exposures are stacked and colored by signature.<br>
+                Plots are separated by mutation type.<br>
+                Every other plot shows exposures after normalizing (to sum to 1).
+            </p>
+        </PlotInfo>
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -226,6 +241,12 @@
         </PlotContainer>
 
         <!-- Hierarchical Clustering -->
+        <PlotInfo title="Hierarchical Clustering of Normalized Mutation Signature Exposures">
+            <p slot="info">
+                This plot shows normalized exposures to mutation signatures per sample after clustering.<br>
+                Ward linkage has been used to cluster samples.
+            </p>
+        </PlotInfo>
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="0"
@@ -337,9 +358,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import PlotInfo from './PlotInfo.vue';
 
 export default {
     name: 'ExplorerMain',
+    components: {
+        PlotInfo,
+    },
     props: {
         'widthProportion': {
             type: Number

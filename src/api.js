@@ -61,6 +61,16 @@ export default class API {
             );
     }
 
+    static fetchClinicalVariableList(dataOptions) {
+        let url = API.api_base + "clinical-variable-list";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
    /* 
    static fetchKaryotype() {
         let url = API.api_base + "karyotype";
@@ -250,5 +260,6 @@ export default class API {
             dataOptions
         );
     }
+    
   
 }

@@ -1,6 +1,11 @@
 <template>
     <div>
         <!-- Counts -->
+        <PlotInfo title="Number of Mutations by Mutation Type">
+            <p slot="info">
+                This plot displays the distribution of mutation counts, separated by mutation type.
+            </p>
+        </PlotInfo>
         <PlotContainer
             :pWidth="(colWidth-130-5)"
             :pHeight="300"
@@ -37,6 +42,12 @@
             />
         </PlotContainer>
         <!-- Exposures -->
+        <PlotInfo title="Exposures by Signature">
+            <p slot="info">
+                This plot displays the distribution of mutation signature exposures, separated by signature.<br>
+                For each mutation type, we also show a normalized version of the distribution.
+            </p>
+        </PlotInfo>
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-130-5)"
             :pHeight="300"
@@ -229,9 +240,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import PlotInfo from './PlotInfo.vue';
 
 export default {
     name: 'ExplorerOverview',
+    components: {
+        PlotInfo,
+    },
     props: {
         'widthProportion': {
             type: Number
