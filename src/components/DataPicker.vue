@@ -8,7 +8,7 @@
                 @choose-indel="updateSignaturesIndel"
              />
             <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
-            <GenesPicker v-show="genesVisible" @choose="updateGenes" />
+            <GenesPicker v-show="genesVisible" @choose="updateGenes" :selectedSamples="chosenSamples" />
             <ClinicalPicker v-show="clinicalVisible" @choose="updateClinicalVariables" />
         </div>
         <div class="actions-bar">

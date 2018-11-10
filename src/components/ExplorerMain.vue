@@ -228,11 +228,11 @@
         <!-- Hierarchical Clustering -->
         <PlotContainer
             :pWidth="(colWidth-150-5)"
-            :pHeight="500"
+            :pHeight="0"
             :pMarginTop="200"
             :pMarginLeft="150"
             :pMarginRight="20"
-            :pMarginBottom="20"
+            :pMarginBottom="0"
         >
             <DendrogramAxis
                 slot="axisTop"
@@ -243,13 +243,23 @@
                 :getStack="getStack"
                 :getData="getData"
             />
+        </PlotContainer>
+
+        <PlotContainer v-if="showSbs"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(numSbs * 30)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="20"
+            :pMarginBottom="5"
+        >
             <Axis
                 slot="axisLeft"
                 variable="sig_sbs"
                 side="left"
-                :tickRotation="-45"
                 :getScale="getScale"
                 :getStack="getStack"
+                :disableBrushing="true"
             />
             <HierarchicalMultiTrackPlot
                 slot="plot"
@@ -258,6 +268,64 @@
                 x="sample_id"
                 y="sig_sbs"
                 c="exposure_sbs_normalized"
+                :getScale="getScale"
+                :getStack="getStack"
+                :getData="getData"
+            />
+        </PlotContainer>
+
+        <PlotContainer v-if="showDbs"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(numDbs * 30)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="20"
+            :pMarginBottom="5"
+        >
+            <Axis
+                slot="axisLeft"
+                variable="sig_dbs"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <HierarchicalMultiTrackPlot
+                slot="plot"
+                data="exposure_dbs_normalized"
+                h="exposures_clustering"
+                x="sample_id"
+                y="sig_dbs"
+                c="exposure_dbs_normalized"
+                :getScale="getScale"
+                :getStack="getStack"
+                :getData="getData"
+            />
+        </PlotContainer>
+
+        <PlotContainer v-if="showIndel"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(numIndel * 30)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="20"
+            :pMarginBottom="5"
+        >
+            <Axis
+                slot="axisLeft"
+                variable="sig_indel"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <HierarchicalMultiTrackPlot
+                slot="plot"
+                data="exposure_indel_normalized"
+                h="exposures_clustering"
+                x="sample_id"
+                y="sig_indel"
+                c="exposure_indel_normalized"
                 :getScale="getScale"
                 :getStack="getStack"
                 :getData="getData"
@@ -289,6 +357,15 @@ export default {
         },
         showIndel() {
             return (this.getConfig().selectedSignaturesIndel.length > 0);
+        },
+        numSbs() {
+            return (this.getConfig().selectedSignaturesSbs.length);
+        },
+        numDbs() {
+            return (this.getConfig().selectedSignaturesDbs.length);
+        },
+        numIndel() {
+            return (this.getConfig().selectedSignaturesIndel.length);
         },
         ...mapGetters([
             'windowHeight', 

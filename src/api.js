@@ -34,7 +34,32 @@ export default class API {
             });
     }
 
+    static fetchAutocompleteGene(partialGeneId, projects) {
+        let url = API.api_base + "autocomplete-gene";
+
+        let body = {
+            "gene_id_partial": partialGeneId,
+            "projects": projects
+        };
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(body) }),
+            url,
+            body
+        );
+    }
+
     // Fetches with cacheing
+
+    static fetchGeneEventTrack(dataOptions) {
+        let url = API.api_base + "gene-event-track";
+
+        return API.request(
+                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+                url,
+                dataOptions
+            );
+    }
 
    /* 
    static fetchKaryotype() {
@@ -202,6 +227,8 @@ export default class API {
             dataOptions
         );
     }
+
+    
     /*
     static fetchSingleDonorGenomeSignatureBins(dataOptions) {
         let url = API.api_base + "signature-genome-bins-single-donor";
@@ -214,7 +241,6 @@ export default class API {
         );
     }
     */
-
     static fetchClustering(dataOptions) {
         let url = API.api_base + "clustering";
         
@@ -224,4 +250,5 @@ export default class API {
             dataOptions
         );
     }
+  
 }
