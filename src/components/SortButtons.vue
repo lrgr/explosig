@@ -12,6 +12,7 @@
                         variable="sample_id" 
                         data="mut_count" 
                         optionScale="mut_type"
+                        comparatorScale="mut_type"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -21,6 +22,7 @@
                         variable="sample_id" 
                         data="exposure_sbs" 
                         optionScale="sig_sbs"
+                        comparatorScale="exposure_sbs"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -30,6 +32,7 @@
                         variable="sample_id" 
                         data="exposure_sbs_normalized" 
                         optionScale="sig_sbs"
+                        comparatorScale="exposure_sbs_normalized"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -39,6 +42,7 @@
                         variable="sample_id" 
                         data="exposure_dbs" 
                         optionScale="sig_dbs"
+                        comparatorScale="exposure_dbs"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -48,6 +52,7 @@
                         variable="sample_id" 
                         data="exposure_dbs_normalized" 
                         optionScale="sig_dbs"
+                        comparatorScale="exposure_dbs_normalized"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -57,6 +62,7 @@
                         variable="sample_id" 
                         data="exposure_indel" 
                         optionScale="sig_indel"
+                        comparatorScale="exposure_indel"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -66,21 +72,38 @@
                         variable="sample_id" 
                         data="exposure_indel_normalized" 
                         optionScale="sig_indel"
+                        comparatorScale="exposure_indel_normalized"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
                         @sort="closeSortModal"
                     />
-                    <!--<SortOptions 
-                        variable="sample_id" 
-                        data="sample_meta"
-                        optionVariable="proj_id"
-                        optionName="Project"
-                        :getScale="getScale" 
-                        :getData="getData"
-                        :getStack="getStack"
-                        @sort="closeSortModal"
-                    />-->
+                    <div v-if="showGenes">
+                        <SortOptions v-for="geneId in selectedGenes" :key="geneId"
+                            variable="sample_id" 
+                            :data="('gene_' + geneId)" 
+                            optionName="Mutation Classification"
+                            optionVariable="mut_class"
+                            comparatorScale="mut_class"
+                            :getScale="getScale" 
+                            :getData="getData"
+                            :getStack="getStack"
+                            @sort="closeSortModal"
+                        />
+                    </div>
+                    <div v-if="showClinical">
+                        <SortOptions v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar"
+                            variable="sample_id" 
+                            :data="('cv_' + clinicalVar)" 
+                            :optionName="clinicalVar"
+                            :optionVariable="('cv_' + clinicalVar)"
+                            :comparatorScale="('cv_' + clinicalVar)"
+                            :getScale="getScale" 
+                            :getData="getData"
+                            :getStack="getStack"
+                            @sort="closeSortModal"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,6 +131,18 @@ export default {
         },
         showIndel() {
             return (this.getConfig().selectedSignaturesIndel.length > 0);
+        },
+        showGenes() {
+            return (this.getConfig().selectedGenes.length > 0);
+        },
+        showClinical() {
+            return (this.getConfig().selectedClinicalVariables.length > 0);
+        },
+        selectedGenes() {
+            return (this.getConfig().selectedGenes);
+        },
+        selectedClinicalVariables() {
+            return (this.getConfig().selectedClinicalVariables);
         },
         ...mapGetters([
             'getConfig',
