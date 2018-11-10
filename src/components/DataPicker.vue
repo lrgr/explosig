@@ -8,12 +8,28 @@
                 @choose-indel="updateSignaturesIndel"
              />
             <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
+            <GenesPicker v-show="genesVisible" @choose="updateGenes" />
+            <ClinicalPicker v-show="clinicalVisible" @choose="updateClinicalVariables" />
         </div>
         <div class="actions-bar">
             <VButton 
                 @click="emitUpdate"
             >
                 Update
+            </VButton>
+            <VButton 
+                @click="setDataPicker('clinical')" 
+                :btn-secondary="true" 
+                :btn-selected="this.clinicalVisible"
+            >
+                Clinical
+            </VButton>
+            <VButton 
+                @click="setDataPicker('genes')" 
+                :btn-secondary="true" 
+                :btn-selected="this.genesVisible"
+            >
+                Genes
             </VButton>
             <VButton 
                 @click="setDataPicker('samples')" 
@@ -39,6 +55,10 @@ import { mapGetters } from 'vuex';
 
 import SignaturesPicker from './SignaturesPicker.vue';
 import SamplesPicker from './SamplesPicker.vue';
+import GenesPicker from './GenesPicker.vue';
+import ClinicalPicker from './ClinicalPicker.vue';
+
+
 import VButton from './VButton.vue';
 
 export default {
@@ -46,6 +66,8 @@ export default {
   components: {
     SignaturesPicker,
     SamplesPicker,
+    GenesPicker,
+    ClinicalPicker,
     VButton
   },
   data: function() {
@@ -54,7 +76,9 @@ export default {
           chosenSignaturesSbs: [],
           chosenSignaturesDbs: [],
           chosenSignaturesIndel: [],
-          chosenSamples: []
+          chosenSamples: [],
+          chosenGenes: [],
+          chosenClinicalVariables: []
       };
   },
   computed: {
@@ -63,6 +87,12 @@ export default {
     },
     signaturesVisible: function() {
         return this.innerDataPicker == 'signatures';
+    },
+    genesVisible: function() {
+        return this.innerDataPicker == 'genes';
+    },
+    clinicalVisible: function() {
+        return this.innerDataPicker == 'clinical';
     },
     ...mapGetters([
         'windowHeight',
@@ -85,6 +115,12 @@ export default {
     updateSamples(chosenSamples) {
         this.chosenSamples = chosenSamples;
     },
+    updateGenes(chosenGenes) {
+        this.chosenGenes = chosenGenes;
+    },
+    updateClinicalVariables(chosenClinicalVariables) {
+        this.chosenClinicalVariables = chosenClinicalVariables;
+    },
     emitUpdate() {
         // Update samples/signatures in config
         this.getConfig().updateConfig(
@@ -92,8 +128,8 @@ export default {
             this.chosenSignaturesSbs.slice(), 
             this.chosenSignaturesDbs.slice(), 
             this.chosenSignaturesIndel.slice(), 
-            [], 
-            []
+            this.chosenGenes.slice(), 
+            this.chosenClinicalVariables.slice()
         );
         // Notify parent to close modal
         this.$emit('update');

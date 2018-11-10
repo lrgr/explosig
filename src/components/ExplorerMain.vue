@@ -7,7 +7,7 @@
             :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="150"
         >
             <Axis 
                 slot="axisLeft"
@@ -23,33 +23,6 @@
                 x="sample_id"
                 y="mut_count_sum"
                 c="mut_type"
-                :getData="getData"
-                :getScale="getScale"
-            />
-        </PlotContainer>
-
-        <!-- Meta -->
-        <PlotContainer
-            :pWidth="(colWidth-150-5)"
-            :pHeight="30"
-            :pMarginTop="0"
-            :pMarginLeft="150"
-            :pMarginRight="5"
-            :pMarginBottom="150"
-        >
-            <Axis 
-                slot="axisLeft"
-                variable="sample_meta"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
-            <TrackPlot 
-                slot="plot"
-                data="sample_meta"
-                x="sample_id"
-                c="proj_id"
                 :getData="getData"
                 :getScale="getScale"
             />
@@ -216,14 +189,32 @@
                 :getScale="getScale"
             />
         </PlotContainer>
+
+        <!-- Meta -->
         <PlotContainer
             :pWidth="(colWidth-150-5)"
-            :pHeight="0"
+            :pHeight="20"
             :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="150"
         >
+            <Axis 
+                slot="axisLeft"
+                variable="sample_meta"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="sample_meta"
+                x="sample_id"
+                c="proj_id"
+                :getData="getData"
+                :getScale="getScale"
+            />
             <Axis 
                 slot="axisBottom"
                 variable="sample_id"

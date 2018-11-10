@@ -5,6 +5,8 @@
             <div class="right-button-group">
                 <VButton :btn-inverse="true" @click="showDataPicker('signatures')">Signatures</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('samples')">Samples</VButton>
+                <!--<VButton :btn-inverse="true" @click="showDataPicker('genes')">Genes</VButton>
+                <VButton :btn-inverse="true" @click="showDataPicker('clinical')">Clinical</VButton>-->
             </div>
         </div>
         
@@ -51,6 +53,8 @@ export default {
 <style scoped lang="scss">
 
 @import './../style/variables.scss';
+@import './../style/modal.scss';
+
 
 .navbar {
     width: 100%;
@@ -90,36 +94,5 @@ span.btn {
     }
 }
 
-.modal-background {
-    z-index: 1;
-    top: 0;
-    left: 0;
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    background-color: black;
-    opacity: 0.4;
-}
-.modal {
-    z-index: 5;
-    top: 10vh;
-    left: 10%;
-    height: 80vh;
-    width: 80%;
-    position: fixed;
-    background-color: $color-white;
-    
-    .modal-inner {
-        box-sizing: border-box;
-        height: 100%;
 
-        .modal-close {
-            position: absolute;
-            right: 2rem;
-            top: 1rem;
-            cursor: pointer;
-            user-select: none;
-        }
-    }
-}
 </style>

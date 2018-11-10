@@ -1,9 +1,11 @@
 <template>
     <div>
-        <div class="explorer-control" :style="{ 'height': 26 + 'px' }"> 
+        <div class="explorer-control" :style="{ 'height': 24 + 'px' }"> 
             <HistoryButtons />
+            <SortButtons />
+            <!--<ShareButtons />-->
         </div> 
-        <div class="explorer" :style="{ 'height': (windowHeight-75) + 'px' }">
+        <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col">
                 <div class="explorer-col-title">
                     <h3>Main</h3>
@@ -32,6 +34,10 @@ import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPES, EVENT_SUBTYPE_RESETS } from 
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
 import HistoryButtons from './HistoryButtons.vue';
+import SortButtons from './SortButtons.vue';
+import ShareButtons from './ShareButtons.vue';
+
+
 import ExplorerLegend from './ExplorerLegend.vue';
 import ExplorerOverview from './ExplorerOverview.vue';
 import ExplorerMain from './ExplorerMain.vue';
@@ -43,6 +49,8 @@ export default {
     name: 'Explorer',
     components: {
         HistoryButtons,
+        SortButtons,
+        ShareButtons,
         ExplorerLegend,
         ExplorerOverview,
         ExplorerMain
@@ -93,7 +101,7 @@ export default {
             this.setScale({key: "sig_indel", scale: sigsIndelScale});
 
             /* SAMPLES METADATA  */
-            const samplesMetaScale = new CategoricalScale("sample_meta", "Sample Metadata", ["sample_id"], ["Sample ID"]);
+            const samplesMetaScale = new CategoricalScale("sample_meta", "Sample Metadata", ["proj_id"], ["Project"]);
             this.setScale({key: "sample_meta", scale: samplesMetaScale});
 
             const samplesMetaData = new DataContainer("sample_meta", "Sample Metadata", API.fetchPlotSamplesMeta({
@@ -248,6 +256,30 @@ export default {
                 projectsScale.emitHighlightDestroy();
             });
 
+            sigsSbsScale.onHighlight("explorer", () => {
+                mutTypeScale.emitHighlight("SBS");
+            });
+
+            sigsSbsScale.onHighlightDestroy("explorer", () => {
+                mutTypeScale.emitHighlightDestroy();
+            });
+
+            sigsDbsScale.onHighlight("explorer", () => {
+                mutTypeScale.emitHighlight("DBS");
+            });
+
+            sigsDbsScale.onHighlightDestroy("explorer", () => {
+                mutTypeScale.emitHighlightDestroy();
+            });
+
+            sigsIndelScale.onHighlight("explorer", () => {
+                mutTypeScale.emitHighlight("INDEL");
+            });
+
+            sigsIndelScale.onHighlightDestroy("explorer", () => {
+                mutTypeScale.emitHighlightDestroy();
+            });
+
         },
         ...mapMutations([
             'setStack',
@@ -258,7 +290,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import './../style/variables.scss';
 @import '~vue-declarative-plots/dist/vue-declarative-plots.css';
 
@@ -291,9 +323,19 @@ export default {
 }
 
 .explorer-control {
-    background-color: #FAFAFA;
+    background-color: #f8f8f8;
     &>div {
-        margin-left: 5px;
+        margin-left: 11px;
+        display: inline-block;
+        margin-right: 15px;
+    }
+    &>div>span.explorer-control-title {
+        text-transform: uppercase;
+        font-weight: 600;
+        color: rgb(154, 154, 154);
+        font-size: 0.75em;
+        margin-right: 5px;
+
     }
 }
 

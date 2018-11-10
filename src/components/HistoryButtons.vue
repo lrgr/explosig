@@ -1,5 +1,6 @@
 <template>
     <div>
+        <span class="explorer-control-title">History</span>
         <button @click="goBack" :disabled="!canGoBack">Back</button>
         <button @click="goForward" :disabled="!canGoForward">Forward</button>
     </div>
@@ -34,5 +35,4 @@ export default {
 
 <style scoped lang="scss">
 @import './../style/variables.scss';
-
 </style>
