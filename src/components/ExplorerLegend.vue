@@ -42,11 +42,32 @@
             :getScale="getScale"
             :getStack="getStack"
         />
+        <!-- Clinical Variables -->
+        <div v-if="showClinical">
+            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+                <CategoricalLegend v-if="!isContinuousClinicalVariable(clinicalVar)"
+                    :variable="('cv_' + clinicalVar)"
+                    lStyle="bar"
+                    :lWidth="colWidth"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <ContinuousLegend v-if="isContinuousClinicalVariable(clinicalVar)"
+                    :variable="('cv_' + clinicalVar)"
+                    lStyle="bar"
+                    :lWidth="colWidth"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
+
 
 export default {
     name: 'ExplorerLegend',
@@ -71,6 +92,12 @@ export default {
         showGenes() {
             return (this.getConfig().selectedGenes.length > 0);
         },
+        showClinical() {
+            return (this.getConfig().selectedClinicalVariables.length > 0);
+        },
+        selectedClinicalVariables() {
+            return (this.getConfig().selectedClinicalVariables);
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -79,6 +106,11 @@ export default {
             'getData',
             'getScale'
         ])
+    },
+    methods: {
+        isContinuousClinicalVariable(clinicalVar) {
+            return CONTINUOUS_CLINICAL_VARS.includes(clinicalVar);
+        }
     }
 }
 </script>

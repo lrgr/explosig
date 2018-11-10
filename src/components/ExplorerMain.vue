@@ -277,6 +277,34 @@
             </div>
         </div>
 
+        <!-- Clinical Variables -->
+        <div v-if="showClinical">
+            <PlotInfo title="Clinical Variables">
+                <p slot="info">
+                    This plot shows clinical variables for each sample.
+                </p>
+            </PlotInfo>
+            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+                <PlotContainer
+                    :pWidth="(colWidth-150-5)"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <TrackPlot 
+                        slot="plot"
+                        :data="('cv_' + clinicalVar)"
+                        x="sample_id"
+                        :c="('cv_' + clinicalVar)"
+                        :getData="getData"
+                        :getScale="getScale"
+                    />
+                </PlotContainer>
+            </div>
+        </div>
+
         <!-- Hierarchical Clustering -->
         <PlotInfo title="Hierarchical Clustering of Normalized Mutation Signature Exposures">
             <p slot="info">
@@ -426,6 +454,9 @@ export default {
         showGenes() {
             return (this.getConfig().selectedGenes.length > 0);
         },
+        showClinical() {
+            return (this.getConfig().selectedClinicalVariables.length > 0);
+        },
         numSbs() {
             return (this.getConfig().selectedSignaturesSbs.length);
         },
@@ -437,6 +468,9 @@ export default {
         },
         selectedGenes() {
             return (this.getConfig().selectedGenes);
+        },
+        selectedClinicalVariables() {
+            return (this.getConfig().selectedClinicalVariables);
         },
         ...mapGetters([
             'windowHeight', 

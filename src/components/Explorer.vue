@@ -44,6 +44,7 @@ import ExplorerMain from './ExplorerMain.vue';
 
 
 import API from './../api.js';
+import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
 export default {
     name: 'Explorer',
@@ -274,17 +275,14 @@ export default {
             const clinicalVariableScale = new CategoricalScale("clinical_variable", "Clinical Variable", this.getConfig().selectedClinicalVariables);
             this.setScale({key:"clinical_variable", scale: clinicalVariableScale});
 
-            // TODO: figure out a better way to do this
-            const continuousClinicalVars = ["Diagnosis Age", "Tobacco Intensity", "Alcohol Intensity"];
-
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
-                if(continuousClinicalVars.includes(clinicalVar)) {
-                    this.setScale({key: ("cv_" + clinicalVar), data: new ContinuousScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
+                if(CONTINUOUS_CLINICAL_VARS.includes(clinicalVar)) {
+                    this.setScale({key: ("cv_" + clinicalVar), scale: new ContinuousScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
                         "projects": this.getConfig().selectedSamples,
                         "clinical_variable": clinicalVar
                     }))});
                 } else {
-                    this.setScale({key: ("cv_" + clinicalVar), data: new CategoricalScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
+                    this.setScale({key: ("cv_" + clinicalVar), scale: new CategoricalScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
                         "projects": this.getConfig().selectedSamples,
                         "clinical_variable": clinicalVar
                     }))});
