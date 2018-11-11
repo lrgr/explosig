@@ -12,7 +12,7 @@
                 :pMarginTop="10"
                 :pMarginLeft="130"
                 :pMarginRight="5"
-                :pMarginBottom="100"
+                :pMarginBottom="130"
                 >
                 <Axis
                     slot="axisLeft"
@@ -50,9 +50,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
-import { select as d3_select } from 'd3-selection';
 
-let uuid = 20;
 export default {
     name: 'StratificationPlots',
     components: {
@@ -63,29 +61,15 @@ export default {
             type: Number
         }
     },
-    data() {
-        return  {
-            stratificationOptions: []
-        };
-    },
-    created() {
-        this.uuid = this.$options.name + uuid.toString();
-        uuid += 1;
-
-        this.stratificationOptions = this.getStratification().choices.slice();
-    },
-    beforeCreate() {
-        d3_select("#stratification-plots").selectAll(".vdp-plot-container").remove();
-    },
-    mounted() {
-        
-    },
     computed: {
         colWidth() {
             return this.windowWidth * this.widthProportion - 25;
         },
         showStratified() {
             return (this.getStratification().choices.length > 0);
+        },
+        stratificationOptions() {
+            return this.getStratification().choices;
         },
         ...mapGetters([
             'windowHeight', 

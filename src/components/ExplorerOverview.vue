@@ -1,11 +1,9 @@
 <template>
     <div>
-        <div id="stratification-plots">
-            <StratificationPlots 
-                :key="stratificationKey"
-                :widthProportion="widthProportion"
-            />
-        </div>
+        <StratificationPlots 
+            :key="stratificationKey"
+            :widthProportion="widthProportion"
+        />
         <!-- Counts -->
         <PlotInfo title="Number of Mutations by Mutation Type">
             <p slot="info">
