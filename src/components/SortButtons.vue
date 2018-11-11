@@ -12,7 +12,7 @@
                         variable="sample_id" 
                         data="mut_count" 
                         optionScale="mut_type"
-                        comparatorScale="mut_type"
+                        comparatorScale="mut_count"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"

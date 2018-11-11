@@ -1,5 +1,11 @@
 <template>
     <div>
+        <div id="stratification-plots">
+            <StratificationPlots 
+                :key="stratificationKey"
+                :widthProportion="widthProportion"
+            />
+        </div>
         <!-- Counts -->
         <PlotInfo title="Number of Mutations by Mutation Type">
             <p slot="info">
@@ -241,15 +247,30 @@
 <script>
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
+import StratificationPlots from './StratificationPlots.vue';
 
 export default {
     name: 'ExplorerOverview',
     components: {
         PlotInfo,
+        StratificationPlots
     },
     props: {
         'widthProportion': {
             type: Number
+        }
+    },
+    data() {
+        return {
+            stratificationKey: 1
+        };
+    },
+    mounted() {
+        this.getStratification().onUpdate(this.name, this.rerender);
+    },
+    methods: {
+        rerender() {
+            this.stratificationKey++;
         }
     },
     computed: {
@@ -265,13 +286,17 @@ export default {
         showIndel() {
             return (this.getConfig().selectedSignaturesIndel.length > 0);
         },
+        showStratified() {
+            return (this.getStratification().choices.length > 0);
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
             'getConfig',
             'getStack',
             'getData',
-            'getScale'
+            'getScale',
+            'getStratification'
         ])
     }
 }

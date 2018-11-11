@@ -4,6 +4,7 @@
             <HistoryButtons />
             <SortButtons />
             <!--<ShareButtons />-->
+            <StratificationButtons />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col">
@@ -30,12 +31,15 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
+import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+
+import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
 import ShareButtons from './ShareButtons.vue';
+import StratificationButtons from './StratificationButtons.vue';
 
 
 import ExplorerLegend from './ExplorerLegend.vue';
@@ -52,6 +56,7 @@ export default {
         HistoryButtons,
         SortButtons,
         ShareButtons,
+        StratificationButtons,
         ExplorerLegend,
         ExplorerOverview,
         ExplorerMain
@@ -65,12 +70,14 @@ export default {
             'windowWidth',
             'getConfig',
             'getStack',
+            'getStratification',
             'getData',
             'getScale'
         ])
     },
     created() {
         this.initStack();
+        this.initStratification();
         this.initScalesAndData();
     },
     methods: {
@@ -79,11 +86,19 @@ export default {
             const stack = new HistoryStack(
                 {
                     [EVENT_TYPES.SCALE]: this.getScale,
-                    [EVENT_TYPES.DATA]: this.getData
+                    [EVENT_TYPES.DATA]: this.getData,
+                    [EVENT_TYPE_STRATIFY]: this.getStratification
                 }, 
-                EVENT_SUBTYPE_RESETS
+                {
+                    [EVENT_SUBTYPE_STRATIFY]: EVENT_SUBTYPE_RESET_STRATIFY,
+                    ...EVENT_SUBTYPE_RESETS
+                }
             );
             this.setStack(stack);
+        },
+        initStratification() {
+            const stratification = new Stratification();
+            this.setStratification(stratification);
         },
         initScalesAndData() {
             const projectsScale = new CategoricalScale("proj_id", "Project", this.getConfig().selectedSamples);
@@ -333,7 +348,8 @@ export default {
         ...mapMutations([
             'setStack',
             'setData',
-            'setScale'
+            'setScale',
+            'setStratification',
         ])
     }
 }

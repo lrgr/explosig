@@ -16,6 +16,7 @@ import {
   TrackPlot,
   MultiTrackPlot,
   HierarchicalMultiTrackPlot,
+  StratifiedBoxPlot,
   GenomeScatterPlot,
   GenomeTrackPlot,
   GenomeMultiTrackPlot,
@@ -39,6 +40,7 @@ Vue.component(MultiBoxPlot.name, MultiBoxPlot);
 Vue.component(TrackPlot.name, TrackPlot);
 Vue.component(MultiTrackPlot.name, MultiTrackPlot);
 Vue.component(HierarchicalMultiTrackPlot.name, HierarchicalMultiTrackPlot);
+Vue.component(StratifiedBoxPlot.name, StratifiedBoxPlot);
 Vue.component(GenomeScatterPlot.name, GenomeScatterPlot);
 Vue.component(GenomeTrackPlot.name, GenomeTrackPlot);
 Vue.component(GenomeMultiTrackPlot.name, GenomeMultiTrackPlot);

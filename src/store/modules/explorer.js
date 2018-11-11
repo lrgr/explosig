@@ -2,6 +2,7 @@
 const state = {
     config: null,
     stack: null,
+    stratification: null,
     data: {},
     scales: {}
 }
@@ -13,6 +14,9 @@ const getters = {
     },
     getStack: (state) => () => {
         return state.stack;
+    },
+    getStratification: (state) => () => {
+        return state.stratification;
     },
     getData: (state) => (key) => {
         return state.data[key];
@@ -34,6 +38,9 @@ const mutations = {
     },
     setStack(state, stack) {
         state.stack = stack;
+    },
+    setStratification(state, stratification) {
+        state.stratification = stratification;
     },
     setData(state, { key, data }) {
         state.data[key] = data;
