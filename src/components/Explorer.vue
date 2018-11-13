@@ -287,7 +287,11 @@ export default {
             }
 
             /* CLINICAL DATA */
-            const clinicalVariableScale = new CategoricalScale("clinical_variable", "Clinical Variable", this.getConfig().selectedClinicalVariables);
+            const clinicalVariableScale = new CategoricalScale(
+                "clinical_variable", 
+                "Clinical Variable", 
+                this.getConfig().selectedClinicalVariables
+            );
             this.setScale({key:"clinical_variable", scale: clinicalVariableScale});
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {

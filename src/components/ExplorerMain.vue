@@ -251,62 +251,19 @@
 
         <!-- Gene Alterations -->
         <div v-if="showGenes">
-            <PlotInfo title="Gene Mutation Classification">
-                <p slot="info">
-                    This plot shows mutation classification for each selected gene for each sample.
-                </p>
-            </PlotInfo>
-            <div v-for="geneId in selectedGenes" :key="geneId">
-                <PlotContainer
-                    :pWidth="(colWidth-150-5)"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <TrackPlot 
-                        slot="plot"
-                        :data="('gene_' + geneId)"
-                        x="sample_id"
-                        c="mut_class"
-                        :getData="getData"
-                        :getScale="getScale"
-                    />
-                </PlotContainer>
-            </div>
+            <GeneTracks :widthProportion="widthProportion" />
         </div>
 
         <!-- Clinical Variables -->
         <div v-if="showClinical">
-            <PlotInfo title="Clinical Variables">
-                <p slot="info">
-                    This plot shows clinical variables for each sample.
-                </p>
-            </PlotInfo>
-            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                <PlotContainer
-                    :pWidth="(colWidth-150-5)"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <TrackPlot 
-                        slot="plot"
-                        :data="('cv_' + clinicalVar)"
-                        x="sample_id"
-                        :c="('cv_' + clinicalVar)"
-                        :getData="getData"
-                        :getScale="getScale"
-                    />
-                </PlotContainer>
-            </div>
+            <ClinicalTracks :widthProportion="widthProportion" />
         </div>
 
         <!-- Hierarchical Clustering -->
-        <PlotInfo title="Hierarchical Clustering of Normalized Mutation Signature Exposures">
+        <PlotInfo 
+            title="Hierarchical Clustering of Normalized Mutation Signature Exposures" 
+            :style="{'margin-top': '15px'}"
+        >
             <p slot="info">
                 This plot shows normalized exposures to mutation signatures per sample after clustering.<br>
                 Ward linkage has been used to cluster samples.
@@ -424,11 +381,15 @@
 <script>
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
+import ClinicalTracks from './ClinicalTracks.vue';
+import GeneTracks from './GeneTracks.vue';
 
 export default {
     name: 'ExplorerMain',
     components: {
         PlotInfo,
+        ClinicalTracks,
+        GeneTracks
     },
     props: {
         'widthProportion': {
