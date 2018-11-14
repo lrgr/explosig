@@ -5,7 +5,7 @@
             :widthProportion="widthProportion"
         />
         <!-- Counts -->
-        <PlotInfo title="Number of Mutations by Mutation Type">
+        <PlotInfo title="Number of Mutations by Mutation Type" :showTitle="true">
             <p slot="info">
                 This plot displays the distribution of mutation counts, separated by mutation type.
             </p>
@@ -16,7 +16,7 @@
             :pMarginTop="10"
             :pMarginLeft="130"
             :pMarginRight="5"
-            :pMarginBottom="100"
+            :pMarginBottom="70"
             >
             <Axis
                 slot="axisLeft"
@@ -46,7 +46,7 @@
             />
         </PlotContainer>
         <!-- Exposures -->
-        <PlotInfo title="Exposures by Signature">
+        <PlotInfo title="Exposures by Signature" :showTitle="true">
             <p slot="info">
                 This plot displays the distribution of mutation signature exposures, separated by signature.<br>
                 For each mutation type, we also show a normalized version of the distribution.

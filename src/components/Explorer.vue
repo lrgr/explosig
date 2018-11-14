@@ -382,9 +382,11 @@ export default {
     }
     .explorer-overview {
         flex: 3;
+        border-left: 1px solid $color-lgray;
     }
     .explorer-legend {
         flex: 2;
+        border-left: 1px solid $color-lgray;
         &>div {
             margin-left: 10px;
         }

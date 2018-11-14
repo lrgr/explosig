@@ -1,7 +1,10 @@
 <template>
     <div>
         <div v-for="(choice, index) in stratificationOptions" :key="index">
-            <PlotInfo :title="('Stratification of ' + choice.variable + ' by ' + getScale(choice.x).name)">
+            <PlotInfo 
+                :title="('Stratification of ' + choice.variable + ' by ' + getScale(choice.x).name)"
+                :showTitle="true"
+            >
                 <p slot="info">
                     These plots display signature exposures stratified by other variables such as gene mutation classification or clinical variable status.
                 </p>
@@ -87,6 +90,5 @@ export default {
 <style scoped lang="scss">
 @import './../style/variables.scss';
 @import '~vue-declarative-plots/dist/vue-declarative-plots.css';
-
 
 </style>

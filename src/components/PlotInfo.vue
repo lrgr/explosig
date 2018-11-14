@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="plot-info">
+            <h4 v-if="showTitle">{{ title }}</h4>
             <button @click="modalVisible = true">?</button>
         </div>
 
@@ -22,7 +23,15 @@
 
 export default {
     name: 'PlotInfo',
-    props: ['title'],
+    props: {
+        'title': {
+            type: String
+        }, 
+        'showTitle': {
+            type: Boolean,
+            default: false
+        }
+    },
     data: function() { 
         return {
             modalVisible: false
@@ -58,6 +67,9 @@ export default {
         font-size: 14px;
         border-radius: 3px;
         cursor: pointer;
+    }
+    h4 {
+        margin-bottom: 0;
     }
 }
 .plot-info-modal {

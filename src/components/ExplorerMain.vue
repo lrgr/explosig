@@ -57,10 +57,10 @@
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="0"
+            :pMarginBottom="5"
         >
             <Axis 
                 slot="axisLeft"
@@ -83,10 +83,10 @@
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="0"
+            :pMarginBottom="5"
         >
             <Axis 
                 slot="axisLeft"
@@ -109,10 +109,10 @@
         <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="0"
+            :pMarginBottom="5"
         >
             <Axis 
                 slot="axisLeft"
@@ -134,10 +134,10 @@
         <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="0"
+            :pMarginBottom="5"
         >
             <Axis 
                 slot="axisLeft"
@@ -159,10 +159,10 @@
         <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="0"
+            :pMarginBottom="5"
         >
             <Axis 
                 slot="axisLeft"
@@ -184,7 +184,7 @@
          <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="5"
