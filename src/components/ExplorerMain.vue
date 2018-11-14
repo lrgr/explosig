@@ -11,11 +11,20 @@
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="130"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="150"
+            :pMarginBottom="5"
         >
+            <Axis 
+                slot="axisTop"
+                variable="sample_id"
+                side="top"
+                :tickRotation="-65"
+                :maxCharacters="4"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
             <Axis 
                 slot="axisLeft"
                 variable="mut_count_sum"
@@ -33,14 +42,7 @@
                 :getData="getData"
                 :getScale="getScale"
             />
-            <Axis 
-                slot="axisBottom"
-                variable="sample_id"
-                side="bottom"
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
+            
         </PlotContainer>
 
         <!-- Exposures -->
@@ -185,7 +187,7 @@
             :pMarginTop="10"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="0"
+            :pMarginBottom="5"
         >
             <Axis 
                 slot="axisLeft"
@@ -205,23 +207,6 @@
             />
         </PlotContainer>
 
-        <PlotContainer
-            :pWidth="(colWidth-150-5)"
-            :pHeight="0"
-            :pMarginTop="0"
-            :pMarginLeft="150"
-            :pMarginRight="5"
-            :pMarginBottom="150"
-        >
-            <Axis 
-                slot="axisBottom"
-                variable="sample_id"
-                side="bottom"
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-        </PlotContainer>
 
         <!-- Meta -->
         <div v-if="showMeta">

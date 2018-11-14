@@ -3,6 +3,7 @@
         <div class="intro-figure">
             <span id="arrow1" class="arrow"></span>
             <span id="arrow2" class="arrow"></span>
+
             <span id="text1" class="text"><span class="bubble">1</span>Select signatures</span>
             <span id="text2" class="text"><span class="bubble">2</span>Select samples</span>
         </div>
@@ -104,28 +105,28 @@ export default {
         }
     }
     #arrow1 {
-        right: 8.5rem;
+        right: 17.8rem;
         &:before {
             height: 100px;
         }
         &:after {
             top: 117px;
-            width: 7rem;
+            width: 1.3rem;
         }
     }
     #arrow2 {
-        right: 1.3rem;
+        right: 10.8rem;
         &:before {
             height: 164px;
         }
         &:after {
             top: 181px;
-            width: 13rem;
+            width: 7.1rem;
         }
     }
     .text {
         display: inline-block;
-        right: 17.2rem;
+        right: 20.2rem;
         border: 0px solid black;
         position: absolute;
         text-align: right;

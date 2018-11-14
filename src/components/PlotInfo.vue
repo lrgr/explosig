@@ -1,7 +1,6 @@
 <template>
     <div>
         <div class="plot-info">
-            <h4 class="plot-info-title">{{ title }}</h4>
             <button @click="modalVisible = true">?</button>
         </div>
 
@@ -42,17 +41,14 @@ export default {
 @import './../style/modal.scss';
 
 .plot-info {
-    width: 95%;
-    margin-left: 2.5%;
+    width: 100%;
     margin-bottom: 5px;
-    padding: 5px;
     text-align: center;
-    h4 {
-        display: inline-block;
-        margin: 0;
-    }
+    z-index: 3;
+    position: relative;
     button {
-        float: right;
+        float: left;
+        margin-left: 15px;
         background-color: $color-gray;
         border: none;
         color: white;
