@@ -8,9 +8,9 @@
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col">
-                <div class="explorer-col-title">
+                <!--<div class="explorer-col-title">
                     <h3>Main</h3>
-                </div>
+                </div>-->
                 <ExplorerMain :widthProportion="(5/10)"/>
             </div>
             <div class="explorer-overview explorer-col">

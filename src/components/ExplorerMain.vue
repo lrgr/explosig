@@ -10,7 +10,7 @@
         </PlotInfo>
         <PlotContainer
             :pWidth="(colWidth-150-5)"
-            :pHeight="200"
+            :pHeight="120"
             :pMarginTop="130"
             :pMarginLeft="150"
             :pMarginRight="5"
@@ -82,7 +82,7 @@
         </PlotContainer>
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
-            :pHeight="200"
+            :pHeight="120"
             :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
@@ -133,7 +133,7 @@
         </PlotContainer>
         <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-150-5)"
-            :pHeight="200"
+            :pHeight="120"
             :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
@@ -183,7 +183,7 @@
         </PlotContainer>
          <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-150-5)"
-            :pHeight="200"
+            :pHeight="120"
             :pMarginTop="5"
             :pMarginLeft="150"
             :pMarginRight="5"
