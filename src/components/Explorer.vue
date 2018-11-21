@@ -35,6 +35,9 @@ import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
+import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY } from './../vdp/Visibility.js';
+import Mode, { EVENT_TYPE_MODE, EVENT_SUBTYPE_MODE, EVENT_SUBTYPE_RESET_MODE } from './../vdp/Mode.js';
+
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
@@ -71,6 +74,8 @@ export default {
             'getConfig',
             'getStack',
             'getStratification',
+            'getVisibility',
+            'getMode',
             'getData',
             'getScale'
         ])
@@ -78,6 +83,8 @@ export default {
     created() {
         this.initStack();
         this.initStratification();
+        this.initVisibility();
+        this.initMode();
         this.initScalesAndData();
     },
     methods: {
@@ -87,10 +94,14 @@ export default {
                 {
                     [EVENT_TYPES.SCALE]: this.getScale,
                     [EVENT_TYPES.DATA]: this.getData,
-                    [EVENT_TYPE_STRATIFY]: this.getStratification
+                    [EVENT_TYPE_STRATIFY]: this.getStratification,
+                    [EVENT_TYPE_VISIBILITY]: this.getVisibility,
+                    [EVENT_TYPE_MODE]: this.getMode
                 }, 
                 {
                     [EVENT_SUBTYPE_STRATIFY]: EVENT_SUBTYPE_RESET_STRATIFY,
+                    [EVENT_SUBTYPE_VISIBILITY]: EVENT_SUBTYPE_RESET_VISIBILITY,
+                    [EVENT_SUBTYPE_MODE]: EVENT_SUBTYPE_RESET_MODE,
                     ...EVENT_SUBTYPE_RESETS
                 }
             );
@@ -99,6 +110,14 @@ export default {
         initStratification() {
             const stratification = new Stratification();
             this.setStratification(stratification);
+        },
+        initVisibility() {
+            const visibility = new Visibility();
+            this.setVisibility(visibility);
+        },
+        initMode() {
+            const mode = new Mode();
+            this.setMode(mode);
         },
         initScalesAndData() {
             const projectsScale = new CategoricalScale("proj_id", "Project", this.getConfig().selectedSamples);
@@ -354,6 +373,8 @@ export default {
             'setData',
             'setScale',
             'setStratification',
+            'setVisibility',
+            'setMode'
         ])
     }
 }

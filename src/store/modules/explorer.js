@@ -3,6 +3,8 @@ const state = {
     config: null,
     stack: null,
     stratification: null,
+    visibility: null,
+    mode: null,
     data: {},
     scales: {}
 }
@@ -17,6 +19,12 @@ const getters = {
     },
     getStratification: (state) => () => {
         return state.stratification;
+    },
+    getVisibility: (state) => () => {
+        return state.visibility;
+    },
+    getMode: (state) => () => {
+        return state.mode;
     },
     getData: (state) => (key) => {
         return state.data[key];
@@ -41,6 +49,12 @@ const mutations = {
     },
     setStratification(state, stratification) {
         state.stratification = stratification;
+    },
+    setVisibility(state, visibility) {
+        state.visibility = visibility;
+    },
+    setMode(state, mode) {
+        state.mode = mode;
     },
     setData(state, { key, data }) {
         state.data[key] = data;
