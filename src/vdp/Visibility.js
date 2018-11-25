@@ -6,14 +6,25 @@ export const EVENT_TYPE_VISIBILITY = 101;
 export const EVENT_SUBTYPE_VISIBILITY = 101;
 export const EVENT_SUBTYPE_RESET_VISIBILITY = "resetVisibility";
 
+export const PLOT_GROUPS = Object.freeze({
+    'NORMALIZED_EXPOSURES': 1
+});
+
 /**
  * Visibility class to store visible/hidden state of plots.
  */
 export default class Visibility {
 
-    constructor() {
+    constructor(hiddenPlots) {
         this._dispatch = d3_dispatch(DISPATCH_EVENT_UPDATE);
-        this._hiddenPlots = [];
+        if(hiddenPlots !== undefined) {
+            this._hiddenPlots = hiddenPlots;
+            this._hiddenPlotsOriginal = Array.from(hiddenPlots); // shallow copy
+        } else {
+            this._hiddenPlots = [];
+            this._hiddenPlotsOriginal = [];
+        }
+        
     }
 
     updateHiddenPlots(hiddenPlots) {
@@ -29,7 +40,7 @@ export default class Visibility {
      * Reset the choices.
      */
     resetVisibility() {
-        this._hiddenPlots = [];
+        this._hiddenPlots = this._hiddenPlotsOriginal;
         this.emitUpdate();
     }
 

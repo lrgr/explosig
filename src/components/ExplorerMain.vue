@@ -80,7 +80,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSbs && showNormalizedExposures"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -131,7 +131,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showDbs && showNormalizedExposures"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -181,7 +181,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-         <PlotContainer v-if="showIndel"
+         <PlotContainer v-if="showIndel && showNormalizedExposures"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -206,7 +206,9 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-
+        
+        <!-- Toggle for normalized exposure plots -->
+        <VisibilityButtons />
 
         <!-- Meta -->
         <div v-if="showMeta">
@@ -369,13 +371,18 @@ import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';
 import GeneTracks from './GeneTracks.vue';
+import VisibilityButtons from './VisibilityButtons.vue';
+
+import { PLOT_GROUPS } from './../vdp/Visibility';
+
 
 export default {
     name: 'ExplorerMain',
     components: {
         PlotInfo,
         ClinicalTracks,
-        GeneTracks
+        GeneTracks,
+        VisibilityButtons
     },
     props: {
         'widthProportion': {
@@ -419,10 +426,14 @@ export default {
         selectedClinicalVariables() {
             return (this.getConfig().selectedClinicalVariables);
         },
+        showNormalizedExposures() {
+            return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.NORMALIZED_EXPOSURES));
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
             'getConfig',
+            'getVisibility',
             'getStack',
             'getData',
             'getScale'
@@ -434,6 +445,5 @@ export default {
 <style scoped lang="scss">
 @import './../style/variables.scss';
 @import '~vue-declarative-plots/dist/vue-declarative-plots.css';
-
 
 </style>

@@ -35,7 +35,7 @@ import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
-import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY } from './../vdp/Visibility.js';
+import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
 import Mode, { EVENT_TYPE_MODE, EVENT_SUBTYPE_MODE, EVENT_SUBTYPE_RESET_MODE } from './../vdp/Mode.js';
 
 
@@ -112,7 +112,7 @@ export default {
             this.setStratification(stratification);
         },
         initVisibility() {
-            const visibility = new Visibility();
+            const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES]);
             this.setVisibility(visibility);
         },
         initMode() {

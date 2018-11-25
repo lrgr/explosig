@@ -1,5 +1,5 @@
 .modal-background {
-    z-index: 4;
+    z-index: 104;
     top: 0;
     left: 0;
     position: fixed;
@@ -9,7 +9,7 @@
     opacity: 0.4;
 }
 .modal {
-    z-index: 5;
+    z-index: 105;
     top: 10vh;
     left: 10%;
     height: 80vh;

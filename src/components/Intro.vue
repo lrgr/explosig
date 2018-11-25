@@ -24,7 +24,7 @@
             iMuSE is developed by the <a href="https://lrgr.io" target="_blank">Leiserson Research Group</a>.
 
             <h4>Getting Started</h4>
-            <p>To begin, select mutational signatures and mutation data sets of interest. Signatures can be selected based on cancer types in which they are present. Change perspective by selecting different modes.</p>
+            <p>To begin, select mutational signatures and mutation data sets of interest. Signatures can be selected based on cancer types in which they are present.</p>
 
             <h4>References</h4>
             <div v-for="(citation, index) in bibliography" :key="citation.code" :id="'bib-' + (index+1)" class="reference">

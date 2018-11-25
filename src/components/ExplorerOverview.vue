@@ -11,11 +11,11 @@
             </p>
         </PlotInfo>
         <PlotContainer
-            :pWidth="(colWidth-130-5)"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="10"
             :pMarginLeft="130"
-            :pMarginRight="5"
+            :pMarginRight="10"
             :pMarginBottom="70"
             >
             <Axis
@@ -53,12 +53,12 @@
             </p>
         </PlotInfo>
         <PlotContainer v-if="showSbs"
-            :pWidth="(colWidth-130-5)"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginRight="10"
+            :pMarginBottom="100"
             >
             <Axis
                 slot="axisLeft"
@@ -77,15 +77,34 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
+            <Axis
+                slot="axisBottom"
+                variable="sig_sbs"
+                side="bottom" 
+                :tickRotation="-65"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
         </PlotContainer>
-        <PlotContainer v-if="showSbs"
-            :pWidth="(colWidth-130-5)"
+        <PlotContainer v-if="showSbs && showNormalizedExposures"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="0"
+            :pMarginTop="65"
             :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="100"
+            :pMarginRight="10"
+            :pMarginBottom="5"
             >
+            <Axis
+                slot="axisTop"
+                variable="sig_sbs"
+                side="top" 
+                :tickRotation="-65"
+                :showLabel="false"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
             <Axis
                 slot="axisLeft"
                 variable="exposure_sbs_normalized"
@@ -103,23 +122,14 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
-            <Axis
-                slot="axisBottom"
-                variable="sig_sbs"
-                side="bottom" 
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
         </PlotContainer>
         <PlotContainer v-if="showDbs"
-            :pWidth="(colWidth-130-5)"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="10"
+            :pMarginTop="5"
             :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginRight="10"
+            :pMarginBottom="100"
             >
             <Axis
                 slot="axisLeft"
@@ -138,15 +148,34 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
+            <Axis
+                slot="axisBottom"
+                variable="sig_dbs"
+                side="bottom" 
+                :tickRotation="-65"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
         </PlotContainer>
-        <PlotContainer v-if="showDbs"
-            :pWidth="(colWidth-130-5)"
+        <PlotContainer v-if="showDbs && showNormalizedExposures"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="0"
+            :pMarginTop="65"
             :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="100"
+            :pMarginRight="10"
+            :pMarginBottom="5"
             >
+            <Axis
+                slot="axisTop"
+                variable="sig_dbs"
+                side="top" 
+                :tickRotation="-65"
+                :showLabel="false"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
             <Axis
                 slot="axisLeft"
                 variable="exposure_dbs_normalized"
@@ -164,23 +193,14 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
-            <Axis
-                slot="axisBottom"
-                variable="sig_dbs"
-                side="bottom" 
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
         </PlotContainer>
         <PlotContainer v-if="showIndel"
-            :pWidth="(colWidth-130-5)"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="0"
+            :pMarginTop="5"
             :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginRight="10"
+            :pMarginBottom="100"
             >
             <Axis
                 slot="axisLeft"
@@ -199,15 +219,34 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
+            <Axis
+                slot="axisBottom"
+                variable="sig_indel"
+                side="bottom" 
+                :tickRotation="-65"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
         </PlotContainer>
-        <PlotContainer v-if="showIndel"
-            :pWidth="(colWidth-130-5)"
+        <PlotContainer v-if="showIndel && showNormalizedExposures"
+            :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="0"
+            :pMarginTop="65"
             :pMarginLeft="130"
-            :pMarginRight="5"
-            :pMarginBottom="100"
+            :pMarginRight="10"
+            :pMarginBottom="5"
             >
+            <Axis
+                slot="axisTop"
+                variable="sig_indel"
+                side="top" 
+                :tickRotation="-65"
+                :showLabel="false"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
             <Axis
                 slot="axisLeft"
                 variable="exposure_indel_normalized"
@@ -225,20 +264,10 @@
                 :getScale="getScale"
                 :drawOutliers="true"
             />
-            <Axis
-                slot="axisBottom"
-                variable="sig_indel"
-                side="bottom" 
-                :tickRotation="-65"
-                :getScale="getScale"
-                :getStack="getStack"
-                :disableBrushing="true"
-            />
         </PlotContainer>
 
-        
-        
-        
+        <VisibilityButtons style="margin: 20px 0px;"/>
+ 
     </div>
 </template>
 
@@ -246,12 +275,16 @@
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
 import StratificationPlots from './StratificationPlots.vue';
+import VisibilityButtons from './VisibilityButtons.vue';
+
+import { PLOT_GROUPS } from './../vdp/Visibility';
 
 export default {
     name: 'ExplorerOverview',
     components: {
         PlotInfo,
-        StratificationPlots
+        StratificationPlots,
+        VisibilityButtons
     },
     props: {
         'widthProportion': {
@@ -287,6 +320,9 @@ export default {
         showStratified() {
             return (this.getStratification().choices.length > 0);
         },
+        showNormalizedExposures() {
+            return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.NORMALIZED_EXPOSURES));
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -294,6 +330,7 @@ export default {
             'getStack',
             'getData',
             'getScale',
+            'getVisibility',
             'getStratification'
         ])
     }
