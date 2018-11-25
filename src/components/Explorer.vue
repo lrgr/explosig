@@ -295,7 +295,7 @@ export default {
             const geneScale = new CategoricalScale("gene", "Gene", this.getConfig().selectedGenes);
             this.setScale({key: "gene", scale: geneScale});
 
-            const geneEventScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations());
+            const geneEventScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#FFFFFF"});
             this.setScale({key: "mut_class", scale: geneEventScale});
 
             for(const geneId of this.getConfig().selectedGenes) {

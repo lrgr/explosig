@@ -254,24 +254,6 @@
                 Ward linkage has been used to cluster samples.
             </p>
         </PlotInfo>
-        <PlotContainer
-            :pWidth="(colWidth-150-5)"
-            :pHeight="0"
-            :pMarginTop="200"
-            :pMarginLeft="150"
-            :pMarginRight="20"
-            :pMarginBottom="0"
-        >
-            <DendrogramAxis
-                slot="axisTop"
-                variable="sample_id"
-                h="exposures_clustering"
-                side="top"
-                :getScale="getScale"
-                :getStack="getStack"
-                :getData="getData"
-            />
-        </PlotContainer>
 
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
@@ -354,6 +336,25 @@
                 x="sample_id"
                 y="sig_indel"
                 c="exposure_indel_normalized"
+                :getScale="getScale"
+                :getStack="getStack"
+                :getData="getData"
+            />
+        </PlotContainer>
+
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="0"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="20"
+            :pMarginBottom="200"
+        >
+            <DendrogramAxis
+                slot="axisBottom"
+                variable="sample_id"
+                h="exposures_clustering"
+                side="bottom"
                 :getScale="getScale"
                 :getStack="getStack"
                 :getData="getData"
