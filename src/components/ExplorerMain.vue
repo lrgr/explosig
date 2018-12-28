@@ -1,5 +1,38 @@
 <template>
     <div>
+        <!-- Meta -->
+        <PlotInfo title="Sample Metadata">
+            <p slot="info">
+                This plot shows metadata for each sample.
+            </p>
+        </PlotInfo>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="20"
+            :pMarginTop="130"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+        >
+            <Axis 
+                slot="axisTop"
+                variable="sample_id"
+                side="top"
+                :tickRotation="-65"
+                :maxCharacters="4"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="sample_meta"
+                x="sample_id"
+                c="proj_id"
+                :getData="getData"
+                :getScale="getScale"
+            />
+        </PlotContainer>
+
         <!-- Counts -->
         <PlotInfo title="Number of Mutations per Sample">
             <p slot="info">
@@ -11,20 +44,11 @@
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="130"
+            :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisTop"
-                variable="sample_id"
-                side="top"
-                :tickRotation="-65"
-                :maxCharacters="4"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
             <Axis 
                 slot="axisLeft"
                 variable="mut_count_sum"
@@ -210,31 +234,7 @@
         <!-- Toggle for normalized exposure plots -->
         <VisibilityButtons />
 
-        <!-- Meta -->
-        <div v-if="showMeta">
-            <PlotInfo title="Sample Metadata">
-                <p slot="info">
-                    This plot shows metadata for each sample.
-                </p>
-            </PlotInfo>
-            <PlotContainer
-                :pWidth="(colWidth-150-5)"
-                :pHeight="20"
-                :pMarginTop="0"
-                :pMarginLeft="150"
-                :pMarginRight="5"
-                :pMarginBottom="5"
-            >
-                <TrackPlot 
-                    slot="plot"
-                    data="sample_meta"
-                    x="sample_id"
-                    c="proj_id"
-                    :getData="getData"
-                    :getScale="getScale"
-                />
-            </PlotContainer>
-        </div>
+        
 
         <!-- Gene Alterations -->
         <div v-if="showGenes">

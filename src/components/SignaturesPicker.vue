@@ -43,20 +43,20 @@ export default {
             top: 160,
             right: 30,
             bottom: 10,
-            left: 100
+            left: 150
           }
       };
   },
   mounted: function() {
         const vm = this;
         API.fetchDataListing().then(function(listing) {
-            vm.allSignaturesSbs = listing["signatures"]["SBS"];
-            vm.allSignaturesDbs = listing["signatures"]["DBS"];
-            vm.allSignaturesIndel = listing["signatures"]["INDEL"];
+            vm.allSignaturesSbs = listing["signatures"].filter(el => el["mut_type"] === "SBS")
+            vm.allSignaturesDbs = listing["signatures"].filter(el => el["mut_type"] === "DBS")
+            vm.allSignaturesIndel = listing["signatures"].filter(el => el["mut_type"] === "INDEL")
 
             vm.cancerTypeMap = listing["cancer_type_map"];
 
-            vm.cancerTypeMapGroups = d3_set(vm.cancerTypeMap.map(el => el["Source"])).values();
+            vm.cancerTypeMapGroups = d3_set(vm.cancerTypeMap.map(el => el["group"])).values();
             
             vm.loading = false;
             vm.drawPlot();
@@ -93,15 +93,15 @@ export default {
   methods: {
       getSignature(name) {
         let sig;
-        sig = this.allSignaturesSbs.find(el => el.name === name);
+        sig = this.allSignaturesSbs.find(el => el.id === name);
         if(sig !== undefined) {
           return [sig, "SBS"];
         }
-        sig = this.allSignaturesDbs.find(el => el.name === name);
+        sig = this.allSignaturesDbs.find(el => el.id === name);
         if(sig !== undefined) {
           return [sig, "DBS"];
         }
-        sig = this.allSignaturesIndel.find(el => el.name === name);
+        sig = this.allSignaturesIndel.find(el => el.id === name);
         if(sig !== undefined) {
           return [sig, "INDEL"];
         }
@@ -165,19 +165,19 @@ export default {
             const rowHeight = 11;
 
             const filteredCancerTypeMap = vm.cancerTypeMap
-              .filter(el => el["Source"] === vm.selectedCancerTypeMapGroup)
+              .filter(el => el["group"] === vm.selectedCancerTypeMapGroup)
             
             const cancerTypes = d3_set(filteredCancerTypeMap
-              .map(el => el["Cancer Type"])
+              .map(el => el["cancer_type"])
             ).values();
 
             const x = d3_scaleBand()
               .domain(cancerTypes)
               .range([0, vm.width]);
 
-            const sigNamesSbs = vm.allSignaturesSbs.map((el) => el.name);
-            const sigNamesDbs = vm.allSignaturesDbs.map((el) => el.name);
-            const sigNamesIndel = vm.allSignaturesIndel.map((el) => el.name);
+            const sigNamesSbs = vm.allSignaturesSbs.map((el) => el.id);
+            const sigNamesDbs = vm.allSignaturesDbs.map((el) => el.id);
+            const sigNamesIndel = vm.allSignaturesIndel.map((el) => el.id);
 
             const sigNames = sigNamesSbs.concat(sigNamesDbs).concat(sigNamesIndel);
             
@@ -226,8 +226,8 @@ export default {
                 .attr("class", "signatureCell")
                 .attr("width", x.bandwidth() - 4)
                 .attr("height", rowHeight - 4)
-                .attr("x", (d) => x(d["Cancer Type"]) + 2)
-                .attr("y", (d) => y(d["Signature"]) + 2)
+                .attr("x", (d) => x(d["cancer_type"]) + 2)
+                .attr("y", (d) => y(d["signature"]) + 2)
                 .attr("fill", "dimgray");
             
             const highlightY = container.append("g")
@@ -272,12 +272,12 @@ export default {
                 .attr("dy", "0.3em")
                 .attr("transform", "rotate(45)")
                 .on("click", (d) => {
-                    const ctSigsAllNames = filteredCancerTypeMap.filter(el => el["Cancer Type"] === d).map(el => el["Signature"]);
+                    const ctSigsAllNames = filteredCancerTypeMap.filter(el => el["cancer_type"] === d).map(el => el["signature"]);
                     const ctSigsAll = ctSigsAllNames.map((name) => vm.getSignature(name));
 
-                    const ctSigsSbsNames = ctSigsAll.filter((el) => el[1] === "SBS").map(el => el[0].name);
-                    const ctSigsDbsNames = ctSigsAll.filter((el) => el[1] === "DBS").map(el => el[0].name);
-                    const ctSigsIndelNames = ctSigsAll.filter((el) => el[1] === "INDEL").map(el => el[0].name);
+                    const ctSigsSbsNames = ctSigsAll.filter((el) => el[1] === "SBS").map(el => el[0].id);
+                    const ctSigsDbsNames = ctSigsAll.filter((el) => el[1] === "DBS").map(el => el[0].id);
+                    const ctSigsIndelNames = ctSigsAll.filter((el) => el[1] === "INDEL").map(el => el[0].id);
 
                     vm.selectedSignaturesSbs = ctSigsSbsNames;
                     vm.selectedSignaturesDbs = ctSigsDbsNames;
