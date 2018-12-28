@@ -3,8 +3,8 @@
         <div class="navbar">
             <span class="title"><a href="/">iMuSE</a></span>
             <div class="right-button-group">
-                <VButton :btn-inverse="true" @click="showDataPicker('signatures')">Signatures</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('samples')">Samples</VButton>
+                <VButton :btn-inverse="true" @click="showDataPicker('signatures')">Signatures</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('genes')">Genes</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('clinical')">Clinical</VButton>
             </div>

@@ -4,8 +4,8 @@
             <span id="arrow1" class="arrow"></span>
             <span id="arrow2" class="arrow"></span>
 
-            <span id="text1" class="text"><span class="bubble">1</span>Select signatures</span>
-            <span id="text2" class="text"><span class="bubble">2</span>Select samples</span>
+            <span id="text1" class="text"><span class="bubble">1</span>Select samples</span>
+            <span id="text2" class="text"><span class="bubble">2</span>Select signatures</span>
         </div>
         <div class="intro-text">
             <h3>iMuSE provides interactive visualization and analysis of mutational signatures.</h3>
@@ -24,7 +24,11 @@
             iMuSE is developed by the <a href="https://lrgr.io" target="_blank">Leiserson Research Group</a>.
 
             <h4>Getting Started</h4>
-            <p>To begin, select mutational signatures and mutation data sets of interest. Signatures can be selected based on cancer types in which they are present.</p>
+            <p>
+                To begin, select sample cohorts and mutational signatures of interest. 
+                Signatures can be selected based on cancer types in which they are present.
+                Signatures will be auto-selected if none have been manually selected and the selected samples map to a single cancer type.
+            </p>
 
             <h4>References</h4>
             <div v-for="(citation, index) in bibliography" :key="citation.code" :id="'bib-' + (index+1)" class="reference">
