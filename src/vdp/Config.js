@@ -96,5 +96,34 @@ export default class Config {
         this._dispatch.call(DISPATCH_EVENT_UPDATE);
     }
 
+    export() {
+        return {
+            "samples": this._samples,
+            "signaturesSbs": this._signaturesSbs,
+            "signaturesDbs": this._signaturesDbs,
+            "signaturesIndel": this._signaturesIndel,
+            "genes": this._genes,
+            "clinicalVariables": this._clinicalVariables
+        };
+    }
+
+    import(config) {
+        console.assert(config.hasOwnProperty("samples"))
+        console.assert(config.hasOwnProperty("signaturesSbs"))
+        console.assert(config.hasOwnProperty("signaturesDbs"))
+        console.assert(config.hasOwnProperty("signaturesIndel"))
+        console.assert(config.hasOwnProperty("genes"))
+        console.assert(config.hasOwnProperty("clinicalVariables"))
+        
+        this._samples = config.samples;
+        this._signaturesSbs = config.signaturesSbs;
+        this._signaturesDbs = config.signaturesDbs;
+        this._signaturesIndel = config.signaturesIndel;
+        this._genes = config.genes;
+        this._clinicalVariables = config.clinicalVariables;
+
+        this.emitUpdate();
+    }
+
 
 }

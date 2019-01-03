@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <NavBar/>
-    <Intro v-if="showIntro" />
+    <Intro v-if="showIntro" :replayImport="replayImport" :resumeImport="resumeImport"/>
     <Explorer v-if="!showIntro" :key="explorerKey" />
   </div>
 </template>
@@ -18,6 +18,7 @@ import API from './../api.js';
 // child components
 import NavBar from './NavBar.vue';
 import Intro from './Intro.vue';
+
 import Explorer from './Explorer.vue';
 
 export default {
@@ -29,7 +30,8 @@ export default {
   },
   data() {
     return {
-      explorerKey: 1
+      explorerKey: 1,
+      importedState: null
     };
   },
   mounted() {
@@ -42,6 +44,7 @@ export default {
    
 
     vm.checkHash();
+    window.addEventListener('hashchange', vm.checkHash);
 
     // Bindings for resize events
     vm.$store.commit('setWindowWidth', window.innerWidth);
@@ -50,6 +53,7 @@ export default {
         vm.$store.commit('setWindowWidth', window.innerWidth);
         vm.$store.commit('setWindowHeight', window.innerHeight);
     }, 250));
+    
 
   },
   computed: {
@@ -57,16 +61,27 @@ export default {
       return (this.getConfig() === null || this.getConfig().isEmpty());
     },
     ...mapGetters([
-      'getConfig'
+      'getConfig',
+      'getStack'
     ])
   },
   methods: {
     checkHash() {
       let vm = this;
       // check for data in hash
-      var paramStr = window.location.hash.substring(1) // remove the initial "#"
-      if(paramStr.length > 0 && paramStr.substring(0, 3) != "bib") {
-        // TODO: Load history stack from param
+      let paramStr = window.location.hash.substring(1) // remove the initial "#"
+      if(paramStr.length > 0 && paramStr.substring(0, 6) === "export") {
+        // Load history stack from param
+        let slug = paramStr.substring(7, 15);
+        this.setIsImporting(true);
+        this.setFromImport(true);
+
+        this.getConfig().resetConfig();
+
+        API.getSharingState(slug).then((data) => {
+          this.setIsImporting(false);
+          this.importedState = JSON.parse(data.state);
+        });
       }
     },
     rerender() {
@@ -74,8 +89,40 @@ export default {
       this.explorerKey++;
       
     },
+    clearImport() {
+      this.setIsImporting(false);
+      this.setFromImport(false);
+      this.importedState = null;
+    },
+    resumeImport() {
+      if(this.importedState !== null) {
+        this.getConfig().import(this.importedState.config);
+        this.$nextTick(() => {
+          let stack = this.getStack();
+          stack.import(this.importedState.history);
+          this.clearImport();
+          API.promiseAll().then(() => {
+            while(stack.canGoForward()) {
+              stack.goForward();
+            }
+          });
+        });
+      }
+    },
+    replayImport() {
+      if(this.importedState !== null) {
+        this.getConfig().import(this.importedState.config);
+        this.$nextTick(() => {
+          let stack = this.getStack();
+          stack.import(this.importedState.history);
+          this.clearImport();
+        });
+      }
+    },
     ...mapMutations([
-      'setConfig'
+      'setConfig',
+      'setIsImporting',
+      'setFromImport'
     ])
   }
 }

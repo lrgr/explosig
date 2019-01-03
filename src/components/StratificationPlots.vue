@@ -2,7 +2,7 @@
     <div>
         <div v-for="(choice, index) in stratificationOptions" :key="index">
             <PlotInfo 
-                :title="('Stratification of ' + choice.variable + ' by ' + getScale(choice.x).name)"
+                :title="('Stratification of ' + choice.variable + ' by ' + getData(choice.s).name)"
                 :showTitle="true"
             >
                 <p slot="info">

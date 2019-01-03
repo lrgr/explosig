@@ -78,7 +78,7 @@
                 Every other plot shows exposures after normalizing (to sum to 1).
             </p>
         </PlotInfo>
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -104,7 +104,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-        <PlotContainer v-if="showSbs && showNormalizedExposures"
+        <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -130,7 +130,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -155,7 +155,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs && showNormalizedExposures"
+        <PlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -180,7 +180,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-        <PlotContainer v-if="showIndel"
+        <PlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -205,7 +205,7 @@
                 :getScale="getScale"
             />
         </PlotContainer>
-         <PlotContainer v-if="showIndel && showNormalizedExposures"
+         <PlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -387,6 +387,16 @@ export default {
     props: {
         'widthProportion': {
             type: Number
+        }
+    },
+    data() {
+        return {
+            explorerMainKey: 1
+        };
+    },
+    watch: {
+        showNormalizedExposures() {
+            this.explorerMainKey++;
         }
     },
     computed: {

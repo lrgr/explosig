@@ -3,8 +3,8 @@
         <div class="explorer-control" :style="{ 'height': 24 + 'px' }"> 
             <HistoryButtons />
             <SortButtons />
-            <!--<ShareButtons />-->
             <StratificationButtons />
+            <SharingButtons :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col">
@@ -41,8 +41,8 @@ import Mode, { EVENT_TYPE_MODE, EVENT_SUBTYPE_MODE, EVENT_SUBTYPE_RESET_MODE } f
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
-import ShareButtons from './ShareButtons.vue';
 import StratificationButtons from './StratificationButtons.vue';
+import SharingButtons from './SharingButtons.vue';
 
 
 import ExplorerLegend from './ExplorerLegend.vue';
@@ -58,8 +58,8 @@ export default {
     components: {
         HistoryButtons,
         SortButtons,
-        ShareButtons,
         StratificationButtons,
+        SharingButtons,
         ExplorerLegend,
         ExplorerOverview,
         ExplorerMain
@@ -428,6 +428,9 @@ export default {
         font-size: 0.75em;
         margin-right: 5px;
 
+    }
+    .explorer-control-right {
+        float: right;
     }
 }
 

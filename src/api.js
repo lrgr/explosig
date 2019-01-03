@@ -24,6 +24,10 @@ export default class API {
         return stored;
     }
 
+    static promiseAll() {
+        return Promise.all(Object.values(globalPlotData))
+    }
+
     // Fetches without cacheing
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
@@ -99,6 +103,18 @@ export default class API {
                 url,
                 dataOptions
             );
+    }
+
+    static getSharingState(slug) {
+        let url = API.api_base + "sharing-get";
+
+        return d3.json(url, { method: "POST", body: JSON.stringify({"slug": slug}) });
+    }
+
+    static setSharingState(state) {
+        let url = API.api_base + "sharing-set";
+
+        return d3.json(url, { method: "POST", body: JSON.stringify({"state": JSON.stringify(state) }) });
     }
 
    /* 
