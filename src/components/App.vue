@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <NavBar/>
-    <Intro v-if="showIntro" :replayImport="replayImport" :resumeImport="resumeImport"/>
+    <Intro v-if="showIntro" :replayImport="replayImport" :resumeImport="resumeImport" :importSlug="importSlug" />
     <Explorer v-if="!showIntro" :key="explorerKey" />
   </div>
 </template>
@@ -31,7 +31,8 @@ export default {
   data() {
     return {
       explorerKey: 1,
-      importedState: null
+      importedState: null,
+      importSlug: ""
     };
   },
   mounted() {
@@ -73,6 +74,7 @@ export default {
       if(paramStr.length > 0 && paramStr.substring(0, 6) === "export") {
         // Load history stack from param
         let slug = paramStr.substring(7, 15);
+        this.importSlug = slug;
         this.setIsImporting(true);
         this.setFromImport(true);
 
@@ -93,6 +95,7 @@ export default {
       this.setIsImporting(false);
       this.setFromImport(false);
       this.importedState = null;
+      this.importSlug = "";
     },
     resumeImport() {
       if(this.importedState !== null) {

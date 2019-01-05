@@ -14,9 +14,7 @@
                 <ExplorerMain :widthProportion="(5/10)"/>
             </div>
             <div class="explorer-overview explorer-col">
-                <div class="explorer-col-title">
-                    <h3>Overview</h3>
-                </div>
+                <ExplorerOverviewTabs />
                 <ExplorerOverview :widthProportion="(3/10)"/>
             </div>
             <div class="explorer-legend explorer-col">
@@ -36,13 +34,16 @@ import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'v
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
-import Mode, { EVENT_TYPE_MODE, EVENT_SUBTYPE_MODE, EVENT_SUBTYPE_RESET_MODE } from './../vdp/Mode.js';
+import Samples, { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES, EVENT_SUBTYPE_RESET_SAMPLES } from './../vdp/Samples.js';
 
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
 import StratificationButtons from './StratificationButtons.vue';
 import SharingButtons from './SharingButtons.vue';
+
+import ExplorerOverviewTabs from './ExplorerOverviewTabs.vue';
+
 
 
 import ExplorerLegend from './ExplorerLegend.vue';
@@ -62,7 +63,8 @@ export default {
         SharingButtons,
         ExplorerLegend,
         ExplorerOverview,
-        ExplorerMain
+        ExplorerMain,
+        ExplorerOverviewTabs
     },
     computed: {
         widthMain() {
@@ -75,7 +77,7 @@ export default {
             'getStack',
             'getStratification',
             'getVisibility',
-            'getMode',
+            'getSamples',
             'getData',
             'getScale'
         ])
@@ -84,7 +86,7 @@ export default {
         this.initStack();
         this.initStratification();
         this.initVisibility();
-        this.initMode();
+        this.initSamples();
         this.initScalesAndData();
     },
     methods: {
@@ -96,12 +98,12 @@ export default {
                     [EVENT_TYPES.DATA]: this.getData,
                     [EVENT_TYPE_STRATIFY]: this.getStratification,
                     [EVENT_TYPE_VISIBILITY]: this.getVisibility,
-                    [EVENT_TYPE_MODE]: this.getMode
+                    [EVENT_TYPE_SAMPLES]: this.getSamples
                 }, 
                 {
                     [EVENT_SUBTYPE_STRATIFY]: EVENT_SUBTYPE_RESET_STRATIFY,
                     [EVENT_SUBTYPE_VISIBILITY]: EVENT_SUBTYPE_RESET_VISIBILITY,
-                    [EVENT_SUBTYPE_MODE]: EVENT_SUBTYPE_RESET_MODE,
+                    [EVENT_SUBTYPE_SAMPLES]: EVENT_SUBTYPE_RESET_SAMPLES,
                     ...EVENT_SUBTYPE_RESETS
                 }
             );
@@ -115,9 +117,9 @@ export default {
             const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES]);
             this.setVisibility(visibility);
         },
-        initMode() {
-            const mode = new Mode();
-            this.setMode(mode);
+        initSamples() {
+            const samples = new Samples();
+            this.setSamples(samples);
         },
         initScalesAndData() {
             const projectsScale = new CategoricalScale("proj_id", "Project", this.getConfig().selectedSamples);
@@ -374,7 +376,7 @@ export default {
             'setScale',
             'setStratification',
             'setVisibility',
-            'setMode'
+            'setSamples'
         ])
     }
 }

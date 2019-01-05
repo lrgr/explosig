@@ -30,6 +30,7 @@
                 c="proj_id"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
 
@@ -65,6 +66,7 @@
                 c="mut_type"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
             
         </PlotContainer>
@@ -375,6 +377,9 @@ import VisibilityButtons from './VisibilityButtons.vue';
 
 import { PLOT_GROUPS } from './../vdp/Visibility';
 
+import { HistoryEvent } from 'vue-declarative-plots';
+import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples';
+
 
 export default {
     name: 'ExplorerMain',
@@ -446,8 +451,25 @@ export default {
             'getVisibility',
             'getStack',
             'getData',
-            'getScale'
+            'getScale',
+            'getSamples'
         ])
+    },
+    methods: {
+        sampleClickHandler(sampleId) {
+            let samplesObject = this.getSamples();
+            if(!samplesObject.selectedSamples.includes(sampleId)) {
+                let updatedSamples = [ ...samplesObject.selectedSamples, sampleId ];
+                samplesObject.updateSelectedSamples(updatedSamples);
+                this.getStack().push(new HistoryEvent(
+                    EVENT_TYPE_SAMPLES, 
+                    EVENT_SUBTYPE_SAMPLES, 
+                    "N/A", 
+                    "updateSelectedSamples", 
+                    [Array.from(updatedSamples)]
+                ));
+            }
+        }
     }
 }
 </script>
