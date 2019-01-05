@@ -204,8 +204,48 @@ export default class API {
 
 
 
-    static fetchPlotCountsNormalizedPerCategorySingleSample(dataOptions) {
-        let url = API.api_base + "plot-counts-normalized-per-category-single-sample";
+    static fetchPlotCountsPerCategorySingleSample(dataOptions) {
+        let url = API.api_base + "plot-counts-per-category-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionSingleSample(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleReconstructionSingleSample(dataOptions) {
+        let url = API.api_base + "scale-reconstruction-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionErrorSingleSample(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-error-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleReconstructionErrorSingleSample(dataOptions) {
+        let url = API.api_base + "scale-reconstruction-error-single-sample";
 
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),

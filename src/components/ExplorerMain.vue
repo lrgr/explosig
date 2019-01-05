@@ -104,6 +104,7 @@
                 c="sig_sbs"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
         <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
@@ -130,6 +131,7 @@
                 c="sig_sbs"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
         <PlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
@@ -155,6 +157,7 @@
                 c="sig_dbs"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
         <PlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
@@ -180,6 +183,7 @@
                 c="sig_dbs"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
         <PlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
@@ -205,6 +209,7 @@
                 c="sig_indel"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
          <PlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
@@ -230,6 +235,7 @@
                 c="sig_indel"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
         
