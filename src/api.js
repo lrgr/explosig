@@ -201,6 +201,20 @@ export default class API {
             dataOptions
         );
     }
+
+
+
+    static fetchPlotCountsNormalizedPerCategorySingleSample(dataOptions) {
+        let url = API.api_base + "plot-counts-normalized-per-category-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+
     /*
     static fetchSingleDonorExposures(dataOptions) {
         let url = API.api_base + "exposures-single-donor";
@@ -276,6 +290,16 @@ export default class API {
 
     static fetchScaleExposuresNormalized(dataOptions) {
         let url = API.api_base + "scale-exposures-normalized";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleContexts(dataOptions) {
+        let url = API.api_base + "scale-contexts";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),

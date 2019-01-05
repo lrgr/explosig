@@ -15,7 +15,8 @@
             </div>
             <div class="explorer-overview explorer-col">
                 <ExplorerOverviewTabs />
-                <ExplorerOverview :widthProportion="(3/10)"/>
+                <ExplorerOverview :widthProportion="(3/10)" v-if="showOverview"/>
+                <ExplorerOverviewSampleContainer :widthProportion="(3/10)" v-if="showOverviewSample"/>
             </div>
             <div class="explorer-legend explorer-col">
                 <div class="explorer-col-title">
@@ -36,20 +37,17 @@ import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBT
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
 import Samples, { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES, EVENT_SUBTYPE_RESET_SAMPLES } from './../vdp/Samples.js';
 
-
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
 import StratificationButtons from './StratificationButtons.vue';
 import SharingButtons from './SharingButtons.vue';
 
 import ExplorerOverviewTabs from './ExplorerOverviewTabs.vue';
-
-
+import ExplorerOverviewSampleContainer from './ExplorerOverviewSampleContainer.vue';
 
 import ExplorerLegend from './ExplorerLegend.vue';
 import ExplorerOverview from './ExplorerOverview.vue';
 import ExplorerMain from './ExplorerMain.vue';
-
 
 import API from './../api.js';
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
@@ -64,11 +62,18 @@ export default {
         ExplorerLegend,
         ExplorerOverview,
         ExplorerMain,
-        ExplorerOverviewTabs
+        ExplorerOverviewTabs,
+        ExplorerOverviewSampleContainer
     },
     computed: {
         widthMain() {
             return this.windowWidth * (5/10) - 25;
+        },
+        showOverview() {
+            return this.getSamples().activeSample === null;
+        },
+        showOverviewSample() {
+            return this.getSamples().activeSample !== null;
         },
         ...mapGetters([
             'windowHeight', 
@@ -281,6 +286,26 @@ export default {
                 "mut_type": "INDEL"
             }));
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
+
+
+            /* Contexts scales for reconstruction and signature plots */
+            const contextsScaleSbs = new CategoricalScale("cat_SBS", "SBS Mutation Category", API.fetchScaleContexts({
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setScale({key: "cat_SBS", scale: contextsScaleSbs});
+
+            const contextsScaleDbs = new CategoricalScale("cat_DBS", "DBS Mutation Category", API.fetchScaleContexts({
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setScale({key: "cat_DBS", scale: contextsScaleDbs});
+
+            const contextsScaleIndel = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", API.fetchScaleContexts({
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setScale({key: "cat_INDEL", scale: contextsScaleIndel});
 
             /* CLUSTERING  */
             const exposuresClusteringData = new DataContainer("exposures_clustering", "Clustering by Exposure", API.fetchClustering({

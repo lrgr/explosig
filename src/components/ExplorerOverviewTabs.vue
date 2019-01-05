@@ -57,25 +57,29 @@ export default {
         },
         activateSample(sampleId) {
             let samplesObject = this.getSamples();
-            samplesObject.updateActiveSample(sampleId);
-            this.getStack().push(new HistoryEvent(
-                EVENT_TYPE_SAMPLES, 
-                EVENT_SUBTYPE_SAMPLES, 
-                "N/A", 
-                "updateActiveSample", 
-                [sampleId]
-            ));
+            if(samplesObject.activeSample !== sampleId) {
+                samplesObject.updateActiveSample(sampleId);
+                this.getStack().push(new HistoryEvent(
+                    EVENT_TYPE_SAMPLES, 
+                    EVENT_SUBTYPE_SAMPLES, 
+                    "N/A", 
+                    "updateActiveSample", 
+                    [sampleId]
+                ));
+            }
         },
         activateOverview() {
             let samplesObject = this.getSamples();
-            samplesObject.updateActiveSample(null);
-            this.getStack().push(new HistoryEvent(
-                EVENT_TYPE_SAMPLES, 
-                EVENT_SUBTYPE_SAMPLES, 
-                "N/A", 
-                "updateActiveSample", 
-                [null]
-            ));
+            if(samplesObject.activeSample !== null) {
+                samplesObject.updateActiveSample(null);
+                this.getStack().push(new HistoryEvent(
+                    EVENT_TYPE_SAMPLES, 
+                    EVENT_SUBTYPE_SAMPLES, 
+                    "N/A", 
+                    "updateActiveSample", 
+                    [null]
+                ));
+            }
         },
         isActiveSample(sampleId) {
             return this.getSamples().activeSample === sampleId;
@@ -135,12 +139,14 @@ export default {
             vertical-align: top;
             direction: rtl;
             text-align: left;
+            user-select: none;
         }
 
         .tab-close {
             cursor: pointer;
             color: #A50026;
             margin-left: 6px;
+            user-select: none;
         }
     }
 }
