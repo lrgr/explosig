@@ -1,7 +1,125 @@
 <template>
     <div>
         <h3 class="sample-title">Sample {{ sampleId }}</h3>
-        <!-- Counts -->
+
+        <!-- Exposures -->
+        <PlotInfo title="Exposures" :showTitle="true">
+            <p slot="info">
+                These plots display exposures to the selected signatures for sample {{ sampleId }}.
+            </p>
+        </PlotInfo>
+        <div v-if="showSbs">
+            <PlotContainer
+                :pWidth="(colWidth-100-5)"
+                :pHeight="200"
+                :pMarginTop="10"
+                :pMarginLeft="100"
+                :pMarginRight="5"
+                :pMarginBottom="110"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    :variable="('exp_SBS_' + sampleId)"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <BarPlot 
+                    slot="plot"
+                    :data="('exp_SBS_' + sampleId)"
+                    x="sig_SBS"
+                    :y="('exp_SBS_' + sampleId)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis 
+                    slot="axisBottom"
+                    variable="sig_SBS"
+                    side="bottom"
+                    :tickRotation="-65"
+                    :disableBrushing="true"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+            </PlotContainer>
+        </div>
+        <div v-if="showDbs">
+            <PlotContainer
+                :pWidth="(colWidth-100-5)"
+                :pHeight="200"
+                :pMarginTop="10"
+                :pMarginLeft="100"
+                :pMarginRight="5"
+                :pMarginBottom="110"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    :variable="('exp_DBS_' + sampleId)"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <BarPlot 
+                    slot="plot"
+                    :data="('exp_DBS_' + sampleId)"
+                    x="sig_DBS"
+                    :y="('exp_DBS_' + sampleId)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis 
+                    slot="axisBottom"
+                    variable="sig_DBS"
+                    side="bottom"
+                    :tickRotation="-65"
+                    :disableBrushing="true"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+            </PlotContainer>
+        </div>
+        <div v-if="showIndel">
+            <PlotContainer
+                :pWidth="(colWidth-100-5)"
+                :pHeight="200"
+                :pMarginTop="10"
+                :pMarginLeft="100"
+                :pMarginRight="5"
+                :pMarginBottom="110"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    :variable="('exp_INDEL_' + sampleId)"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <BarPlot 
+                    slot="plot"
+                    :data="('exp_INDEL_' + sampleId)"
+                    x="sig_INDEL"
+                    :y="('exp_INDEL_' + sampleId)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis 
+                    slot="axisBottom"
+                    variable="sig_INDEL"
+                    side="bottom"
+                    :tickRotation="-65"
+                    :disableBrushing="true"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+            </PlotContainer>
+        </div>
+
+
+
+
+
+
+        <!-- Reconstruction -->
         <PlotInfo title="Reconstruction of Mutation Profile" :showTitle="true">
             <p slot="info">
                 This plot displays the mutation counts and the reconstruction using signatures with the error for each category.
@@ -357,6 +475,26 @@ export default {
                     this.cosineSimilaritySbs = data["cosine_similarity_SBS"];
                 });
 
+                // EXPOSURES
+                if(this.getData("exp_SBS_" + this.sampleId) === undefined) {
+                    const expsSbsData = new DataContainer("exp_SBS_" + this.sampleId, "SBS Exposures for " + this.sampleId, API.fetchPlotExposuresSingleSample({
+                        "projects": this.getConfig().selectedSamples,
+                        "signatures": this.getConfig().selectedSignaturesSbs,
+                        "mut_type": "SBS",
+                        "sample_id": this.sampleId
+                    }));
+                    this.setData({key: "exp_SBS_" + this.sampleId, data: expsSbsData});
+                }
+                if(this.getScale("exp_SBS_" + this.sampleId) === undefined) {
+                    const expsSbsScale = new ContinuousScale("exp_SBS_" + this.sampleId, "SBS Exposure", API.fetchScaleExposuresSingleSample({
+                        "projects": this.getConfig().selectedSamples,
+                        "signatures": this.getConfig().selectedSignaturesSbs,
+                        "mut_type": "SBS",
+                        "sample_id": this.sampleId
+                    }));
+                    this.setScale({key: "exp_SBS_" + this.sampleId, scale: expsSbsScale});
+                }
+
 
                 // COUNTS
                 if(this.getData("count_SBS_" + this.sampleId) === undefined) {
@@ -434,6 +572,25 @@ export default {
                     this.cosineSimilarityDbs = data["cosine_similarity_DBS"];
                 });
 
+                // EXPOSURES
+                if(this.getData("exp_DBS_" + this.sampleId) === undefined) {
+                    const expsDbsData = new DataContainer("exp_DBS_" + this.sampleId, "DBS Exposures for " + this.sampleId, API.fetchPlotExposuresSingleSample({
+                        "projects": this.getConfig().selectedSamples,
+                        "signatures": this.getConfig().selectedSignaturesDbs,
+                        "mut_type": "DBS",
+                        "sample_id": this.sampleId
+                    }));
+                    this.setData({key: "exp_DBS_" + this.sampleId, data: expsDbsData});
+                }
+                if(this.getScale("exp_DBS_" + this.sampleId) === undefined) {
+                    const expsDbsScale = new ContinuousScale("exp_DBS_" + this.sampleId, "DBS Exposure", API.fetchScaleExposuresSingleSample({
+                        "projects": this.getConfig().selectedSamples,
+                        "signatures": this.getConfig().selectedSignaturesDbs,
+                        "mut_type": "DBS",
+                        "sample_id": this.sampleId
+                    }));
+                    this.setScale({key: "exp_DBS_" + this.sampleId, scale: expsDbsScale});
+                }
 
                 // COUNTS
                 if(this.getData("count_DBS_" + this.sampleId) === undefined) {
@@ -510,6 +667,26 @@ export default {
                 }).then((data) => {
                     this.cosineSimilarityIndel = data["cosine_similarity_INDEL"];
                 });
+
+                // EXPOSURES
+                if(this.getData("exp_INDEL_" + this.sampleId) === undefined) {
+                    const expsIndelData = new DataContainer("exp_INDEL_" + this.sampleId, "INDEL Exposures for " + this.sampleId, API.fetchPlotExposuresSingleSample({
+                        "projects": this.getConfig().selectedSamples,
+                        "signatures": this.getConfig().selectedSignaturesIndel,
+                        "mut_type": "INDEL",
+                        "sample_id": this.sampleId
+                    }));
+                    this.setData({key: "exp_INDEL_" + this.sampleId, data: expsIndelData});
+                }
+                if(this.getScale("exp_INDEL_" + this.sampleId) === undefined) {
+                    const expsIndelScale = new ContinuousScale("exp_INDEL_" + this.sampleId, "INDEL Exposure", API.fetchScaleExposuresSingleSample({
+                        "projects": this.getConfig().selectedSamples,
+                        "signatures": this.getConfig().selectedSignaturesIndel,
+                        "mut_type": "INDEL",
+                        "sample_id": this.sampleId
+                    }));
+                    this.setScale({key: "exp_INDEL_" + this.sampleId, scale: expsIndelScale});
+                }
 
 
                 // COUNTS

@@ -133,14 +133,14 @@ export default {
             const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
             this.setScale({key: "mut_type", scale: mutTypeScale});
 
-            const sigsSbsScale = new CategoricalScale("sig_sbs", "SBS Signature", this.getConfig().selectedSignaturesSbs);
-            this.setScale({key: "sig_sbs", scale: sigsSbsScale});
+            const sigsSbsScale = new CategoricalScale("sig_SBS", "SBS Signature", this.getConfig().selectedSignaturesSbs);
+            this.setScale({key: "sig_SBS", scale: sigsSbsScale});
 
-            const sigsDbsScale = new CategoricalScale("sig_dbs", "DBS Signature", this.getConfig().selectedSignaturesDbs);
-            this.setScale({key: "sig_dbs", scale: sigsDbsScale});
+            const sigsDbsScale = new CategoricalScale("sig_DBS", "DBS Signature", this.getConfig().selectedSignaturesDbs);
+            this.setScale({key: "sig_DBS", scale: sigsDbsScale});
 
-            const sigsIndelScale = new CategoricalScale("sig_indel", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
-            this.setScale({key: "sig_indel", scale: sigsIndelScale});
+            const sigsIndelScale = new CategoricalScale("sig_INDEL", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
+            this.setScale({key: "sig_INDEL", scale: sigsIndelScale});
 
             /* SAMPLES METADATA  */
             const samplesMetaScale = new CategoricalScale("sample_meta", "Sample Metadata", ["proj_id"], ["Project"]);

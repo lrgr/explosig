@@ -70,7 +70,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_sbs"
-                x="sig_sbs"
+                x="sig_SBS"
                 y="exposure_sbs"
                 o="sample_id"
                 :getData="getData"
@@ -79,7 +79,7 @@
             />
             <Axis
                 slot="axisBottom"
-                variable="sig_sbs"
+                variable="sig_SBS"
                 side="bottom" 
                 :tickRotation="-65"
                 :getScale="getScale"
@@ -97,7 +97,7 @@
             >
             <Axis
                 slot="axisTop"
-                variable="sig_sbs"
+                variable="sig_SBS"
                 side="top" 
                 :tickRotation="-65"
                 :showLabel="false"
@@ -115,7 +115,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_sbs_normalized"
-                x="sig_sbs"
+                x="sig_SBS"
                 y="exposure_sbs_normalized"
                 o="sample_id"
                 :getData="getData"
@@ -141,7 +141,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_dbs"
-                x="sig_dbs"
+                x="sig_DBS"
                 y="exposure_dbs"
                 o="sample_id"
                 :getData="getData"
@@ -150,7 +150,7 @@
             />
             <Axis
                 slot="axisBottom"
-                variable="sig_dbs"
+                variable="sig_DBS"
                 side="bottom" 
                 :tickRotation="-65"
                 :getScale="getScale"
@@ -168,7 +168,7 @@
             >
             <Axis
                 slot="axisTop"
-                variable="sig_dbs"
+                variable="sig_DBS"
                 side="top" 
                 :tickRotation="-65"
                 :showLabel="false"
@@ -186,7 +186,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_dbs_normalized"
-                x="sig_dbs"
+                x="sig_DBS"
                 y="exposure_dbs_normalized"
                 o="sample_id"
                 :getData="getData"
@@ -212,7 +212,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_indel"
-                x="sig_indel"
+                x="sig_INDEL"
                 y="exposure_indel"
                 o="sample_id"
                 :getData="getData"
@@ -221,7 +221,7 @@
             />
             <Axis
                 slot="axisBottom"
-                variable="sig_indel"
+                variable="sig_INDEL"
                 side="bottom" 
                 :tickRotation="-65"
                 :getScale="getScale"
@@ -239,7 +239,7 @@
             >
             <Axis
                 slot="axisTop"
-                variable="sig_indel"
+                variable="sig_INDEL"
                 side="top" 
                 :tickRotation="-65"
                 :showLabel="false"
@@ -257,7 +257,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_indel_normalized"
-                x="sig_indel"
+                x="sig_INDEL"
                 y="exposure_indel_normalized"
                 o="sample_id"
                 :getData="getData"

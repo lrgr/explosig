@@ -368,6 +368,26 @@ export default class API {
         );
     }
 
+
+    static fetchPlotExposuresSingleSample(dataOptions) {
+        let url = API.api_base + "plot-exposures-single-sample";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleExposuresSingleSample(dataOptions) {
+        let url = API.api_base + "scale-exposures-single-sample";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
     
     /*
     static fetchSingleDonorGenomeSignatureBins(dataOptions) {
