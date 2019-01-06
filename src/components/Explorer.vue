@@ -119,7 +119,7 @@ export default {
             this.setStratification(stratification);
         },
         initVisibility() {
-            const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES]);
+            const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES, PLOT_GROUPS.COSINE_SIMILARITY]);
             this.setVisibility(visibility);
         },
         initSamples() {
@@ -209,6 +209,16 @@ export default {
             }));
             this.setData({key: "exposure_sbs_normalized", data: exposureSbsNormalizedData});
 
+            const exposureSbsCosineSimilarityScale = new ContinuousScale("cosine_similarity_SBS", "SBS Cos. Sim.", [0, 1]);
+            this.setScale({key: "cosine_similarity_SBS", scale: exposureSbsCosineSimilarityScale});
+
+            const exposureSbsCosineSimilarityData = new DataContainer("cosine_similarity_SBS", "SBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setData({key: "cosine_similarity_SBS", data: exposureSbsCosineSimilarityData});
+
             /* SIGNATURE EXPOSURES: DBS */
             const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
@@ -247,6 +257,16 @@ export default {
                 "mut_type": "DBS"
             }));
             this.setData({key: "exposure_dbs_normalized", data: exposureDbsNormalizedData});
+
+            const exposureDbsCosineSimilarityScale = new ContinuousScale("cosine_similarity_DBS", "DBS Cos. Sim.", [0, 1]);
+            this.setScale({key: "cosine_similarity_DBS", scale: exposureDbsCosineSimilarityScale});
+
+            const exposureDbsCosineSimilarityData = new DataContainer("cosine_similarity_DBS", "DBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setData({key: "cosine_similarity_DBS", data: exposureDbsCosineSimilarityData});
 
             /* SIGNATURE EXPOSURES: INDEL */
             const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
@@ -287,6 +307,15 @@ export default {
             }));
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
 
+            const exposureIndelCosineSimilarityScale = new ContinuousScale("cosine_similarity_INDEL", "INDEL Cos. Sim.", [0, 1]);
+            this.setScale({key: "cosine_similarity_INDEL", scale: exposureIndelCosineSimilarityScale});
+
+            const exposureIndelCosineSimilarityData = new DataContainer("cosine_similarity_INDEL", "INDEL Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setData({key: "cosine_similarity_INDEL", data: exposureIndelCosineSimilarityData});
 
             /* Contexts scales for reconstruction and signature plots */
             const contextsScaleSbs = new CategoricalScale("cat_SBS", "SBS Mutation Category", API.fetchScaleContexts({

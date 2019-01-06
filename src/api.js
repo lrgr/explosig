@@ -254,6 +254,26 @@ export default class API {
         );
     }
 
+    static fetchPlotReconstructionCosineSimilaritySingleSample(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-cosine-similarity-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionCosineSimilarity(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-cosine-similarity";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
 
     /*
     static fetchSingleDonorExposures(dataOptions) {

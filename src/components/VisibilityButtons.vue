@@ -1,7 +1,10 @@
 <template>
     <div>
-        <div class="normalized-plot-toggle-wrapper">
+        <div class="plot-toggle-wrapper">
             <button @click="toggleNormalizedPlots">Toggle Normalized Exposure Plots</button>
+        </div>
+        <div class="plot-toggle-wrapper">
+            <button @click="toggleCosineSimilarityPlots">Toggle Cosine Similarity Plots</button>
         </div>
     </div>
 </template>
@@ -45,6 +48,26 @@ export default {
                 "updateHiddenPlots", 
                 [nextHiddenPlots]
             ));
+        },
+        toggleCosineSimilarityPlots() {
+            let prevHiddenPlots = this.getVisibility().hiddenPlots;
+            let nextHiddenPlots;
+            if(prevHiddenPlots.includes(PLOT_GROUPS.COSINE_SIMILARITY)) {
+                // remove cosine similarity plots from hidden to show
+                nextHiddenPlots = Array.from(prevHiddenPlots);
+                nextHiddenPlots.splice(prevHiddenPlots.indexOf(PLOT_GROUPS.COSINE_SIMILARITY), 1);
+            } else {
+                // add cosine similarity plots to hidden to hide
+                nextHiddenPlots = [PLOT_GROUPS.COSINE_SIMILARITY, ...prevHiddenPlots];
+            }
+            this.getVisibility().updateHiddenPlots(nextHiddenPlots);
+            this.getStack().push(new HistoryEvent(
+                EVENT_TYPE_VISIBILITY, 
+                EVENT_SUBTYPE_VISIBILITY, 
+                "N/A", 
+                "updateHiddenPlots", 
+                [nextHiddenPlots]
+            ));
         }
     }
 }
@@ -53,7 +76,7 @@ export default {
 <style scoped lang="scss">
 @import './../style/variables.scss';
 
-.normalized-plot-toggle-wrapper {
+.plot-toggle-wrapper {
     width: 100%;
     text-align: center;
 }

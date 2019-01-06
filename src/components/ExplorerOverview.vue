@@ -1,7 +1,7 @@
 <template>
     <div>
         <StratificationPlots 
-            :key="stratificationKey"
+            :key="explorerOverviewKey"
             :widthProportion="widthProportion"
         />
         <!-- Counts -->
@@ -10,7 +10,7 @@
                 This plot displays the distribution of mutation counts, separated by mutation type.
             </p>
         </PlotInfo>
-        <PlotContainer
+        <PlotContainer :key="('counts_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="10"
@@ -52,13 +52,13 @@
                 For each mutation type, we also show a normalized version of the distribution.
             </p>
         </PlotInfo>
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSbs" :key="('sbs_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="5"
             :pMarginLeft="130"
             :pMarginRight="10"
-            :pMarginBottom="100"
+            :pMarginBottom="110"
             >
             <Axis
                 slot="axisLeft"
@@ -87,10 +87,10 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showSbs && showNormalizedExposures"
+        <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_overview_norm_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="65"
+            :pMarginTop="75"
             :pMarginLeft="130"
             :pMarginRight="10"
             :pMarginBottom="5"
@@ -123,13 +123,13 @@
                 :drawOutliers="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showDbs" :key="('dbs_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="5"
             :pMarginLeft="130"
             :pMarginRight="10"
-            :pMarginBottom="100"
+            :pMarginBottom="110"
             >
             <Axis
                 slot="axisLeft"
@@ -158,10 +158,10 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs && showNormalizedExposures"
+        <PlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_overview_norm_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="65"
+            :pMarginTop="75"
             :pMarginLeft="130"
             :pMarginRight="10"
             :pMarginBottom="5"
@@ -194,13 +194,13 @@
                 :drawOutliers="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showIndel"
+        <PlotContainer v-if="showIndel" :key="('indel_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="5"
             :pMarginLeft="130"
             :pMarginRight="10"
-            :pMarginBottom="100"
+            :pMarginBottom="110"
             >
             <Axis
                 slot="axisLeft"
@@ -229,10 +229,10 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showIndel && showNormalizedExposures"
+        <PlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_overview_norm_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="65"
+            :pMarginTop="75"
             :pMarginLeft="130"
             :pMarginRight="10"
             :pMarginBottom="5"
@@ -293,7 +293,7 @@ export default {
     },
     data() {
         return {
-            stratificationKey: 1
+            explorerOverviewKey: 1
         };
     },
     mounted() {
@@ -301,7 +301,12 @@ export default {
     },
     methods: {
         rerender() {
-            this.stratificationKey++;
+            this.explorerOverviewKey++;
+        }
+    },
+    watch: {
+        showNormalizedExposures() {
+            this.explorerOverviewKey++;
         }
     },
     computed: {

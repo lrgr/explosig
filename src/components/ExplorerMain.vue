@@ -134,6 +134,32 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
+        <PlotContainer v-if="showSbs && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="100"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="cosine_similarity_SBS"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <BarPlot 
+                slot="plot"
+                data="cosine_similarity_SBS"
+                x="sample_id"
+                y="cosine_similarity_SBS"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+
         <PlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -186,6 +212,33 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
+        <PlotContainer v-if="showDbs && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="100"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="cosine_similarity_DBS"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <BarPlot 
+                slot="plot"
+                data="cosine_similarity_DBS"
+                x="sample_id"
+                y="cosine_similarity_DBS"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+
+
         <PlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -233,6 +286,31 @@
                 x="sample_id"
                 y="exposure_sum_indel_normalized"
                 c="sig_indel"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+        <PlotContainer v-if="showIndel && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="100"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="cosine_similarity_INDEL"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <BarPlot 
+                slot="plot"
+                data="cosine_similarity_INDEL"
+                x="sample_id"
+                y="cosine_similarity_INDEL"
                 :getData="getData"
                 :getScale="getScale"
                 :clickHandler="sampleClickHandler"
@@ -408,6 +486,9 @@ export default {
     watch: {
         showNormalizedExposures() {
             this.explorerMainKey++;
+        },
+        showCosineSimilarity() {
+            this.explorerMainKey++;
         }
     },
     computed: {
@@ -450,6 +531,9 @@ export default {
         showNormalizedExposures() {
             return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.NORMALIZED_EXPOSURES));
         },
+        showCosineSimilarity() {
+            return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.COSINE_SIMILARITY));
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -474,6 +558,17 @@ export default {
                     "updateSelectedSamples", 
                     [Array.from(updatedSamples)]
                 ));
+            } else {
+                if(samplesObject.activeSample !== sampleId) {
+                    samplesObject.updateActiveSample(sampleId);
+                    this.getStack().push(new HistoryEvent(
+                        EVENT_TYPE_SAMPLES, 
+                        EVENT_SUBTYPE_SAMPLES, 
+                        "N/A", 
+                        "updateActiveSample", 
+                        [sampleId]
+                    ));
+                }
             }
         }
     }
