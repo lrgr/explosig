@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     checkHash() {
-      let vm = this;
       // check for data in hash
       let paramStr = window.location.hash.substring(1) // remove the initial "#"
       if(paramStr.length > 0 && paramStr.substring(0, 6) === "export") {
@@ -97,18 +96,28 @@ export default {
       this.importedState = null;
       this.importSlug = "";
     },
+    resumeImportAux() {
+      let stack = this.getStack();
+      API.promiseAll().then(() => {
+        if(stack.canGoForward()) {
+          stack.goForward();
+          this.resumeImportAux();
+        } else {
+          this.setIsLoading(false);
+        }
+      }).catch(() => {
+        this.setIsLoading(false);
+      });
+    },
     resumeImport() {
       if(this.importedState !== null) {
         this.getConfig().import(this.importedState.config);
+        this.setIsLoading(true);
         this.$nextTick(() => {
           let stack = this.getStack();
           stack.import(this.importedState.history);
           this.clearImport();
-          API.promiseAll().then(() => {
-            while(stack.canGoForward()) {
-              stack.goForward();
-            }
-          });
+          this.resumeImportAux();
         });
       }
     },
@@ -125,7 +134,8 @@ export default {
     ...mapMutations([
       'setConfig',
       'setIsImporting',
-      'setFromImport'
+      'setFromImport',
+      'setIsLoading'
     ])
   }
 }

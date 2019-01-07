@@ -1,14 +1,28 @@
 <template>
-    <div class="hollow-dots-spinner">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+    <div class="hollow-dots-spinner" :style="{'margin': margin, 'display': display}">
+        <div class="dot" :style="{'border-color': color}"></div>
+        <div class="dot" :style="{'border-color': color}"></div>
+        <div class="dot" :style="{'border-color': color}"></div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'VSpinner'
+  name: 'VSpinner',
+  props: {
+      'color': {
+          type: String,
+          default: "#648381"
+      },
+      'margin': {
+          type: String,
+          default: "30px 0"
+      },
+      'display': {
+          type: String,
+          default: "block"
+      }
+  }
 }
 </script>
 
@@ -30,7 +44,7 @@ export default {
     width: 15px;
     height: 15px;
     margin: 0 calc(15px / 2);
-    border: calc(15px / 5) solid $color-gray;
+    border: 3px solid;
     border-radius: 50%;
     float: left;
     transform: scale(0);

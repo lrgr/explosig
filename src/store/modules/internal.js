@@ -3,7 +3,8 @@ const state = {
     windowWidth: 0,
     windowHeight: 0,
     isImporting: false,
-    fromImport: false
+    fromImport: false,
+    isLoading: false
 }
 
 // getters
@@ -11,7 +12,8 @@ const getters = {
     windowWidth: state => state.windowWidth,
     windowHeight: state => state.windowHeight,
     isImporting: state => state.isImporting,
-    fromImport: state => state.fromImport
+    fromImport: state => state.fromImport,
+    isLoading: state => state.isLoading
 }
 
 // actions
@@ -32,6 +34,9 @@ const mutations = {
     },
     setFromImport (state, fromImport) {
         state.fromImport = fromImport;
+    },
+    setIsLoading (state, isLoading) {
+        state.isLoading = isLoading;
     },
 }
 
