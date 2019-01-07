@@ -52,6 +52,13 @@ import ExplorerMain from './ExplorerMain.vue';
 import API from './../api.js';
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
+import { 
+    SBS_SUPERCAT_COLORS, DBS_SUPERCAT_COLORS, INDEL_SUPERCAT_COLORS,
+    SBS_SUPERCAT_MAP, DBS_SUPERCAT_MAP, INDEL_SUPERCAT_MAP,
+    SBS_CATS, DBS_CATS, INDEL_CATS,
+    getCategoryColors
+} from './../categories.js';
+
 export default {
     name: 'Explorer',
     components: {
@@ -318,22 +325,13 @@ export default {
             this.setData({key: "cosine_similarity_INDEL", data: exposureIndelCosineSimilarityData});
 
             /* Contexts scales for reconstruction and signature plots */
-            const contextsScaleSbs = new CategoricalScale("cat_SBS", "SBS Mutation Category", API.fetchScaleContexts({
-                "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
-            }));
+            const contextsScaleSbs = new CategoricalScale("cat_SBS", "SBS Mutation Category", SBS_CATS, undefined, getCategoryColors(SBS_CATS, SBS_SUPERCAT_MAP, SBS_SUPERCAT_COLORS));
             this.setScale({key: "cat_SBS", scale: contextsScaleSbs});
 
-            const contextsScaleDbs = new CategoricalScale("cat_DBS", "DBS Mutation Category", API.fetchScaleContexts({
-                "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
-            }));
+            const contextsScaleDbs = new CategoricalScale("cat_DBS", "DBS Mutation Category", DBS_CATS, undefined, getCategoryColors(DBS_CATS, DBS_SUPERCAT_MAP, DBS_SUPERCAT_COLORS));
             this.setScale({key: "cat_DBS", scale: contextsScaleDbs});
 
-            const contextsScaleIndel = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", API.fetchScaleContexts({
-                "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
-            }));
+            const contextsScaleIndel = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", INDEL_CATS, undefined, getCategoryColors(INDEL_CATS, INDEL_SUPERCAT_MAP, INDEL_SUPERCAT_COLORS));
             this.setScale({key: "cat_INDEL", scale: contextsScaleIndel});
 
             /* CLUSTERING  */
