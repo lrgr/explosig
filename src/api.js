@@ -24,6 +24,10 @@ export default class API {
         return stored;
     }
 
+    static promiseAll() {
+        return Promise.all(Object.values(globalPlotData))
+    }
+
     // Fetches without cacheing
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
@@ -99,6 +103,18 @@ export default class API {
                 url,
                 dataOptions
             );
+    }
+
+    static getSharingState(slug) {
+        let url = API.api_base + "sharing-get";
+
+        return d3.json(url, { method: "POST", body: JSON.stringify({"slug": slug}) });
+    }
+
+    static setSharingState(state) {
+        let url = API.api_base + "sharing-set";
+
+        return d3.json(url, { method: "POST", body: JSON.stringify({"state": JSON.stringify(state) }) });
     }
 
    /* 
@@ -185,6 +201,80 @@ export default class API {
             dataOptions
         );
     }
+
+
+
+    static fetchPlotCountsPerCategorySingleSample(dataOptions) {
+        let url = API.api_base + "plot-counts-per-category-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionSingleSample(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleReconstructionSingleSample(dataOptions) {
+        let url = API.api_base + "scale-reconstruction-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionErrorSingleSample(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-error-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleReconstructionErrorSingleSample(dataOptions) {
+        let url = API.api_base + "scale-reconstruction-error-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionCosineSimilaritySingleSample(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-cosine-similarity-single-sample";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchPlotReconstructionCosineSimilarity(dataOptions) {
+        let url = API.api_base + "plot-reconstruction-cosine-similarity";
+
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+
     /*
     static fetchSingleDonorExposures(dataOptions) {
         let url = API.api_base + "exposures-single-donor";
@@ -268,6 +358,36 @@ export default class API {
         );
     }
 
+    static fetchScaleContexts(dataOptions) {
+        let url = API.api_base + "scale-contexts";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+
+    static fetchPlotExposuresSingleSample(dataOptions) {
+        let url = API.api_base + "plot-exposures-single-sample";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
+
+    static fetchScaleExposuresSingleSample(dataOptions) {
+        let url = API.api_base + "scale-exposures-single-sample";
+        
+        return API.request(
+            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            url,
+            dataOptions
+        );
+    }
     
     /*
     static fetchSingleDonorGenomeSignatureBins(dataOptions) {

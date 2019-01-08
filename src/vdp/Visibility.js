@@ -7,7 +7,8 @@ export const EVENT_SUBTYPE_VISIBILITY = 101;
 export const EVENT_SUBTYPE_RESET_VISIBILITY = "resetVisibility";
 
 export const PLOT_GROUPS = Object.freeze({
-    'NORMALIZED_EXPOSURES': 1
+    'NORMALIZED_EXPOSURES': 1,
+    'COSINE_SIMILARITY': 2
 });
 
 /**

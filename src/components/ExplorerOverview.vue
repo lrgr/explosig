@@ -1,7 +1,7 @@
 <template>
     <div>
         <StratificationPlots 
-            :key="stratificationKey"
+            :key="explorerOverviewKey"
             :widthProportion="widthProportion"
         />
         <!-- Counts -->
@@ -10,7 +10,7 @@
                 This plot displays the distribution of mutation counts, separated by mutation type.
             </p>
         </PlotInfo>
-        <PlotContainer
+        <PlotContainer :key="('counts_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="10"
@@ -52,13 +52,13 @@
                 For each mutation type, we also show a normalized version of the distribution.
             </p>
         </PlotInfo>
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSbs" :key="('sbs_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="5"
             :pMarginLeft="130"
             :pMarginRight="10"
-            :pMarginBottom="100"
+            :pMarginBottom="110"
             >
             <Axis
                 slot="axisLeft"
@@ -70,7 +70,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_sbs"
-                x="sig_sbs"
+                x="sig_SBS"
                 y="exposure_sbs"
                 o="sample_id"
                 :getData="getData"
@@ -79,7 +79,7 @@
             />
             <Axis
                 slot="axisBottom"
-                variable="sig_sbs"
+                variable="sig_SBS"
                 side="bottom" 
                 :tickRotation="-65"
                 :getScale="getScale"
@@ -87,17 +87,17 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showSbs && showNormalizedExposures"
+        <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_overview_norm_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="65"
+            :pMarginTop="75"
             :pMarginLeft="130"
             :pMarginRight="10"
             :pMarginBottom="5"
             >
             <Axis
                 slot="axisTop"
-                variable="sig_sbs"
+                variable="sig_SBS"
                 side="top" 
                 :tickRotation="-65"
                 :showLabel="false"
@@ -115,7 +115,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_sbs_normalized"
-                x="sig_sbs"
+                x="sig_SBS"
                 y="exposure_sbs_normalized"
                 o="sample_id"
                 :getData="getData"
@@ -123,13 +123,13 @@
                 :drawOutliers="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showDbs" :key="('dbs_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="5"
             :pMarginLeft="130"
             :pMarginRight="10"
-            :pMarginBottom="100"
+            :pMarginBottom="110"
             >
             <Axis
                 slot="axisLeft"
@@ -141,7 +141,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_dbs"
-                x="sig_dbs"
+                x="sig_DBS"
                 y="exposure_dbs"
                 o="sample_id"
                 :getData="getData"
@@ -150,7 +150,7 @@
             />
             <Axis
                 slot="axisBottom"
-                variable="sig_dbs"
+                variable="sig_DBS"
                 side="bottom" 
                 :tickRotation="-65"
                 :getScale="getScale"
@@ -158,17 +158,17 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs && showNormalizedExposures"
+        <PlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_overview_norm_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="65"
+            :pMarginTop="75"
             :pMarginLeft="130"
             :pMarginRight="10"
             :pMarginBottom="5"
             >
             <Axis
                 slot="axisTop"
-                variable="sig_dbs"
+                variable="sig_DBS"
                 side="top" 
                 :tickRotation="-65"
                 :showLabel="false"
@@ -186,7 +186,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_dbs_normalized"
-                x="sig_dbs"
+                x="sig_DBS"
                 y="exposure_dbs_normalized"
                 o="sample_id"
                 :getData="getData"
@@ -194,13 +194,13 @@
                 :drawOutliers="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showIndel"
+        <PlotContainer v-if="showIndel" :key="('indel_overview_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
             :pMarginTop="5"
             :pMarginLeft="130"
             :pMarginRight="10"
-            :pMarginBottom="100"
+            :pMarginBottom="110"
             >
             <Axis
                 slot="axisLeft"
@@ -212,7 +212,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_indel"
-                x="sig_indel"
+                x="sig_INDEL"
                 y="exposure_indel"
                 o="sample_id"
                 :getData="getData"
@@ -221,7 +221,7 @@
             />
             <Axis
                 slot="axisBottom"
-                variable="sig_indel"
+                variable="sig_INDEL"
                 side="bottom" 
                 :tickRotation="-65"
                 :getScale="getScale"
@@ -229,17 +229,17 @@
                 :disableBrushing="true"
             />
         </PlotContainer>
-        <PlotContainer v-if="showIndel && showNormalizedExposures"
+        <PlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_overview_norm_' + explorerOverviewKey)"
             :pWidth="(colWidth-130-10)"
             :pHeight="300"
-            :pMarginTop="65"
+            :pMarginTop="75"
             :pMarginLeft="130"
             :pMarginRight="10"
             :pMarginBottom="5"
             >
             <Axis
                 slot="axisTop"
-                variable="sig_indel"
+                variable="sig_INDEL"
                 side="top" 
                 :tickRotation="-65"
                 :showLabel="false"
@@ -257,7 +257,7 @@
             <MultiBoxPlot
                 slot="plot"
                 data="exposure_indel_normalized"
-                x="sig_indel"
+                x="sig_INDEL"
                 y="exposure_indel_normalized"
                 o="sample_id"
                 :getData="getData"
@@ -293,7 +293,7 @@ export default {
     },
     data() {
         return {
-            stratificationKey: 1
+            explorerOverviewKey: 1
         };
     },
     mounted() {
@@ -301,7 +301,12 @@ export default {
     },
     methods: {
         rerender() {
-            this.stratificationKey++;
+            this.explorerOverviewKey++;
+        }
+    },
+    watch: {
+        showNormalizedExposures() {
+            this.explorerOverviewKey++;
         }
     },
     computed: {

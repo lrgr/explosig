@@ -2,7 +2,7 @@
     <div>
       <h3>Select signatures</h3>
       <span id="preset-source">
-        <label>Source: </label>
+        <label>Source for Cancer Type Mappings: </label>
         <select v-model="selectedCancerTypeMapGroup">
             <option v-for="pctg in cancerTypeMapGroups" :key="pctg" :value="pctg" :selected="pctg === selectedCancerTypeMapGroup ? 'selected' : ''">{{ pctg }}</option>
         </select>
@@ -23,12 +23,16 @@ import VSpinner from './VSpinner.vue';
 
 export default {
   name: 'SignaturesPicker',
+  props: ['selectedMapping'],
   components: {
     VSpinner
   },
   data: function() {
       return {
           selectedCancerTypeMapGroup: "COSMIC",
+          hasClicked: false,
+          autoSelected: false,
+          autoSelectedBy: null,
           cancerTypeMapGroups: [],
           loading: true,
           allSignaturesSbs: [],
@@ -38,25 +42,26 @@ export default {
           selectedSignaturesDbs: [],
           selectedSignaturesIndel: [],
           cancerTypeMap: [],
+          highlightXScale: null,
           svg: null,
           margin: {
             top: 160,
             right: 30,
             bottom: 10,
-            left: 100
+            left: 150
           }
       };
   },
   mounted: function() {
         const vm = this;
         API.fetchDataListing().then(function(listing) {
-            vm.allSignaturesSbs = listing["signatures"]["SBS"];
-            vm.allSignaturesDbs = listing["signatures"]["DBS"];
-            vm.allSignaturesIndel = listing["signatures"]["INDEL"];
+            vm.allSignaturesSbs = listing["signatures"].filter(el => el["mut_type"] === "SBS")
+            vm.allSignaturesDbs = listing["signatures"].filter(el => el["mut_type"] === "DBS")
+            vm.allSignaturesIndel = listing["signatures"].filter(el => el["mut_type"] === "INDEL")
 
             vm.cancerTypeMap = listing["cancer_type_map"];
 
-            vm.cancerTypeMapGroups = d3_set(vm.cancerTypeMap.map(el => el["Source"])).values();
+            vm.cancerTypeMapGroups = d3_set(vm.cancerTypeMap.map(el => el["group"])).values();
             
             vm.loading = false;
             vm.drawPlot();
@@ -69,8 +74,10 @@ export default {
       windowWidth() {
         this.drawPlot();
       },
-      selectedCancerTypeMapGroup() {
+      selectedCancerTypeMapGroup(val) {
         this.drawPlot();
+        this.$emit('choose-sig-group', val);
+        this.tryToAutoSelect(this.selectedMapping);
       },
       selectedSignaturesSbs(val) {
           this.$emit('choose-sbs', val)
@@ -80,6 +87,18 @@ export default {
       },
       selectedSignaturesIndel(val) {
           this.$emit('choose-indel', val)
+      },
+      autoSelectedBy(val) {
+          this.$emit('choose-auto-selected', val !== null);
+      },
+      selectedMapping(val) {
+        this.tryToAutoSelect(val);
+      },
+      hasClicked(val) {
+        if(val) {
+          this.autoSelectedBy = null;
+          this.updateHighlights();
+        }
       }
   },
   computed: {
@@ -91,17 +110,44 @@ export default {
       ])
   },
   methods: {
+      tryToAutoSelect(val) {
+        // Watch the selected cancer type (oncotree code) mapping object. 
+        // Auto-select by this code if no signatures have been chosen yet.
+        if(
+          val !== null && !this.hasClicked
+        ) {
+          const ctSigsAll = this.cancerTypeMap
+            .filter(el => el.group === val.sig_group && el.oncotree_code === val.oncotree_code)
+            .map(el => this.getSignature(el.signature));
+          
+          const ctSigsSbsNames = ctSigsAll.filter((el) => el[1] === "SBS").map(el => el[0].id);
+          const ctSigsDbsNames = ctSigsAll.filter((el) => el[1] === "DBS").map(el => el[0].id);
+          const ctSigsIndelNames = ctSigsAll.filter((el) => el[1] === "INDEL").map(el => el[0].id);
+
+          this.selectedSignaturesSbs = ctSigsSbsNames;
+          this.selectedSignaturesDbs = ctSigsDbsNames;
+          this.selectedSignaturesIndel = ctSigsIndelNames;
+          this.autoSelectedBy = val;
+          this.updateHighlights();
+        } else if(val === null && !this.hasClicked) {
+          this.selectedSignaturesSbs = [];
+          this.selectedSignaturesDbs = [];
+          this.selectedSignaturesIndel = [];
+          this.autoSelectedBy = null;
+          this.updateHighlights();
+        }
+      },
       getSignature(name) {
         let sig;
-        sig = this.allSignaturesSbs.find(el => el.name === name);
+        sig = this.allSignaturesSbs.find(el => el.id === name);
         if(sig !== undefined) {
           return [sig, "SBS"];
         }
-        sig = this.allSignaturesDbs.find(el => el.name === name);
+        sig = this.allSignaturesDbs.find(el => el.id === name);
         if(sig !== undefined) {
           return [sig, "DBS"];
         }
-        sig = this.allSignaturesIndel.find(el => el.name === name);
+        sig = this.allSignaturesIndel.find(el => el.id === name);
         if(sig !== undefined) {
           return [sig, "INDEL"];
         }
@@ -154,6 +200,18 @@ export default {
               return "normal";
             }
           })
+
+
+          if(this.autoSelectedBy !== null && this.highlightXScale !== null && this.autoSelectedBy.sig_group === this.selectedCancerTypeMapGroup) {
+            let autoSelectedCode = this.autoSelectedBy.oncotree_code;
+            let autoSelectedCancerType = this.cancerTypeMap.find(el => el.oncotree_code === autoSelectedCode).cancer_type;
+            d3_select("#signaturePicker .cancer-type-highlight").select("rect")
+              .attr("fill-opacity", 0.5)
+              .attr("x", this.highlightXScale(autoSelectedCancerType));
+          } else {
+            d3_select("#signaturePicker .cancer-type-highlight").select("rect")
+              .attr("fill-opacity", 0);
+          }
       },
       removePlot: function() {
         d3_select("#signaturePicker").select("svg").remove();
@@ -165,19 +223,21 @@ export default {
             const rowHeight = 11;
 
             const filteredCancerTypeMap = vm.cancerTypeMap
-              .filter(el => el["Source"] === vm.selectedCancerTypeMapGroup)
+              .filter(el => el["group"] === vm.selectedCancerTypeMapGroup)
             
             const cancerTypes = d3_set(filteredCancerTypeMap
-              .map(el => el["Cancer Type"])
+              .map(el => el["cancer_type"])
             ).values();
 
             const x = d3_scaleBand()
               .domain(cancerTypes)
               .range([0, vm.width]);
 
-            const sigNamesSbs = vm.allSignaturesSbs.map((el) => el.name);
-            const sigNamesDbs = vm.allSignaturesDbs.map((el) => el.name);
-            const sigNamesIndel = vm.allSignaturesIndel.map((el) => el.name);
+            this.highlightXScale = x;
+
+            const sigNamesSbs = vm.allSignaturesSbs.map((el) => el.id);
+            const sigNamesDbs = vm.allSignaturesDbs.map((el) => el.id);
+            const sigNamesIndel = vm.allSignaturesIndel.map((el) => el.id);
 
             const sigNames = sigNamesSbs.concat(sigNamesDbs).concat(sigNamesIndel);
             
@@ -216,6 +276,7 @@ export default {
               .on("click", (d) => {
                 vm.toggleSignature(d);
                 vm.updateHighlights();
+                vm.hasClicked = true;
                 // TODO: emit
               });
             
@@ -226,8 +287,8 @@ export default {
                 .attr("class", "signatureCell")
                 .attr("width", x.bandwidth() - 4)
                 .attr("height", rowHeight - 4)
-                .attr("x", (d) => x(d["Cancer Type"]) + 2)
-                .attr("y", (d) => y(d["Signature"]) + 2)
+                .attr("x", (d) => x(d["cancer_type"]) + 2)
+                .attr("y", (d) => y(d["signature"]) + 2)
                 .attr("fill", "dimgray");
             
             const highlightY = container.append("g")
@@ -241,6 +302,7 @@ export default {
                 .attr("fill", "yellow");
             
             const highlightX = container.append("g")
+              .attr("class", "cancer-type-highlight")
               .append("rect")
                 .style("pointer-events", "none")
                 .attr("width", x.bandwidth())
@@ -272,17 +334,18 @@ export default {
                 .attr("dy", "0.3em")
                 .attr("transform", "rotate(45)")
                 .on("click", (d) => {
-                    const ctSigsAllNames = filteredCancerTypeMap.filter(el => el["Cancer Type"] === d).map(el => el["Signature"]);
+                    const ctSigsAllNames = filteredCancerTypeMap.filter(el => el["cancer_type"] === d).map(el => el["signature"]);
                     const ctSigsAll = ctSigsAllNames.map((name) => vm.getSignature(name));
 
-                    const ctSigsSbsNames = ctSigsAll.filter((el) => el[1] === "SBS").map(el => el[0].name);
-                    const ctSigsDbsNames = ctSigsAll.filter((el) => el[1] === "DBS").map(el => el[0].name);
-                    const ctSigsIndelNames = ctSigsAll.filter((el) => el[1] === "INDEL").map(el => el[0].name);
+                    const ctSigsSbsNames = ctSigsAll.filter((el) => el[1] === "SBS").map(el => el[0].id);
+                    const ctSigsDbsNames = ctSigsAll.filter((el) => el[1] === "DBS").map(el => el[0].id);
+                    const ctSigsIndelNames = ctSigsAll.filter((el) => el[1] === "INDEL").map(el => el[0].id);
 
                     vm.selectedSignaturesSbs = ctSigsSbsNames;
                     vm.selectedSignaturesDbs = ctSigsDbsNames;
                     vm.selectedSignaturesIndel = ctSigsIndelNames;
                     vm.updateHighlights();
+                    vm.hasClicked = true;
                 })
                 .on("mouseover", (d) => {
                     highlightX
@@ -304,6 +367,7 @@ export default {
                   vm.toggleSignature(d);
                   vm.updateHighlights();
                   // TODO: emit
+                  vm.hasClicked = true;
                 })
                 .on("mouseover", (d) => {
                     highlightY

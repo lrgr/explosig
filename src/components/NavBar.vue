@@ -2,9 +2,10 @@
     <div>
         <div class="navbar">
             <span class="title"><a href="/">iMuSE</a></span>
+            <VSpinner v-if="isLoading" color="white" margin="0 0 0 20px" display="inline-block"/>
             <div class="right-button-group">
-                <VButton :btn-inverse="true" @click="showDataPicker('signatures')">Signatures</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('samples')">Samples</VButton>
+                <VButton :btn-inverse="true" @click="showDataPicker('signatures')">Signatures</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('genes')">Genes</VButton>
                 <VButton :btn-inverse="true" @click="showDataPicker('clinical')">Clinical</VButton>
             </div>
@@ -21,10 +22,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 
 // child components
 import DataPicker from './DataPicker.vue';
 import VButton from './VButton.vue';
+import VSpinner from './VSpinner.vue';
 
 export default {
   name: 'NavBar',
@@ -36,7 +39,13 @@ export default {
   },
   components: {
       DataPicker,
-      VButton
+      VButton,
+      VSpinner
+  },
+  computed: {
+      ...mapGetters([
+          'isLoading'
+      ])
   },
   methods: {
       showDataPicker: function(selection) {

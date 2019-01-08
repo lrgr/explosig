@@ -3,8 +3,8 @@
         <div class="explorer-control" :style="{ 'height': 24 + 'px' }"> 
             <HistoryButtons />
             <SortButtons />
-            <!--<ShareButtons />-->
             <StratificationButtons />
+            <SharingButtons :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col">
@@ -14,10 +14,9 @@
                 <ExplorerMain :widthProportion="(5/10)"/>
             </div>
             <div class="explorer-overview explorer-col">
-                <div class="explorer-col-title">
-                    <h3>Overview</h3>
-                </div>
-                <ExplorerOverview :widthProportion="(3/10)"/>
+                <ExplorerOverviewTabs />
+                <ExplorerOverview :widthProportion="(3/10)" v-if="showOverview"/>
+                <ExplorerOverviewSampleContainer :widthProportion="(3/10)" v-if="showOverviewSample"/>
             </div>
             <div class="explorer-legend explorer-col">
                 <div class="explorer-col-title">
@@ -36,37 +35,52 @@ import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'v
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
-import Mode, { EVENT_TYPE_MODE, EVENT_SUBTYPE_MODE, EVENT_SUBTYPE_RESET_MODE } from './../vdp/Mode.js';
-
+import Samples, { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES, EVENT_SUBTYPE_RESET_SAMPLES } from './../vdp/Samples.js';
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
-import ShareButtons from './ShareButtons.vue';
 import StratificationButtons from './StratificationButtons.vue';
+import SharingButtons from './SharingButtons.vue';
 
+import ExplorerOverviewTabs from './ExplorerOverviewTabs.vue';
+import ExplorerOverviewSampleContainer from './ExplorerOverviewSampleContainer.vue';
 
 import ExplorerLegend from './ExplorerLegend.vue';
 import ExplorerOverview from './ExplorerOverview.vue';
 import ExplorerMain from './ExplorerMain.vue';
 
-
 import API from './../api.js';
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
+
+import { 
+    SBS_SUPERCAT_COLORS, DBS_SUPERCAT_COLORS, INDEL_SUPERCAT_COLORS,
+    SBS_SUPERCAT_MAP, DBS_SUPERCAT_MAP, INDEL_SUPERCAT_MAP,
+    SBS_CATS, DBS_CATS, INDEL_CATS,
+    getCategoryColors
+} from './../categories.js';
 
 export default {
     name: 'Explorer',
     components: {
         HistoryButtons,
         SortButtons,
-        ShareButtons,
         StratificationButtons,
+        SharingButtons,
         ExplorerLegend,
         ExplorerOverview,
-        ExplorerMain
+        ExplorerMain,
+        ExplorerOverviewTabs,
+        ExplorerOverviewSampleContainer
     },
     computed: {
         widthMain() {
             return this.windowWidth * (5/10) - 25;
+        },
+        showOverview() {
+            return this.getSamples().activeSample === null;
+        },
+        showOverviewSample() {
+            return this.getSamples().activeSample !== null;
         },
         ...mapGetters([
             'windowHeight', 
@@ -75,7 +89,7 @@ export default {
             'getStack',
             'getStratification',
             'getVisibility',
-            'getMode',
+            'getSamples',
             'getData',
             'getScale'
         ])
@@ -84,7 +98,7 @@ export default {
         this.initStack();
         this.initStratification();
         this.initVisibility();
-        this.initMode();
+        this.initSamples();
         this.initScalesAndData();
     },
     methods: {
@@ -96,12 +110,12 @@ export default {
                     [EVENT_TYPES.DATA]: this.getData,
                     [EVENT_TYPE_STRATIFY]: this.getStratification,
                     [EVENT_TYPE_VISIBILITY]: this.getVisibility,
-                    [EVENT_TYPE_MODE]: this.getMode
+                    [EVENT_TYPE_SAMPLES]: this.getSamples
                 }, 
                 {
                     [EVENT_SUBTYPE_STRATIFY]: EVENT_SUBTYPE_RESET_STRATIFY,
                     [EVENT_SUBTYPE_VISIBILITY]: EVENT_SUBTYPE_RESET_VISIBILITY,
-                    [EVENT_SUBTYPE_MODE]: EVENT_SUBTYPE_RESET_MODE,
+                    [EVENT_SUBTYPE_SAMPLES]: EVENT_SUBTYPE_RESET_SAMPLES,
                     ...EVENT_SUBTYPE_RESETS
                 }
             );
@@ -112,12 +126,12 @@ export default {
             this.setStratification(stratification);
         },
         initVisibility() {
-            const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES]);
+            const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES, PLOT_GROUPS.COSINE_SIMILARITY]);
             this.setVisibility(visibility);
         },
-        initMode() {
-            const mode = new Mode();
-            this.setMode(mode);
+        initSamples() {
+            const samples = new Samples();
+            this.setSamples(samples);
         },
         initScalesAndData() {
             const projectsScale = new CategoricalScale("proj_id", "Project", this.getConfig().selectedSamples);
@@ -126,14 +140,14 @@ export default {
             const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
             this.setScale({key: "mut_type", scale: mutTypeScale});
 
-            const sigsSbsScale = new CategoricalScale("sig_sbs", "SBS Signature", this.getConfig().selectedSignaturesSbs);
-            this.setScale({key: "sig_sbs", scale: sigsSbsScale});
+            const sigsSbsScale = new CategoricalScale("sig_SBS", "SBS Signature", this.getConfig().selectedSignaturesSbs);
+            this.setScale({key: "sig_SBS", scale: sigsSbsScale});
 
-            const sigsDbsScale = new CategoricalScale("sig_dbs", "DBS Signature", this.getConfig().selectedSignaturesDbs);
-            this.setScale({key: "sig_dbs", scale: sigsDbsScale});
+            const sigsDbsScale = new CategoricalScale("sig_DBS", "DBS Signature", this.getConfig().selectedSignaturesDbs);
+            this.setScale({key: "sig_DBS", scale: sigsDbsScale});
 
-            const sigsIndelScale = new CategoricalScale("sig_indel", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
-            this.setScale({key: "sig_indel", scale: sigsIndelScale});
+            const sigsIndelScale = new CategoricalScale("sig_INDEL", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
+            this.setScale({key: "sig_INDEL", scale: sigsIndelScale});
 
             /* SAMPLES METADATA  */
             const samplesMetaScale = new CategoricalScale("sample_meta", "Sample Metadata", ["proj_id"], ["Project"]);
@@ -202,6 +216,16 @@ export default {
             }));
             this.setData({key: "exposure_sbs_normalized", data: exposureSbsNormalizedData});
 
+            const exposureSbsCosineSimilarityScale = new ContinuousScale("cosine_similarity_SBS", "SBS Cos. Sim.", [0, 1]);
+            this.setScale({key: "cosine_similarity_SBS", scale: exposureSbsCosineSimilarityScale});
+
+            const exposureSbsCosineSimilarityData = new DataContainer("cosine_similarity_SBS", "SBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesSbs,
+                "mut_type": "SBS"
+            }));
+            this.setData({key: "cosine_similarity_SBS", data: exposureSbsCosineSimilarityData});
+
             /* SIGNATURE EXPOSURES: DBS */
             const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
@@ -241,6 +265,16 @@ export default {
             }));
             this.setData({key: "exposure_dbs_normalized", data: exposureDbsNormalizedData});
 
+            const exposureDbsCosineSimilarityScale = new ContinuousScale("cosine_similarity_DBS", "DBS Cos. Sim.", [0, 1]);
+            this.setScale({key: "cosine_similarity_DBS", scale: exposureDbsCosineSimilarityScale});
+
+            const exposureDbsCosineSimilarityData = new DataContainer("cosine_similarity_DBS", "DBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesDbs,
+                "mut_type": "DBS"
+            }));
+            this.setData({key: "cosine_similarity_DBS", data: exposureDbsCosineSimilarityData});
+
             /* SIGNATURE EXPOSURES: INDEL */
             const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
@@ -279,6 +313,26 @@ export default {
                 "mut_type": "INDEL"
             }));
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
+
+            const exposureIndelCosineSimilarityScale = new ContinuousScale("cosine_similarity_INDEL", "INDEL Cos. Sim.", [0, 1]);
+            this.setScale({key: "cosine_similarity_INDEL", scale: exposureIndelCosineSimilarityScale});
+
+            const exposureIndelCosineSimilarityData = new DataContainer("cosine_similarity_INDEL", "INDEL Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+                "projects": this.getConfig().selectedSamples,
+                "signatures": this.getConfig().selectedSignaturesIndel,
+                "mut_type": "INDEL"
+            }));
+            this.setData({key: "cosine_similarity_INDEL", data: exposureIndelCosineSimilarityData});
+
+            /* Contexts scales for reconstruction and signature plots */
+            const contextsScaleSbs = new CategoricalScale("cat_SBS", "SBS Mutation Category", SBS_CATS, undefined, getCategoryColors(SBS_CATS, SBS_SUPERCAT_MAP, SBS_SUPERCAT_COLORS));
+            this.setScale({key: "cat_SBS", scale: contextsScaleSbs});
+
+            const contextsScaleDbs = new CategoricalScale("cat_DBS", "DBS Mutation Category", DBS_CATS, undefined, getCategoryColors(DBS_CATS, DBS_SUPERCAT_MAP, DBS_SUPERCAT_COLORS));
+            this.setScale({key: "cat_DBS", scale: contextsScaleDbs});
+
+            const contextsScaleIndel = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", INDEL_CATS, undefined, getCategoryColors(INDEL_CATS, INDEL_SUPERCAT_MAP, INDEL_SUPERCAT_COLORS));
+            this.setScale({key: "cat_INDEL", scale: contextsScaleIndel});
 
             /* CLUSTERING  */
             const exposuresClusteringData = new DataContainer("exposures_clustering", "Clustering by Exposure", API.fetchClustering({
@@ -374,7 +428,7 @@ export default {
             'setScale',
             'setStratification',
             'setVisibility',
-            'setMode'
+            'setSamples'
         ])
     }
 }
@@ -428,6 +482,9 @@ export default {
         font-size: 0.75em;
         margin-right: 5px;
 
+    }
+    .explorer-control-right {
+        float: right;
     }
 }
 

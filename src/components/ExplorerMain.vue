@@ -1,5 +1,39 @@
 <template>
     <div>
+        <!-- Meta -->
+        <PlotInfo title="Sample Metadata">
+            <p slot="info">
+                This plot shows metadata for each sample.
+            </p>
+        </PlotInfo>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="20"
+            :pMarginTop="130"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+        >
+            <Axis 
+                slot="axisTop"
+                variable="sample_id"
+                side="top"
+                :tickRotation="-65"
+                :maxCharacters="4"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="sample_meta"
+                x="sample_id"
+                c="proj_id"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+
         <!-- Counts -->
         <PlotInfo title="Number of Mutations per Sample">
             <p slot="info">
@@ -11,20 +45,11 @@
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="130"
+            :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisTop"
-                variable="sample_id"
-                side="top"
-                :tickRotation="-65"
-                :maxCharacters="4"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
             <Axis 
                 slot="axisLeft"
                 variable="mut_count_sum"
@@ -41,6 +66,7 @@
                 c="mut_type"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
             
         </PlotContainer>
@@ -54,7 +80,7 @@
                 Every other plot shows exposures after normalizing (to sum to 1).
             </p>
         </PlotInfo>
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -75,12 +101,13 @@
                 data="exposure_sbs"
                 x="sample_id"
                 y="exposure_sum_sbs"
-                c="sig_sbs"
+                c="sig_SBS"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <PlotContainer v-if="showSbs && showNormalizedExposures"
+        <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -101,12 +128,40 @@
                 data="exposure_sbs_normalized"
                 x="sample_id"
                 y="exposure_sum_sbs_normalized"
-                c="sig_sbs"
+                c="sig_SBS"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showSbs && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="100"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="cosine_similarity_SBS"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <BarPlot 
+                slot="plot"
+                data="cosine_similarity_SBS"
+                x="sample_id"
+                y="cosine_similarity_SBS"
+                barColor="gray"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+
+        <PlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -126,12 +181,13 @@
                 data="exposure_dbs"
                 x="sample_id"
                 y="exposure_sum_dbs"
-                c="sig_dbs"
+                c="sig_DBS"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <PlotContainer v-if="showDbs && showNormalizedExposures"
+        <PlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -151,12 +207,41 @@
                 data="exposure_dbs_normalized"
                 x="sample_id"
                 y="exposure_sum_dbs_normalized"
-                c="sig_dbs"
+                c="sig_DBS"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <PlotContainer v-if="showIndel"
+        <PlotContainer v-if="showDbs && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="100"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="cosine_similarity_DBS"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <BarPlot 
+                slot="plot"
+                data="cosine_similarity_DBS"
+                x="sample_id"
+                y="cosine_similarity_DBS"
+                barColor="gray"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+
+
+        <PlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -176,12 +261,13 @@
                 data="exposure_indel"
                 x="sample_id"
                 y="exposure_sum_indel"
-                c="sig_indel"
+                c="sig_INDEL"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-         <PlotContainer v-if="showIndel && showNormalizedExposures"
+         <PlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -201,40 +287,43 @@
                 data="exposure_indel_normalized"
                 x="sample_id"
                 y="exposure_sum_indel_normalized"
-                c="sig_indel"
+                c="sig_INDEL"
                 :getData="getData"
                 :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+        <PlotContainer v-if="showIndel && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="100"
+            :pMarginTop="5"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="5"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="cosine_similarity_INDEL"
+                side="left"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <BarPlot 
+                slot="plot"
+                data="cosine_similarity_INDEL"
+                x="sample_id"
+                y="cosine_similarity_INDEL"
+                barColor="gray"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
         
         <!-- Toggle for normalized exposure plots -->
         <VisibilityButtons />
 
-        <!-- Meta -->
-        <div v-if="showMeta">
-            <PlotInfo title="Sample Metadata">
-                <p slot="info">
-                    This plot shows metadata for each sample.
-                </p>
-            </PlotInfo>
-            <PlotContainer
-                :pWidth="(colWidth-150-5)"
-                :pHeight="20"
-                :pMarginTop="0"
-                :pMarginLeft="150"
-                :pMarginRight="5"
-                :pMarginBottom="5"
-            >
-                <TrackPlot 
-                    slot="plot"
-                    data="sample_meta"
-                    x="sample_id"
-                    c="proj_id"
-                    :getData="getData"
-                    :getScale="getScale"
-                />
-            </PlotContainer>
-        </div>
+        
 
         <!-- Gene Alterations -->
         <div v-if="showGenes">
@@ -267,7 +356,7 @@
         >
             <Axis
                 slot="axisLeft"
-                variable="sig_sbs"
+                variable="sig_SBS"
                 side="left"
                 :getScale="getScale"
                 :getStack="getStack"
@@ -278,7 +367,7 @@
                 data="exposure_sbs_normalized"
                 h="exposures_clustering"
                 x="sample_id"
-                y="sig_sbs"
+                y="sig_SBS"
                 c="exposure_sbs_normalized"
                 :getScale="getScale"
                 :getStack="getStack"
@@ -296,7 +385,7 @@
         >
             <Axis
                 slot="axisLeft"
-                variable="sig_dbs"
+                variable="sig_DBS"
                 side="left"
                 :getScale="getScale"
                 :getStack="getStack"
@@ -307,7 +396,7 @@
                 data="exposure_dbs_normalized"
                 h="exposures_clustering"
                 x="sample_id"
-                y="sig_dbs"
+                y="sig_DBS"
                 c="exposure_dbs_normalized"
                 :getScale="getScale"
                 :getStack="getStack"
@@ -325,7 +414,7 @@
         >
             <Axis
                 slot="axisLeft"
-                variable="sig_indel"
+                variable="sig_INDEL"
                 side="left"
                 :getScale="getScale"
                 :getStack="getStack"
@@ -336,7 +425,7 @@
                 data="exposure_indel_normalized"
                 h="exposures_clustering"
                 x="sample_id"
-                y="sig_indel"
+                y="sig_INDEL"
                 c="exposure_indel_normalized"
                 :getScale="getScale"
                 :getStack="getStack"
@@ -375,6 +464,9 @@ import VisibilityButtons from './VisibilityButtons.vue';
 
 import { PLOT_GROUPS } from './../vdp/Visibility';
 
+import { HistoryEvent } from 'vue-declarative-plots';
+import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples';
+
 
 export default {
     name: 'ExplorerMain',
@@ -387,6 +479,19 @@ export default {
     props: {
         'widthProportion': {
             type: Number
+        }
+    },
+    data() {
+        return {
+            explorerMainKey: 1
+        };
+    },
+    watch: {
+        showNormalizedExposures() {
+            this.explorerMainKey++;
+        },
+        showCosineSimilarity() {
+            this.explorerMainKey++;
         }
     },
     computed: {
@@ -429,6 +534,9 @@ export default {
         showNormalizedExposures() {
             return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.NORMALIZED_EXPOSURES));
         },
+        showCosineSimilarity() {
+            return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.COSINE_SIMILARITY));
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -436,8 +544,36 @@ export default {
             'getVisibility',
             'getStack',
             'getData',
-            'getScale'
+            'getScale',
+            'getSamples'
         ])
+    },
+    methods: {
+        sampleClickHandler(sampleId) {
+            let samplesObject = this.getSamples();
+            if(!samplesObject.selectedSamples.includes(sampleId)) {
+                let updatedSamples = [ ...samplesObject.selectedSamples, sampleId ];
+                samplesObject.updateSelectedSamples(updatedSamples);
+                this.getStack().push(new HistoryEvent(
+                    EVENT_TYPE_SAMPLES, 
+                    EVENT_SUBTYPE_SAMPLES, 
+                    "N/A", 
+                    "updateSelectedSamples", 
+                    [Array.from(updatedSamples)]
+                ));
+            } else {
+                if(samplesObject.activeSample !== sampleId) {
+                    samplesObject.updateActiveSample(sampleId);
+                    this.getStack().push(new HistoryEvent(
+                        EVENT_TYPE_SAMPLES, 
+                        EVENT_SUBTYPE_SAMPLES, 
+                        "N/A", 
+                        "updateActiveSample", 
+                        [sampleId]
+                    ));
+                }
+            }
+        }
     }
 }
 </script>

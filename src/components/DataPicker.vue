@@ -6,12 +6,30 @@
                 @choose-sbs="updateSignaturesSbs"
                 @choose-dbs="updateSignaturesDbs"
                 @choose-indel="updateSignaturesIndel"
+                @choose-sig-group="updateSignaturesGroup"
+                @choose-auto-selected="updateSignaturesAutoSelected"
+                :selectedMapping="chosenSignaturesGroupMapping"
              />
-            <SamplesPicker v-show="samplesVisible" @choose="updateSamples" />
-            <GenesPicker v-show="genesVisible" @choose="updateGenes" :selectedSamples="chosenSamples" />
-            <ClinicalPicker v-show="clinicalVisible" @choose="updateClinicalVariables" />
+            <SamplesPicker 
+                v-show="samplesVisible" 
+                @choose="updateSamples" 
+                @chooseNum="updateSamplesNum" 
+                @chooseMappings="updateSamplesOncotreeMappings" 
+            />
+            <GenesPicker 
+                v-show="genesVisible" 
+                @choose="updateGenes" 
+                :selectedSamples="chosenSamples" 
+            />
+            <ClinicalPicker 
+                v-show="clinicalVisible" 
+                @choose="updateClinicalVariables" 
+            />
         </div>
         <div class="actions-bar">
+            <span>
+                {{ getSelectedText() }}
+            </span>
             <VButton 
                 @click="emitUpdate"
             >
@@ -32,18 +50,18 @@
                 Genes
             </VButton>
             <VButton 
-                @click="setDataPicker('samples')" 
-                :btn-secondary="true" 
-                :btn-selected="this.samplesVisible"
-            >
-                Samples
-            </VButton>
-            <VButton 
                 @click="setDataPicker('signatures')" 
                 :btn-secondary="true" 
                 :btn-selected="this.signaturesVisible"
             >
                 Signatures
+            </VButton>
+            <VButton 
+                @click="setDataPicker('samples')" 
+                :btn-secondary="true" 
+                :btn-selected="this.samplesVisible"
+            >
+                Samples
             </VButton>
             <div class="clearfix"></div>
         </div>
@@ -76,7 +94,11 @@ export default {
           chosenSignaturesSbs: [],
           chosenSignaturesDbs: [],
           chosenSignaturesIndel: [],
+          chosenSignaturesGroup: "COSMIC",
+          chosenSignaturesGroupMapping: null,
+          chosenSignaturesAutoSelected: false,
           chosenSamples: [],
+          chosenSamplesNum: 0,
           chosenGenes: [],
           chosenClinicalVariables: []
       };
@@ -115,6 +137,35 @@ export default {
     updateSamples(chosenSamples) {
         this.chosenSamples = chosenSamples;
     },
+    updateSamplesNum(chosenSamplesNum) {
+        this.chosenSamplesNum = chosenSamplesNum;
+    },
+    updateSamplesOncotreeMappings(chosenSamplesOncotreeMappings) {
+        // Filter by the currently-selected "signature group" e.g. COSMIC
+        // Then, if only one oncotree code mapping exists for the selected projects, 
+        // set the chosenSignaturesGroupMapping code to that single mapping.
+        let singleMapping = undefined;
+        let groupMappings = chosenSamplesOncotreeMappings.filter(el => el.sig_group === this.chosenSignaturesGroup);
+        for(let mapping of groupMappings) {
+            if(singleMapping === undefined || singleMapping.oncotree_code === mapping.oncotree_code) {
+                singleMapping = mapping;
+            } else {
+                this.chosenSignaturesGroupMapping = null;
+                return;
+            }
+        }
+        if(singleMapping !== undefined) {
+            this.chosenSignaturesGroupMapping = singleMapping;
+        } else {
+            this.chosenSignaturesGroupMapping = null;
+        }
+    },
+    updateSignaturesGroup(chosenSignaturesGroup) {
+        this.chosenSignaturesGroup = chosenSignaturesGroup;
+    },
+    updateSignaturesAutoSelected(chosenSignaturesAutoSelected) {
+        this.chosenSignaturesAutoSelected = chosenSignaturesAutoSelected;
+    },
     updateGenes(chosenGenes) {
         this.chosenGenes = chosenGenes;
     },
@@ -133,6 +184,16 @@ export default {
         );
         // Notify parent to close modal
         this.$emit('update');
+    },
+    getSelectedText() {
+        if(this.samplesVisible) {
+            return (this.chosenSamples.length  + ' stud' + (this.chosenSamples.length === 1 ? 'y' : 'ies') + ' selected (' + this.chosenSamplesNum + ' samples)');
+        }
+        if(this.signaturesVisible) {
+            let totalSignatures = (this.chosenSignaturesSbs.length + this.chosenSignaturesDbs.length + this.chosenSignaturesIndel.length);
+            return totalSignatures + ' signature' + (totalSignatures === 1 ? '' : 's') + ' ' + (this.chosenSignaturesAutoSelected ? 'auto-' : '') + 'selected (' + this.chosenSignaturesSbs.length + ' SBS, ' + this.chosenSignaturesDbs.length + ' DBS, ' + this.chosenSignaturesIndel.length  + ' INDEL)';
+        }
+        return '';
     }
   }
 }

@@ -35,7 +35,7 @@ export default {
         'data': { // The data used for the box plot values. Example: exposure_sbs
             type: String 
         },
-        'optionScale': { // The scale used for the options. Example: sig_sbs
+        'optionScale': { // The scale used for the options. Example: sig_SBS
             type: String 
         },
         'y': { // The scale used for the box plot values. Example: exposure_sbs
