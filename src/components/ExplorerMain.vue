@@ -6,6 +6,7 @@
                 This plot shows metadata for each sample.
             </p>
         </PlotInfo>
+        <NumSamples />
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
@@ -20,6 +21,14 @@
                 side="top"
                 :tickRotation="-65"
                 :maxCharacters="4"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <Axis 
+                slot="axisLeft"
+                variable="sample_meta"
+                side="left"
+                :disableBrushing="true"
                 :getScale="getScale"
                 :getStack="getStack"
             />
@@ -461,6 +470,8 @@ import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';
 import GeneTracks from './GeneTracks.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
+import NumSamples from './NumSamples.vue';
+
 
 import { PLOT_GROUPS } from './../vdp/Visibility';
 
@@ -474,7 +485,8 @@ export default {
         PlotInfo,
         ClinicalTracks,
         GeneTracks,
-        VisibilityButtons
+        VisibilityButtons,
+        NumSamples
     },
     props: {
         'widthProportion': {

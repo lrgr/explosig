@@ -87,7 +87,7 @@ export default {
     position: absolute;
     right: 0;
     height: 60vh;
-    width: 100%;
+    width: 50%;
     .arrow {
         width: 0;
         height: 0;

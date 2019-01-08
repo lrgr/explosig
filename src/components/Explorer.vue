@@ -134,7 +134,7 @@ export default {
             this.setSamples(samples);
         },
         initScalesAndData() {
-            const projectsScale = new CategoricalScale("proj_id", "Project", this.getConfig().selectedSamples);
+            const projectsScale = new CategoricalScale("proj_id", "Study", this.getConfig().selectedSamples);
             this.setScale({key: "proj_id", scale: projectsScale});
 
             const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
@@ -150,7 +150,7 @@ export default {
             this.setScale({key: "sig_INDEL", scale: sigsIndelScale});
 
             /* SAMPLES METADATA  */
-            const samplesMetaScale = new CategoricalScale("sample_meta", "Sample Metadata", ["proj_id"], ["Project"]);
+            const samplesMetaScale = new CategoricalScale("sample_meta", "", ["Study"]);
             this.setScale({key: "sample_meta", scale: samplesMetaScale});
 
             const samplesMetaData = new DataContainer("sample_meta", "Sample Metadata", API.fetchPlotSamplesMeta({
