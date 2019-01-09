@@ -1,12 +1,18 @@
 <template>
     <div>
-      <h3>Select signatures</h3>
+      <h3 class="signatures-title">Select signatures</h3>
       <span id="preset-source">
-        <label>Source for Cancer Type Mappings: </label>
+        <label>Filter signatures by source: </label>
         <select v-model="selectedCancerTypeMapGroup">
+            <option value="*" :selected="'*' === selectedCancerTypeMapGroup ? 'selected' : ''">*</option>
             <option v-for="pctg in cancerTypeMapGroups" :key="pctg" :value="pctg" :selected="pctg === selectedCancerTypeMapGroup ? 'selected' : ''">{{ pctg }}</option>
         </select>
       </span>
+      <SignatureTooltip 
+        :hoveredSignature="hoveredSignature" 
+        :hoveredViewportX="hoveredViewportX"
+        :hoveredViewportY="hoveredViewportY"
+      />
       <div id="signaturePicker"></div>
       <VSpinner v-if="loading" class="spinner"/>
     </div>
@@ -14,18 +20,21 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { mouse as d3_mouse, event as d3_event } from 'd3';
 import { select as d3_select } from 'd3-selection';
 import { scaleBand as d3_scaleBand } from 'd3-scale';
 import { set as d3_set } from 'd3-collection';
 import { axisTop as d3_axisTop, axisLeft as d3_axisLeft } from 'd3-axis';
 import API from '../api.js';
 import VSpinner from './VSpinner.vue';
+import SignatureTooltip from './SignatureTooltip.vue';
 
 export default {
   name: 'SignaturesPicker',
   props: ['selectedMapping'],
   components: {
-    VSpinner
+    VSpinner,
+    SignatureTooltip
   },
   data: function() {
       return {
@@ -43,9 +52,12 @@ export default {
           selectedSignaturesIndel: [],
           cancerTypeMap: [],
           highlightXScale: null,
+          hoveredSignature: null,
+          hoveredViewportX: null,
+          hoveredViewportY: null,
           svg: null,
           margin: {
-            top: 160,
+            top: 140,
             right: 30,
             bottom: 10,
             left: 150
@@ -55,12 +67,11 @@ export default {
   mounted: function() {
         const vm = this;
         API.fetchDataListing().then(function(listing) {
-            vm.allSignaturesSbs = listing["signatures"].filter(el => el["mut_type"] === "SBS")
-            vm.allSignaturesDbs = listing["signatures"].filter(el => el["mut_type"] === "DBS")
-            vm.allSignaturesIndel = listing["signatures"].filter(el => el["mut_type"] === "INDEL")
+            vm.allSignaturesSbs = listing["signatures"].filter(el => el["mut_type"] === "SBS");
+            vm.allSignaturesDbs = listing["signatures"].filter(el => el["mut_type"] === "DBS");
+            vm.allSignaturesIndel = listing["signatures"].filter(el => el["mut_type"] === "INDEL");
 
             vm.cancerTypeMap = listing["cancer_type_map"];
-
             vm.cancerTypeMapGroups = d3_set(vm.cancerTypeMap.map(el => el["group"])).values();
             
             vm.loading = false;
@@ -78,6 +89,7 @@ export default {
         this.drawPlot();
         this.$emit('choose-sig-group', val);
         this.tryToAutoSelect(this.selectedMapping);
+        
       },
       selectedSignaturesSbs(val) {
           this.$emit('choose-sbs', val)
@@ -102,6 +114,27 @@ export default {
       }
   },
   computed: {
+      filteredSignaturesSbs() {
+        if(this.selectedCancerTypeMapGroup === "*") {
+          return this.allSignaturesSbs;
+        } else {
+          return this.allSignaturesSbs.filter(el => el["group"] === this.selectedCancerTypeMapGroup);
+        }
+      },
+      filteredSignaturesDbs() {
+        if(this.selectedCancerTypeMapGroup === "*") {
+          return this.allSignaturesDbs;
+        } else {
+          return this.allSignaturesDbs.filter(el => el["group"] === this.selectedCancerTypeMapGroup);
+        }
+      },
+      filteredSignaturesIndel() {
+        if(this.selectedCancerTypeMapGroup === "*") {
+          return this.allSignaturesIndel;
+        } else {
+          return this.allSignaturesIndel.filter(el => el["group"] === this.selectedCancerTypeMapGroup);
+        }
+      },
       width: function() {
           return this.windowWidth*0.8 - this.margin.left - this.margin.right - 60;
       },
@@ -235,9 +268,9 @@ export default {
 
             this.highlightXScale = x;
 
-            const sigNamesSbs = vm.allSignaturesSbs.map((el) => el.id);
-            const sigNamesDbs = vm.allSignaturesDbs.map((el) => el.id);
-            const sigNamesIndel = vm.allSignaturesIndel.map((el) => el.id);
+            const sigNamesSbs = vm.filteredSignaturesSbs.map((el) => el.id);
+            const sigNamesDbs = vm.filteredSignaturesDbs.map((el) => el.id);
+            const sigNamesIndel = vm.filteredSignaturesIndel.map((el) => el.id);
 
             const sigNames = sigNamesSbs.concat(sigNamesDbs).concat(sigNamesIndel);
             
@@ -316,12 +349,18 @@ export default {
               highlightY
                 .attr("fill-opacity", 0.5)
                 .attr("y", y(d));
+              this.hoveredSignature = d;
+              this.hoveredViewportX = d3_event.clientX;
+              this.hoveredViewportY = d3_event.clientY;
             });
 
             container.on("mouseleave", (d) => {
               highlightY
                 .attr("fill-opacity", 0);
-            })
+              this.hoveredSignature = null;
+              this.hoveredViewportX = null;
+              this.hoveredViewportY = null;
+            });
 
             
             // x-axis
@@ -388,7 +427,9 @@ export default {
 
 <style scoped lang="scss">
 @import './../style/variables.scss';
-
+.signatures-title {
+  margin-bottom: 5px;
+}
 #signaturePicker {
             position: relative;
             overflow-x: hidden;

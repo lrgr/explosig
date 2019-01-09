@@ -54,10 +54,10 @@
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="0"
+            :pMarginTop="3"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="3"
         >
             <Axis 
                 slot="axisLeft"
@@ -92,10 +92,10 @@
         <PlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="3"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="3"
         >
             <Axis 
                 slot="axisLeft"
@@ -119,10 +119,10 @@
         <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
-            :pMarginTop="5"
+            :pMarginTop="3"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="5"
+            :pMarginBottom="3"
         >
             <Axis 
                 slot="axisLeft"
@@ -336,12 +336,12 @@
 
         <!-- Gene Alterations -->
         <div v-if="showGenes">
-            <GeneTracks :widthProportion="widthProportion" />
+            <GeneTracks :widthProportion="widthProportion" :sampleClickHandler="sampleClickHandler" />
         </div>
 
         <!-- Clinical Variables -->
         <div v-if="showClinical">
-            <ClinicalTracks :widthProportion="widthProportion" />
+            <ClinicalTracks :widthProportion="widthProportion" :sampleClickHandler="sampleClickHandler" />
         </div>
 
         <!-- Hierarchical Clustering -->
@@ -381,6 +381,7 @@
                 :getScale="getScale"
                 :getStack="getStack"
                 :getData="getData"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
 
@@ -410,6 +411,7 @@
                 :getScale="getScale"
                 :getStack="getStack"
                 :getData="getData"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
 
@@ -439,6 +441,7 @@
                 :getScale="getScale"
                 :getStack="getStack"
                 :getData="getData"
+                :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
 

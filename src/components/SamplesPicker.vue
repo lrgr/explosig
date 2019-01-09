@@ -3,9 +3,21 @@
     <h3 class="samples-title">Select samples</h3>
     <button class="deselect-button inline" v-show="selectedProjects.length > 0" @click="deselectAll">Deselect All</button>
 
+    <div class="filters">
+      <div class="samples-filter-by-source">
+        Filter samples by source: 
+        <select v-model="filterBySource">
+          <option value="*" :selected="filterBySource === '*'">*</option>
+          <option v-for="source of allSources" :key="source" :value="source" :selected="source === filterBySource ? 'selected' : ''">
+            {{ source }}
+          </option>
+        </select>
+      </div>
+    </div>
+
     <div class="col-container">
       <div class="col-tissue-types" :style="{'height': (windowHeight*0.8 - 164) + 'px' }">
-        <div v-for="tType in allProjectsByTissueType" :key="tType.oncotree_code" @click="scrollToTissueType(tType.oncotree_code)">
+        <div v-for="tType in filteredProjectsByTissueType" :key="tType.oncotree_code" @click="scrollToTissueType(tType.oncotree_code)">
           <span>{{ tType.oncotree_name }}</span>
           <span class="num-projects-badge">
             {{ tType.projects.length }}
@@ -15,7 +27,7 @@
       </div>
 
       <div class="col-projects" id="col-projects" :style="{'height': (windowHeight*0.8 - 164) + 'px' }">
-        <div v-for="tType in allProjectsByTissueType" :key="tType.oncotree_code">
+        <div v-for="tType in filteredProjectsByTissueType" :key="tType.oncotree_code">
           <h4>{{ tType.oncotree_name }}</h4> <button @click="selectAllByTissueType(tType.oncotree_code)">Select All {{ tType.oncotree_name }}</button>
           <div v-for="tTypeProject in tType.projects" :key="tTypeProject.id">
             <input type="checkbox" :value="tTypeProject.id" :id="tTypeProject.id" name="projects" v-model="selectedProjects">
@@ -38,6 +50,7 @@ import VSpinner from './VSpinner.vue';
 
 export default {
   name: 'SamplesPicker',
+  props: ['selectedSigGroup'],
   components: {
     VSpinner,
   },
@@ -46,14 +59,24 @@ export default {
         loading: true,
         allProjects: [],
         selectedProjects: [],
-        tissueTypes: []
+        tissueTypes: [],
+        // for filtering:
+        allSources: [],
+        filterBySource: "TCGA"
     };
   },
   computed: {
-    allProjectsByTissueType() {
+    filteredProjects() {
+      if(this.filterBySource === "*") {
+        return this.allProjects;
+      } else {
+        return this.allProjects.filter(el => el["source"] === this.filterBySource);
+      }
+    },
+    filteredProjectsByTissueType() {
       let result = [];
       for(let tType of this.tissueTypes) {
-        let tTypeProjects = this.allProjects.filter(el => el.oncotree_tissue_code === tType.oncotree_code);
+        let tTypeProjects = this.filteredProjects.filter(el => el.oncotree_tissue_code === tType.oncotree_code);
         if(tTypeProjects.length > 0) {
           result.push({
             'oncotree_name': tType.oncotree_name,
@@ -73,6 +96,13 @@ export default {
       this.$emit('chooseNum', this.selectedNumSamples());
       this.$emit('chooseMappings', this.selectedOncotreeMappings());
       this.$emit('choose', val);
+    },
+    allProjects(val) {
+      for(let project of val) {
+        if(!this.allSources.includes(project["source"])) {
+          this.allSources.push(project["source"]);
+        }
+      }
     }
   },
   mounted: function() {
@@ -88,7 +118,7 @@ export default {
       this.selectedProjects = [];
     },
     selectAllByTissueType(oncotree_tissue_code) {
-      let tTypeProjects = this.allProjects.filter(el => el.oncotree_tissue_code === oncotree_tissue_code).map(el => el.id);
+      let tTypeProjects = this.filteredProjects.filter(el => el.oncotree_tissue_code === oncotree_tissue_code).map(el => el.id);
       for(let projId of tTypeProjects) {
         if(!this.selectedProjects.includes(projId)) {
           this.selectedProjects.push(projId);
@@ -124,8 +154,8 @@ export default {
     },
     scrollToTissueType(oncotree_tissue_code) {
       let scrollHeight = 0;
-      let allProjectsByTissueType = this.allProjectsByTissueType;
-      for(let tType of allProjectsByTissueType) {
+      let filteredProjectsByTissueType = this.filteredProjectsByTissueType;
+      for(let tType of filteredProjectsByTissueType) {
         if(tType.oncotree_code === oncotree_tissue_code) {
           break;
         }
@@ -142,6 +172,15 @@ export default {
 .samples-title {
   display: inline-block;
   margin-right: 15px;
+  margin-bottom: 5px;
+}
+.filters {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  .samples-filter-by-source {
+    flex-grow: 1;
+  }
 }
 
 .col-container {

@@ -42,6 +42,7 @@
                         c="mut_class"
                         :getData="getData"
                         :getScale="getScale"
+                        :clickHandler="sampleClickHandler"
                     />
                 </PlotContainer>
             </div>
@@ -61,6 +62,9 @@ export default {
     props: {
         'widthProportion': {
             type: Number
+        },
+        'sampleClickHandler': {
+            type: Function
         }
     },
     computed: {

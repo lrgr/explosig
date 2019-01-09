@@ -286,9 +286,9 @@ export default class API {
         );
     }
     */
-    /*
-    static fetchSignature(dataOptions) {
-        let url = API.api_base + "signature";
+    
+    static fetchPlotSignature(dataOptions) {
+        let url = API.api_base + "plot-signature";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -296,7 +296,6 @@ export default class API {
             dataOptions
         );
     }
-    */
 
     static fetchScaleSamples(dataOptions) {
         let url = API.api_base + "scale-samples";
