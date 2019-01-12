@@ -20,6 +20,7 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :clickHandler="clickSignature"
         />
         <CategoricalLegend v-if="showDbs"
             variable="sig_DBS"
@@ -27,6 +28,7 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :clickHandler="clickSignature"
         />
         <CategoricalLegend v-if="showIndel"
             variable="sig_INDEL"
@@ -34,6 +36,7 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :clickHandler="clickSignature"
         />
         <CategoricalLegend v-if="showGenes"
             variable="mut_class"
@@ -61,6 +64,8 @@
                 />
             </div>
         </div>
+
+        <SignatureModal :clickedSignature="clickedSignature" @close-modal="unclickSignature" />
     </div>
 </template>
 
@@ -68,12 +73,21 @@
 import { mapGetters } from 'vuex';
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
+import SignatureModal from './SignatureModal.vue';
 
 export default {
     name: 'ExplorerLegend',
+    components: {
+        SignatureModal
+    },
     props: {
         'widthProportion': {
             type: Number
+        }
+    },
+    data() {
+        return {
+            clickedSignature: null
         }
     },
     computed: {
@@ -110,6 +124,13 @@ export default {
     methods: {
         isContinuousClinicalVariable(clinicalVar) {
             return CONTINUOUS_CLINICAL_VARS.includes(clinicalVar);
+        },
+        clickSignature(sig) {
+            this.clickedSignature = sig;
+        },
+        unclickSignature() {
+            console.log("unclicking");
+            this.clickedSignature = null;
         }
     }
 }
@@ -117,7 +138,6 @@ export default {
 
 <style scoped lang="scss">
 @import './../style/variables.scss';
-@import '~vue-declarative-plots/dist/vue-declarative-plots.css';
 
 
 </style>

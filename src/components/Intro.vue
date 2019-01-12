@@ -72,6 +72,7 @@ export default {
     margin-top: 2rem;
     margin-left: 10%;
     margin-right: 10%;
+    margin-bottom: 3rem;
     width: 80%;
     padding: 1rem;
     box-sizing: border-box;
@@ -173,8 +174,12 @@ export default {
   .intro-figure {
       display: none;
   }
-  .intro-text {
-    width: 100%;
+  .intro-col-container {
+      display: block;
+      .intro-col {
+        width: 100%;
+    }
   }
+  
 }
 </style>

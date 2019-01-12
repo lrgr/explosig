@@ -32,10 +32,11 @@ export default class API {
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
         
-        return fetch(url, { method: "POST" })
-            .then(function(response) {
-                return response.json();
-            });
+        return API.request(
+            d3.json(url, { method: "POST" }),
+            url,
+            {}
+        );
     }
 
     static fetchAutocompleteGene(partialGeneId, projects) {

@@ -436,7 +436,6 @@ export default {
 
 <style lang="scss">
 @import './../style/variables.scss';
-@import '~vue-declarative-plots/dist/vue-declarative-plots.css';
 
 .explorer {
     display: flex;

@@ -788,7 +788,6 @@ export default {
 
 <style scoped lang="scss">
 @import './../style/variables.scss';
-@import '~vue-declarative-plots/dist/vue-declarative-plots.css';
 
 .sample-title {
     text-align: center;
