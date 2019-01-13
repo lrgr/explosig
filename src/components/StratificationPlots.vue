@@ -9,7 +9,7 @@
                     These plots display signature exposures stratified by other variables such as gene mutation classification or clinical variable status.
                 </p>
             </PlotInfo>
-            <PlotContainer
+            <PlotContainer v-if="!isContinuousClinicalVariable(choice.x)"
                 :pWidth="(colWidth-130-5)"
                 :pHeight="300"
                 :pMarginTop="10"
@@ -46,6 +46,43 @@
                     :disableBrushing="true"
                 />
             </PlotContainer>
+            <PlotContainer v-if="isContinuousClinicalVariable(choice.x)"
+                :pWidth="(colWidth-130-5)"
+                :pHeight="300"
+                :pMarginTop="10"
+                :pMarginLeft="130"
+                :pMarginRight="5"
+                :pMarginBottom="130"
+                >
+                <Axis
+                    slot="axisLeft"
+                    :variable="choice.y"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StratifiedScatterPlot
+                    slot="plot"
+                    :variable="choice.variable"
+                    :data="choice.data"
+                    :s="choice.s"
+                    :x="choice.x"
+                    :y="choice.y"
+                    :o="choice.o"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :fillPoints="true"
+                />
+                <Axis
+                    :variable="choice.x"
+                    slot="axisBottom"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
         </div>
     </div>
 </template>
@@ -53,6 +90,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
+
+import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
 export default {
     name: 'StratificationPlots',
@@ -83,6 +122,11 @@ export default {
             'getScale',
             'getStratification'
         ])
+    },
+    methods: {
+        isContinuousClinicalVariable(clinicalVar) {
+            return CONTINUOUS_CLINICAL_VARS.includes(clinicalVar.substring(3));
+        }
     }
 }
 </script>

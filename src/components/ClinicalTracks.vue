@@ -9,11 +9,11 @@
             <div class="clinical-axis-wrapper">
                 <PlotContainer
                     :pWidth="0"
-                    :pHeight="(numClinicalVariables * 24.3)"
+                    :pHeight="(numClinicalVariables * 24.7)"
                     :pMarginTop="0"
                     :pMarginLeft="150"
                     :pMarginRight="0"
-                    :pMarginBottom="10"
+                    :pMarginBottom="20"
                 >
                     <Axis
                         slot="axisLeft"

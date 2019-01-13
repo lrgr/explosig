@@ -1,12 +1,42 @@
 <template>
     <div>
         <!-- Meta -->
-        <PlotInfo title="Sample Metadata">
+        <PlotInfo title="Samples">
             <p slot="info">
-                This plot shows metadata for each sample.
+                This axis (and most other axes in iMuSE) show an "overview" (zoomed-out) view to provide context and enable interaction. 
+                Here we also display a zoomed-out version of the Mutation Count plot behind the zoomed-out Sample axis for additional context.
+                Samples can be filtered by panning or dragging the window along the zoomed-out view.
+                <br><br>
+                The Study track immediately below the Sample axis displays the study from which each sample comes.
             </p>
         </PlotInfo>
         <NumSamples />
+        <!-- counts plot as background for sample axis -->
+        <div id="counts-plot-background-container">
+            <div id="counts-plot-background">
+                <PlotContainer
+                    :pWidth="(colWidth-150-5)"
+                    :pHeight="44"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="0"
+                >
+                    <StackedBarPlot 
+                        slot="plot"
+                        data="mut_count"
+                        x="sample_id"
+                        y="mut_count_sum"
+                        c="mut_type"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :filterX="false"
+                        :filterY="false"
+                    />
+                </PlotContainer>
+            </div>
+        </div>
+        <!-- samples axis -->
         <PlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
@@ -596,4 +626,11 @@ export default {
 <style scoped lang="scss">
 @import './../style/variables.scss';
 
+#counts-plot-background-container {
+    position: relative;
+    #counts-plot-background {
+        position: absolute;
+        margin-top: 29px;
+    }
+}
 </style>

@@ -10,7 +10,7 @@
                     <h3>Stratification options</h3>
                     <div v-if="showSbs">
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                            <StratificationOptions v-if="!isContinuousClinicalVariable(clinicalVar)"
+                            <StratificationOptions
                                 data="exposure_sbs"
                                 :variable="('cv_' + clinicalVar)"
                                 optionScale="sig_SBS"
@@ -42,7 +42,7 @@
                     </div>
                     <div v-if="showDbs">
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                            <StratificationOptions v-if="!isContinuousClinicalVariable(clinicalVar)"
+                            <StratificationOptions
                                 data="exposure_dbs"
                                 :variable="('cv_' + clinicalVar)"
                                 optionScale="sig_DBS"
@@ -74,7 +74,7 @@
                     </div>
                     <div v-if="showIndel">
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                            <StratificationOptions v-if="!isContinuousClinicalVariable(clinicalVar)"
+                            <StratificationOptions
                                 data="exposure_indel"
                                 :variable="('cv_' + clinicalVar)"
                                 optionScale="sig_INDEL"
@@ -115,8 +115,6 @@
 import { mapGetters } from 'vuex';
 
 import StratificationOptions from './StratificationOptions.vue';
-
-import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
 export default {
     name: 'StratificationButtons',
@@ -164,9 +162,6 @@ export default {
         },
         closeStratificationModal() {
             this.modalVisible = false;
-        },
-        isContinuousClinicalVariable(clinicalVar) {
-            return CONTINUOUS_CLINICAL_VARS.includes(clinicalVar);
         }
     }
 }
