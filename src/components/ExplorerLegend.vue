@@ -129,7 +129,6 @@ export default {
             this.clickedSignature = sig;
         },
         unclickSignature() {
-            console.log("unclicking");
             this.clickedSignature = null;
         }
     }

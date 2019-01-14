@@ -168,6 +168,9 @@ export default {
 
 .sort-options-wrapper {
     padding: 1rem;
+    height: 80vh;
+    overflow-y: scroll;
+    box-sizing: border-box;
     h3 {
         margin-top: 0;
     }

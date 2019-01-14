@@ -9,16 +9,16 @@
             <div class="gene-axis-wrapper">
                 <PlotContainer
                     :pWidth="0"
-                    :pHeight="(numGenes * 24.5)"
+                    :pHeight="(numGenes * 25)"
                     :pMarginTop="0"
                     :pMarginLeft="150"
                     :pMarginRight="0"
-                    :pMarginBottom="10"
+                    :pMarginBottom="0"
                 >
                     <Axis
                         slot="axisLeft"
                         side="left"
-                        :tickRotation="-25"
+                        :tickRotation="0"
                         variable="gene"
                         :getScale="getScale"
                         :getStack="getStack"
@@ -98,5 +98,6 @@ export default {
 
 .gene-axis-wrapper {
     position: absolute;
+    margin-top: -2.5px;
 }
 </style>

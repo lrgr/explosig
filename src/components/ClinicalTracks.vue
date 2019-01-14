@@ -9,7 +9,7 @@
             <div class="clinical-axis-wrapper">
                 <PlotContainer
                     :pWidth="0"
-                    :pHeight="(numClinicalVariables * 24.7)"
+                    :pHeight="(numClinicalVariables * 25)"
                     :pMarginTop="0"
                     :pMarginLeft="150"
                     :pMarginRight="0"
@@ -18,7 +18,7 @@
                     <Axis
                         slot="axisLeft"
                         side="left"
-                        :tickRotation="-25"
+                        :tickRotation="0"
                         variable="clinical_variable"
                         :getScale="getScale"
                         :getStack="getStack"
@@ -98,5 +98,6 @@ export default {
 
 .clinical-axis-wrapper {
     position: absolute;
+    margin-top: -2.5px;
 }
 </style>

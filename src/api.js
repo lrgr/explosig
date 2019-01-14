@@ -76,6 +76,16 @@ export default class API {
         );
     }
 
+    static fetchPathwaysListing() {
+        let url = API.api_base + "pathways-listing";
+        
+        return API.request(
+            d3.json(url, { method: "POST" }),
+            url,
+            {}
+        );
+    }
+
     static fetchScaleGeneAlterations() {
         let url = API.api_base + "scale-gene-alterations";
         
