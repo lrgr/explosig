@@ -18,7 +18,7 @@
                     <Axis
                         slot="axisLeft"
                         side="left"
-                        :tickRotation="0"
+                        :tickRotation="-15"
                         variable="clinical_variable"
                         :getScale="getScale"
                         :getStack="getStack"
