@@ -4,8 +4,14 @@
             <div :class="activeOverviewClasses()">
                 <span class="tab-target" @click="activateOverview">Overview</span>
             </div>
-            <div v-for="sampleId in selectedSamples" :key="sampleId" :class="activeSampleClasses(sampleId)">
-                <span class="tab-target" @click="activateSample(sampleId)">{{ sampleId }}</span><span class="tab-close" @click="deselectSample(sampleId)">x</span>
+            <div 
+                v-for="sampleId in selectedSamples" 
+                :key="sampleId" 
+                :class="activeSampleClasses(sampleId)"
+                @mouseover="highlightSample(sampleId)"
+                @mouseleave="unhighlightSample"
+            >
+                <span class="tab-target" @click="activateSample(sampleId)" :title="sampleId">{{ sampleId }}</span><span class="tab-close" @click="deselectSample(sampleId)">x</span>
             </div>
         </div>
     </div>
@@ -36,10 +42,17 @@ export default {
         },
         ...mapGetters([
             'getSamples',
-            'getStack'
+            'getStack',
+            'getScale'
         ])
     },
     methods: {
+        highlightSample(sampleId) {
+            this.getScale("sample_id").emitHighlight(sampleId);
+        },
+        unhighlightSample() {
+            this.getScale("sample_id").emitHighlightDestroy();
+        },
         deselectSample(sampleId) {
             let samplesObject = this.getSamples();
             if(samplesObject.selectedSamples.includes(sampleId)) {

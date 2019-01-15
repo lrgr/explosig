@@ -14,6 +14,7 @@ import {
   BoxPlot,
   MultiBoxPlot,
   TrackPlot,
+  RectPlot,
   MultiTrackPlot,
   HierarchicalMultiTrackPlot,
   StratifiedBoxPlot,
@@ -39,6 +40,7 @@ Vue.component(ScatterPlot.name, ScatterPlot);
 Vue.component(BoxPlot.name, BoxPlot);
 Vue.component(MultiBoxPlot.name, MultiBoxPlot);
 Vue.component(TrackPlot.name, TrackPlot);
+Vue.component(RectPlot.name, RectPlot);
 Vue.component(MultiTrackPlot.name, MultiTrackPlot);
 Vue.component(HierarchicalMultiTrackPlot.name, HierarchicalMultiTrackPlot);
 Vue.component(StratifiedBoxPlot.name, StratifiedBoxPlot);

@@ -153,4 +153,8 @@ export default {
   margin: 0px;
   overflow-x: hidden;
 }
+
+.vdp-plot-highlight-rect {
+    display: none !important;
+}
 </style>

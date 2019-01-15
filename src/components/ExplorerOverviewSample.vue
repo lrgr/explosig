@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @mouseover="highlightSample" @mouseleave="unhighlightSample">
         <h3 class="sample-title">Sample {{ sampleId }}</h3>
 
         <!-- Exposures -->
@@ -114,7 +114,119 @@
             </PlotContainer>
         </div>
 
+        <!-- Genes -->
+        <PlotInfo title="Genes" :showTitle="true">
+            <p slot="info">
+                These plots display mutation classes of the selected genes for sample {{ sampleId }}.
+            </p>
+        </PlotInfo>
+        <div class="gene-rects-wrapper">
+            <div class="gene-axis-wrapper">
+                <PlotContainer
+                    :pWidth="0"
+                    :pHeight="(numGenes * 25)"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="0"
+                    :pMarginBottom="0"
+                >
+                    <Axis
+                        slot="axisLeft"
+                        side="left"
+                        :tickRotation="0"
+                        variable="gene"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div v-for="geneId in selectedGenes" :key="geneId">
+                <PlotContainer
+                    :pWidth="25"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <RectPlot 
+                        slot="plot"
+                        :data="('gene_' + geneId)"
+                        z="sample_id"
+                        c="mut_class"
+                        :o="sampleId"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :disableTooltip="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
+                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
+                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
+                        {{ genes[('gene_' + geneId)] }}
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Clinical -->
+        <PlotInfo title="Clinical Variables" :showTitle="true">
+            <p slot="info">
+                These plots display values of the selected clinical variables for sample {{ sampleId }}.
+            </p>
+        </PlotInfo>
+        <div class="clinical-rects-wrapper">
+            <div class="clinical-axis-wrapper">
+                <PlotContainer
+                    :pWidth="0"
+                    :pHeight="(numClinicalVariables * 25)"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="0"
+                    :pMarginBottom="20"
+                >
+                    <Axis
+                        slot="axisLeft"
+                        side="left"
+                        :tickRotation="0"
+                        variable="clinical_variable"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+                <PlotContainer
+                    :pWidth="25"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <RectPlot 
+                        slot="plot"
+                        :data="('cv_' + clinicalVar)"
+                        z="sample_id"
+                        :c="('cv_' + clinicalVar)"
+                        :o="sampleId"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :disableTooltip="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div class="clinical-axis-wrapper" :style="{'height': (25*numClinicalVariables) + 'px', 'left': 0, 'top': 0}">
+                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
+                    <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar" class="clinical-value">
+                        {{ clinical[('cv_' + clinicalVar)] }}
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
 
@@ -436,7 +548,6 @@ import API from './../api.js';
 
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
-
 export default {
     name: 'ExplorerOverviewSample',
     components: {
@@ -452,16 +563,35 @@ export default {
             sampleId: "",
             cosineSimilaritySbs: "Loading...",
             cosineSimilarityDbs: "Loading...",
-            cosineSimilarityIndel: "Loading..."
+            cosineSimilarityIndel: "Loading...",
+            genes: {},
+            clinical: {}
         };
     },
     created() {
         this.sampleId = this.getSamples().activeSample;
         this.initScalesAndData();
+        this.initGeneAndClinicalValues();
     },
     methods: {
-        initScalesAndData() {
+        unhighlightSample() {
+            this.getScale("sample_id").emitHighlightDestroy();
+        },
+        highlightSample() {
+            this.getScale("sample_id").emitHighlight(this.sampleId);
+        },
+        initGeneAndClinicalValues() {
+            for(const geneId of this.getConfig().selectedGenes) {
+                const geneValue = this.getData(("gene_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["mut_class"];
+                this.genes[("gene_" + geneId)] = this.getScale("mut_class").toHuman(geneValue);
+            }
 
+            for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
+                const clinicalValue = this.getData(("cv_" + clinicalVar)).dataCopy.find(el => el["sample_id"] === this.sampleId)[("cv_" + clinicalVar)];
+                this.clinical[("cv_" + clinicalVar)] = this.getScale(("cv_" + clinicalVar)).toHuman(clinicalValue);
+            }
+        },
+        initScalesAndData() {
             /*
                 SBS
             */
@@ -773,6 +903,18 @@ export default {
         showIndel() {
             return (this.getConfig().selectedSignaturesIndel.length > 0);
         },
+        numClinicalVariables() {
+            return (this.getConfig().selectedClinicalVariables.length);
+        },
+        selectedClinicalVariables() {
+            return (this.getConfig().selectedClinicalVariables);
+        },
+        numGenes() {
+            return (this.getConfig().selectedGenes.length);
+        },
+        selectedGenes() {
+            return (this.getConfig().selectedGenes);
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -795,6 +937,22 @@ export default {
 .sample-cosine-similarity {
     width: 100%;
     text-align: center;
+}
+
+.gene-rects-wrapper, .clinical-rects-wrapper {
+    position: relative;
+}
+
+.gene-axis-wrapper, .clinical-axis-wrapper {
+    position: absolute;
+    margin-top: -2.5px;
+}
+
+.gene-value, .clinical-value {
+    height: 25px;
+    font-size: 13px;
+    line-height: 25px;
+    margin-left: 5px;
 }
 
 </style>

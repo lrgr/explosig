@@ -15,7 +15,7 @@ export default {
   beforeCreate() {
         this.uuid = this.$options.name + uuid.toString();
         uuid += 1;
-    },
+  },
   data() {
       return {
           numSamples: 0,
