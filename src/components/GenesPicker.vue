@@ -24,9 +24,15 @@
         <div v-for="group of pathwayGroups" :key="group.pathway_group" class="pathway-group">
           <span>{{ group.pathway_group }} pathways</span>&nbsp;<span><em>({{ group.publication }})</em></span>
           <div v-for="pathway of group.pathways" :key="pathway.pathway" class="pathway">
-            <span>{{ pathway.pathway }}</span>&nbsp;<button @click="selectPathway(pathway)">Select All</button><br>
+            <span>{{ pathway.pathway }}</span>
+              &nbsp;<button @click="selectPathway(pathway, false)">Select All</button>
+              &nbsp;<button @click="selectPathway(pathway, true)">Select Core</button>
+              <br>
             <div class="pathway-genes">
-              <span v-for="gene of pathway.genes" :key="gene" class="gene-item">{{ gene }}</span>
+              <span v-for="gene of pathway.genes" :key="gene.gene" class="gene-item" 
+                :style="{'font-weight': (gene.core ? 'bold' : 'normal')}"
+                :title="getGeneTooltip(gene)"
+              >{{ gene.gene }}</span>
             </div>
           </div>
         </div>
@@ -82,7 +88,7 @@ export default {
             "pathway_group": pathwayGene["pathway_group"],
             "pathways": [{
               "pathway": pathwayGene["pathway"],
-              "genes": [ pathwayGene["gene"] ]
+              "genes": [ pathwayGene ]
             }],
             "publication": pathwayGene["publication"]
           };
@@ -92,11 +98,11 @@ export default {
           if(pathway === undefined) {
             pathway = {
               "pathway": pathwayGene["pathway"],
-              "genes": [ pathwayGene["gene"] ]
+              "genes": [ pathwayGene ]
             }
             group["pathways"].push(pathway);
           } else {
-            pathway["genes"].push(pathwayGene["gene"])
+            pathway["genes"].push(pathwayGene)
           }
         }
       }
@@ -115,10 +121,17 @@ export default {
     deselectAll() {
       this.selectedGenes = [];
     },
-    selectPathway(pathwayObj) {
+    selectPathway(pathwayObj, core) {
       for(let gene of pathwayObj["genes"]) {
-        this.submitGene(gene);
+        if(core && gene["core"]) {
+          this.submitGene(gene["gene"]);
+        } else if (!core){
+          this.submitGene(gene["gene"]);
+        }
       }
+    },
+    getGeneTooltip(geneObj) {
+      return "Gene: " + geneObj["gene"] + "\n" + "Location: " + geneObj["location"] + "\n" + "Description: " + geneObj["description"];
     }
   }
 }
