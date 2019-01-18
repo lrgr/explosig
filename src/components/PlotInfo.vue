@@ -1,6 +1,9 @@
 <template>
-    <div>
-        <div class="plot-info">
+    <div class="plot-info-container">
+        <div 
+            class="plot-info" 
+            :style="{'width': (showTitle ? '100%' : 'auto'), 'position': (showTitle ? 'relative' : 'absolute')}"
+        >
             <h4 v-if="showTitle">{{ title }}</h4>
             <button @click="modalVisible = true">?</button>
         </div>
@@ -49,27 +52,28 @@ export default {
 @import './../style/variables.scss';
 @import './../style/modal.scss';
 
-.plot-info {
-    width: 100%;
-    margin-bottom: 5px;
-    text-align: center;
-    z-index: 3;
+.plot-info-container {
     position: relative;
-    button {
-        float: left;
-        margin-left: 15px;
-        background-color: $color-gray;
-        border: none;
-        color: white;
+    .plot-info {
+        margin-bottom: 5px;
         text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 14px;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-    h4 {
-        margin-bottom: 0;
+        z-index: 3;
+        button {
+            float: left;
+            margin-left: 15px;
+            background-color: $color-gray;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        h4 {
+            margin-bottom: 0;
+        }
     }
 }
 .plot-info-modal {

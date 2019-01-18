@@ -12,6 +12,8 @@
 
                 <span id="text1" class="text"><span class="bubble">1</span>Select samples</span>
                 <span id="text2" class="text"><span class="bubble">2</span>Select signatures</span>
+
+                <IntroFeatured class="intro-featured" />
             </div>
             <div class="intro-importing" v-if="fromImport">
                 <h3 v-if="isImporting">Loading configuration...</h3>
@@ -34,13 +36,14 @@
 import { mapGetters } from 'vuex';
 
 import IntroText from './IntroText.vue';
-
+import IntroFeatured from './IntroFeatured.vue';
 
 export default {
   name: 'Intro',
   props: ['replayImport', 'resumeImport'],
   components: {
-      IntroText
+      IntroText,
+      IntroFeatured
   },
   computed: {
       ...mapGetters([
@@ -87,8 +90,12 @@ export default {
 .intro-figure {
     position: absolute;
     right: 0;
-    height: 60vh;
+    height: 80vh;
     width: 50%;
+    border: 0px solid red;
+    .intro-featured {
+        margin-top: 230px;
+    }
     .arrow {
         width: 0;
         height: 0;

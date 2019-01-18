@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="explorer-divider" :style="{ 'height': (windowHeight-73) + 'px', 'left': offsetLeft + 'px' }" @dragend="dragEnd" draggable="true"></div>
+        <div class="explorer-divider" :style="{ 'height': (windowHeight-73) + 'px', 'left': offsetLeft + 'px' }" @dragstart="dragStart" @dragend="dragEnd" draggable="true"></div>
     </div>
 </template>
 
@@ -26,9 +26,13 @@ export default {
       ])
   },
   methods: {
+      dragStart(e) {
+          // Do nothing. Required by firefox.
+          e.dataTransfer.setData('Text', 'dragstart');
+      },
       dragEnd(e) {
           let columns = Object.assign({}, this.getSizes().columns);
-          let clientX = e.clientX;
+          let clientX = e.screenX;
           if(this.side === "left") {
             let newProportionMain = clientX / this.windowWidth;
             columns[IMUSE_COLUMNS.MAIN] = Math.min(columns[IMUSE_COLUMNS.MAIN] + columns[IMUSE_COLUMNS.OVERVIEW], Math.max(0, newProportionMain));

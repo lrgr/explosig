@@ -28,9 +28,18 @@ export default class API {
         return Promise.all(Object.values(globalPlotData))
     }
 
-    // Fetches without cacheing
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
+        
+        return API.request(
+            d3.json(url, { method: "POST" }),
+            url,
+            {}
+        );
+    }
+
+    static fetchFeaturedListing() {
+        let url = API.api_base + "featured-listing";
         
         return API.request(
             d3.json(url, { method: "POST" }),

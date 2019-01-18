@@ -9,80 +9,90 @@
                     These plots display signature exposures stratified by other variables such as gene mutation classification or clinical variable status.
                 </p>
             </PlotInfo>
-            <PlotContainer v-if="!isContinuousClinicalVariable(choice.x)"
+            <ResizablePlotContainer v-if="!isContinuousClinicalVariable(choice.x)"
+                :plotCode="('stratification_plot' + JSON.stringify(choice))"
                 :pWidth="(colWidth-130-5)"
                 :pHeight="300"
                 :pMarginTop="10"
                 :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="130"
+            >
+                <PlotContainer 
+                    slot="inner"    
                 >
-                <Axis
-                    slot="axisLeft"
-                    :variable="choice.y"
-                    side="left" 
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <StratifiedBoxPlot
-                    slot="plot"
-                    :variable="choice.variable"
-                    :data="choice.data"
-                    :s="choice.s"
-                    :x="choice.x"
-                    :y="choice.y"
-                    :o="choice.o"
-                    :getData="getData"
-                    :getScale="getScale"
-                    :drawOutliers="true"
-                />
-                <Axis
-                    :variable="choice.x"
-                    slot="axisBottom"
-                    side="bottom" 
-                    :tickRotation="-65"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                    :disableBrushing="true"
-                />
-            </PlotContainer>
-            <PlotContainer v-if="isContinuousClinicalVariable(choice.x)"
+                    <Axis
+                        slot="axisLeft"
+                        :variable="choice.y"
+                        side="left" 
+                        :getScale="getScale"
+                        :getStack="getStack"
+                    />
+                    <StratifiedBoxPlot
+                        slot="plot"
+                        :variable="choice.variable"
+                        :data="choice.data"
+                        :s="choice.s"
+                        :x="choice.x"
+                        :y="choice.y"
+                        :o="choice.o"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :drawOutliers="true"
+                    />
+                    <Axis
+                        :variable="choice.x"
+                        slot="axisBottom"
+                        side="bottom" 
+                        :tickRotation="-65"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </ResizablePlotContainer>
+            <ResizablePlotContainer v-if="isContinuousClinicalVariable(choice.x)"
+                :plotCode="('stratification_plot' + JSON.stringify(choice))"
                 :pWidth="(colWidth-130-5)"
                 :pHeight="300"
                 :pMarginTop="10"
                 :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="130"
+            >
+                <PlotContainer 
+                    slot="inner"
                 >
-                <Axis
-                    slot="axisLeft"
-                    :variable="choice.y"
-                    side="left" 
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <StratifiedScatterPlot
-                    slot="plot"
-                    :variable="choice.variable"
-                    :data="choice.data"
-                    :s="choice.s"
-                    :x="choice.x"
-                    :y="choice.y"
-                    :o="choice.o"
-                    :getData="getData"
-                    :getScale="getScale"
-                    :fillPoints="true"
-                />
-                <Axis
-                    :variable="choice.x"
-                    slot="axisBottom"
-                    side="bottom" 
-                    :tickRotation="-65"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                    :disableBrushing="true"
-                />
-            </PlotContainer>
+                    <Axis
+                        slot="axisLeft"
+                        :variable="choice.y"
+                        side="left" 
+                        :getScale="getScale"
+                        :getStack="getStack"
+                    />
+                    <StratifiedScatterPlot
+                        slot="plot"
+                        :variable="choice.variable"
+                        :data="choice.data"
+                        :s="choice.s"
+                        :x="choice.x"
+                        :y="choice.y"
+                        :o="choice.o"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :fillPoints="true"
+                    />
+                    <Axis
+                        :variable="choice.x"
+                        slot="axisBottom"
+                        side="bottom" 
+                        :tickRotation="-65"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </ResizablePlotContainer>
         </div>
     </div>
 </template>
@@ -90,6 +100,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
+import ResizablePlotContainer from './ResizablePlotContainer.vue';
 
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 import { IMUSE_COLUMNS } from '../vdp/Sizes';
@@ -98,6 +109,7 @@ export default {
     name: 'StratificationPlots',
     components: {
         PlotInfo,
+        ResizablePlotContainer
     },
     computed: {
         colWidth() {

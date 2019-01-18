@@ -82,16 +82,16 @@
             </p>
         </PlotInfo>
         <ResizablePlotContainer
+            plotCode="main_mut_counts"
             :pWidth="(colWidth-150-5)"
-            :pHeight="200"
+            :pHeight="125"
             :pMarginTop="3"
             :pMarginLeft="150"
             :pMarginRight="5"
-            :pMarginBottom="3"
+            :pMarginBottom="4"
         >
             <PlotContainer
                 slot="inner"
-                plotCode="main_mut_counts"
             >
                 <Axis 
                     slot="axisLeft"
@@ -124,7 +124,40 @@
                 Every other plot shows exposures after normalizing (to sum to 1).
             </p>
         </PlotInfo>
-        <PlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
+            plotCode="main_sbs"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="200"
+            :pMarginTop="3"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="4"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="exposure_sum_sbs"
+                    side="left"
+                    
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="exposure_sbs"
+                    x="sample_id"
+                    y="exposure_sum_sbs"
+                    c="sig_SBS"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
+            plotCode="main_sbs_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="3"
@@ -132,53 +165,31 @@
             :pMarginRight="5"
             :pMarginBottom="3"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="exposure_sum_sbs"
-                side="left"
-                
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="exposure_sbs"
-                x="sample_id"
-                y="exposure_sum_sbs"
-                c="sig_SBS"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-        <PlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
-            :pWidth="(colWidth-150-5)"
-            :pHeight="200"
-            :pMarginTop="3"
-            :pMarginLeft="150"
-            :pMarginRight="5"
-            :pMarginBottom="3"
-        >
-            <Axis 
-                slot="axisLeft"
-                variable="exposure_sum_sbs_normalized"
-                side="left"
-                
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="exposure_sbs_normalized"
-                x="sample_id"
-                y="exposure_sum_sbs_normalized"
-                c="sig_SBS"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-        <PlotContainer v-if="showSbs && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="exposure_sum_sbs_normalized"
+                    side="left"
+                    
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="exposure_sbs_normalized"
+                    x="sample_id"
+                    y="exposure_sum_sbs_normalized"
+                    c="sig_SBS"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showSbs && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
+            plotCode="main_sbs_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
             :pMarginTop="5"
@@ -186,26 +197,30 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="cosine_similarity_SBS"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <BarPlot 
-                slot="plot"
-                data="cosine_similarity_SBS"
-                x="sample_id"
-                y="cosine_similarity_SBS"
-                barColor="gray"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-
-        <PlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="cosine_similarity_SBS"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <BarPlot 
+                    slot="plot"
+                    data="cosine_similarity_SBS"
+                    x="sample_id"
+                    y="cosine_similarity_SBS"
+                    barColor="gray"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
+            plotCode="main_dbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -213,25 +228,30 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="exposure_sum_dbs"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="exposure_dbs"
-                x="sample_id"
-                y="exposure_sum_dbs"
-                c="sig_DBS"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-        <PlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="exposure_sum_dbs"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="exposure_dbs"
+                    x="sample_id"
+                    y="exposure_sum_dbs"
+                    c="sig_DBS"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
+            plotCode="main_dbs_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -239,25 +259,30 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="exposure_sum_dbs_normalized"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="exposure_dbs_normalized"
-                x="sample_id"
-                y="exposure_sum_dbs_normalized"
-                c="sig_DBS"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-        <PlotContainer v-if="showDbs && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="exposure_sum_dbs_normalized"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="exposure_dbs_normalized"
+                    x="sample_id"
+                    y="exposure_sum_dbs_normalized"
+                    c="sig_DBS"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showDbs && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
+            plotCode="main_dbs_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
             :pMarginTop="5"
@@ -265,27 +290,30 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="cosine_similarity_DBS"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <BarPlot 
-                slot="plot"
-                data="cosine_similarity_DBS"
-                x="sample_id"
-                y="cosine_similarity_DBS"
-                barColor="gray"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-
-
-        <PlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="cosine_similarity_DBS"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <BarPlot 
+                    slot="plot"
+                    data="cosine_similarity_DBS"
+                    x="sample_id"
+                    y="cosine_similarity_DBS"
+                    barColor="gray"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
+            plotCode="main_indel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -293,25 +321,30 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="exposure_sum_indel"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="exposure_indel"
-                x="sample_id"
-                y="exposure_sum_indel"
-                c="sig_INDEL"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-         <PlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="exposure_sum_indel"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="exposure_indel"
+                    x="sample_id"
+                    y="exposure_sum_indel"
+                    c="sig_INDEL"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
+            plotCode="main_indel_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="5"
@@ -319,25 +352,30 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="exposure_sum_indel_normalized"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="exposure_indel_normalized"
-                x="sample_id"
-                y="exposure_sum_indel_normalized"
-                c="sig_INDEL"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
-        <PlotContainer v-if="showIndel && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="exposure_sum_indel_normalized"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="exposure_indel_normalized"
+                    x="sample_id"
+                    y="exposure_sum_indel_normalized"
+                    c="sig_INDEL"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showIndel && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
+            plotCode="main_indel_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
             :pMarginTop="5"
@@ -345,24 +383,28 @@
             :pMarginRight="5"
             :pMarginBottom="5"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="cosine_similarity_INDEL"
-                side="left"
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <BarPlot 
-                slot="plot"
-                data="cosine_similarity_INDEL"
-                x="sample_id"
-                y="cosine_similarity_INDEL"
-                barColor="gray"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-        </PlotContainer>
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="cosine_similarity_INDEL"
+                    side="left"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <BarPlot 
+                    slot="plot"
+                    data="cosine_similarity_INDEL"
+                    x="sample_id"
+                    y="cosine_similarity_INDEL"
+                    barColor="gray"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
         
         <!-- Toggle for normalized exposure plots -->
         <VisibilityButtons />
@@ -512,7 +554,6 @@ import GeneTracks from './GeneTracks.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
-
 
 import { PLOT_GROUPS } from './../vdp/Visibility.js';
 import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples.js';

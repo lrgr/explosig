@@ -46,7 +46,7 @@ export default {
     name: 'ResizablePlotContainer',
     props: {
         'plotCode': {
-            type: Number
+            type: String
         },
         'pWidth': {
             type: Number
@@ -96,8 +96,9 @@ export default {
             let pHeight = Math.max(0, totalHeight - this.pMarginTop - this.pMarginBottom - 6);
             this.currPlotHeight = pHeight;
 
-            let currPlotHeights = this.getSizes().plotHeights;
-            this.getSizes().updatePlotHeights({ [this.plotCode]: pHeight, ...currPlotHeights });
+            let currPlotHeights = Object.assign({}, this.getSizes().plotHeights);
+            currPlotHeights[this.plotCode] = pHeight;
+            this.getSizes().updatePlotHeights(currPlotHeights);
 
             this.rerender();
         },
