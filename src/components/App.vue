@@ -144,6 +144,7 @@ export default {
 <style lang="scss">
 @import './../style/variables.scss';
 @import '~vue-declarative-plots/dist/vue-declarative-plots.css';
+@import '~vue-resize/dist/vue-resize.css';
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

@@ -3,8 +3,10 @@ import { dispatch as d3_dispatch } from "d3-dispatch";
 const DISPATCH_EVENT_UPDATE = "update";
 
 export const EVENT_TYPE_SIZES = 103;
-export const EVENT_SUBTYPE_SIZES = 103;
-export const EVENT_SUBTYPE_RESET_SIZES = "resetSizes";
+export const EVENT_SUBTYPE_COLUMNS = 103;
+export const EVENT_SUBTYPE_RESET_COLUMNS = "resetColumns";
+export const EVENT_SUBTYPE_HEIGHTS = 104;
+export const EVENT_SUBTYPE_RESET_HEIGHTS = "resetHeights";
 
 export const IMUSE_COLUMNS = Object.freeze({
     'MAIN': 1,
@@ -24,6 +26,7 @@ export default class Sizes {
             [IMUSE_COLUMNS.OVERVIEW]: 0.3,
             [IMUSE_COLUMNS.LEGEND]: 0.2
         };
+        this._plotHeights = {};
     }
 
     updateColumns(columns) {
@@ -34,16 +37,30 @@ export default class Sizes {
     get columns() {
         return this._columns;
     }
+
+    updatePlotHeights(plotHeights) {
+        this._plotHeights = plotHeights;
+        this.emitUpdate();
+    }
+
+    get plotHeights() {
+        return this._plotHeights;
+    }
     
     /**
-     * Reset the sizes.
+     * Reset the column sizes.
      */
-    resetSizes() {
+    resetColumns() {
         this._columns = {
             [IMUSE_COLUMNS.MAIN]: 0.5,
             [IMUSE_COLUMNS.OVERVIEW]: 0.3,
             [IMUSE_COLUMNS.LEGEND]: 0.2
         };
+        this.emitUpdate();
+    }
+
+    resetHeights() {
+        this._plotHeights = {};
         this.emitUpdate();
     }
 

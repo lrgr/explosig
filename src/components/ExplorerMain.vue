@@ -81,7 +81,7 @@
                 Bar color signifies mutation type.
             </p>
         </PlotInfo>
-        <PlotContainer
+        <ResizablePlotContainer
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
             :pMarginTop="3"
@@ -89,26 +89,31 @@
             :pMarginRight="5"
             :pMarginBottom="3"
         >
-            <Axis 
-                slot="axisLeft"
-                variable="mut_count_sum"
-                side="left"
+            <PlotContainer
+                slot="inner"
+                plotCode="main_mut_counts"
+            >
+                <Axis 
+                    slot="axisLeft"
+                    variable="mut_count_sum"
+                    side="left"
+                    
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StackedBarPlot 
+                    slot="plot"
+                    data="mut_count"
+                    x="sample_id"
+                    y="mut_count_sum"
+                    c="mut_type"
+                    :getData="getData"
+                    :getScale="getScale"
+                    :clickHandler="sampleClickHandler"
+                />
                 
-                :getScale="getScale"
-                :getStack="getStack"
-            />
-            <StackedBarPlot 
-                slot="plot"
-                data="mut_count"
-                x="sample_id"
-                y="mut_count_sum"
-                c="mut_type"
-                :getData="getData"
-                :getScale="getScale"
-                :clickHandler="sampleClickHandler"
-            />
-            
-        </PlotContainer>
+            </PlotContainer>
+        </ResizablePlotContainer>
 
         <!-- Exposures -->
         <PlotInfo title="Mutation Signature Exposures per Sample">
@@ -506,6 +511,7 @@ import ClinicalTracks from './ClinicalTracks.vue';
 import GeneTracks from './GeneTracks.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
+import ResizablePlotContainer from './ResizablePlotContainer.vue';
 
 
 import { PLOT_GROUPS } from './../vdp/Visibility.js';
@@ -520,7 +526,8 @@ export default {
         ClinicalTracks,
         GeneTracks,
         VisibilityButtons,
-        NumSamples
+        NumSamples,
+        ResizablePlotContainer
     },
     data() {
         return {

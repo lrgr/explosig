@@ -35,7 +35,7 @@ import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'v
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
 import Samples, { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES, EVENT_SUBTYPE_RESET_SAMPLES } from './../vdp/Samples.js';
-import Sizes, { EVENT_TYPE_SIZES, EVENT_SUBTYPE_SIZES, EVENT_SUBTYPE_RESET_SIZES, IMUSE_COLUMNS } from './../vdp/Sizes.js';
+import Sizes, { EVENT_TYPE_SIZES, EVENT_SUBTYPE_COLUMNS, EVENT_SUBTYPE_RESET_COLUMNS, IMUSE_COLUMNS, EVENT_SUBTYPE_HEIGHTS, EVENT_SUBTYPE_RESET_HEIGHTS } from './../vdp/Sizes.js';
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
@@ -128,7 +128,8 @@ export default {
                     [EVENT_SUBTYPE_STRATIFY]: EVENT_SUBTYPE_RESET_STRATIFY,
                     [EVENT_SUBTYPE_VISIBILITY]: EVENT_SUBTYPE_RESET_VISIBILITY,
                     [EVENT_SUBTYPE_SAMPLES]: EVENT_SUBTYPE_RESET_SAMPLES,
-                    [EVENT_SUBTYPE_SIZES]: EVENT_SUBTYPE_RESET_SIZES,
+                    [EVENT_SUBTYPE_COLUMNS]: EVENT_SUBTYPE_RESET_COLUMNS,
+                    [EVENT_SUBTYPE_HEIGHTS]: EVENT_SUBTYPE_RESET_HEIGHTS,
                     ...EVENT_SUBTYPE_RESETS
                 }
             );
