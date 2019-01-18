@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ExplorerOverviewSample :key="('ExplorerOverviewSampleContainer' + sampleKey)" :widthProportion="widthProportion" />
+        <ExplorerOverviewSample :key="('ExplorerOverviewSampleContainer' + sampleKey)" />
     </div>
 </template>
 
@@ -14,11 +14,6 @@ export default {
     name: 'ExplorerOverviewSampleContainer',
     components: {
         ExplorerOverviewSample
-    },
-    props: {
-        'widthProportion': {
-            type: Number
-        }
     },
     data() {
         return {

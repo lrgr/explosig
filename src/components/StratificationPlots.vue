@@ -92,20 +92,16 @@ import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
 
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
+import { IMUSE_COLUMNS } from '../vdp/Sizes';
 
 export default {
     name: 'StratificationPlots',
     components: {
         PlotInfo,
     },
-    props: {
-        'widthProportion': {
-            type: Number
-        }
-    },
     computed: {
         colWidth() {
-            return this.windowWidth * this.widthProportion - 25;
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW] - 25;
         },
         showStratified() {
             return (this.getStratification().choices.length > 0);
@@ -120,7 +116,8 @@ export default {
             'getStack',
             'getData',
             'getScale',
-            'getStratification'
+            'getStratification',
+            'getSizes'
         ])
     },
     methods: {

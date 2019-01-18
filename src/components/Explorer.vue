@@ -7,22 +7,21 @@
             <SharingButtons :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
-            <div class="explorer-main explorer-col">
-                <!--<div class="explorer-col-title">
-                    <h3>Main</h3>
-                </div>-->
-                <ExplorerMain :widthProportion="(5/10)"/>
+            <div class="explorer-main explorer-col" :style="{'width': colWidthMain + 'px'}">
+                <ExplorerMain/>
             </div>
-            <div class="explorer-overview explorer-col">
+            <Divider side="left" />
+            <div class="explorer-overview explorer-col" :style="{'width': colWidthOverview + 'px'}">
                 <ExplorerOverviewTabs />
-                <ExplorerOverview :widthProportion="(3/10)" v-if="showOverview"/>
-                <ExplorerOverviewSampleContainer :widthProportion="(3/10)" v-if="showOverviewSample"/>
+                <ExplorerOverview v-if="showOverview"/>
+                <ExplorerOverviewSampleContainer v-if="showOverviewSample"/>
             </div>
-            <div class="explorer-legend explorer-col">
+            <Divider side="right" />
+            <div class="explorer-legend explorer-col" :style="{'width': colWidthLegend + 'px'}">
                 <div class="explorer-col-title">
                     <h3>Legend</h3>
                 </div>
-                <ExplorerLegend :widthProportion="(2/10)"/>
+                <ExplorerLegend />
             </div>
         </div>
     </div>
@@ -36,6 +35,7 @@ import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'v
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
 import Samples, { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES, EVENT_SUBTYPE_RESET_SAMPLES } from './../vdp/Samples.js';
+import Sizes, { EVENT_TYPE_SIZES, EVENT_SUBTYPE_SIZES, EVENT_SUBTYPE_RESET_SIZES, IMUSE_COLUMNS } from './../vdp/Sizes.js';
 
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
@@ -48,6 +48,8 @@ import ExplorerOverviewSampleContainer from './ExplorerOverviewSampleContainer.v
 import ExplorerLegend from './ExplorerLegend.vue';
 import ExplorerOverview from './ExplorerOverview.vue';
 import ExplorerMain from './ExplorerMain.vue';
+
+import Divider from './Divider.vue';
 
 import API from './../api.js';
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
@@ -70,17 +72,24 @@ export default {
         ExplorerOverview,
         ExplorerMain,
         ExplorerOverviewTabs,
-        ExplorerOverviewSampleContainer
+        ExplorerOverviewSampleContainer,
+        Divider
     },
     computed: {
-        widthMain() {
-            return this.windowWidth * (5/10) - 25;
-        },
         showOverview() {
             return this.getSamples().activeSample === null;
         },
         showOverviewSample() {
             return this.getSamples().activeSample !== null;
+        },
+        colWidthMain() {
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.MAIN];
+        },
+        colWidthOverview() {
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW];
+        },
+        colWidthLegend() {
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.LEGEND];
         },
         ...mapGetters([
             'windowHeight', 
@@ -91,13 +100,15 @@ export default {
             'getVisibility',
             'getSamples',
             'getData',
-            'getScale'
+            'getScale',
+            'getSizes'
         ])
     },
     created() {
         this.initStack();
         this.initStratification();
         this.initVisibility();
+        this.initSizes();
         this.initSamples();
         this.initScalesAndData();
     },
@@ -110,12 +121,14 @@ export default {
                     [EVENT_TYPES.DATA]: this.getData,
                     [EVENT_TYPE_STRATIFY]: this.getStratification,
                     [EVENT_TYPE_VISIBILITY]: this.getVisibility,
-                    [EVENT_TYPE_SAMPLES]: this.getSamples
+                    [EVENT_TYPE_SAMPLES]: this.getSamples,
+                    [EVENT_TYPE_SIZES]: this.getSizes
                 }, 
                 {
                     [EVENT_SUBTYPE_STRATIFY]: EVENT_SUBTYPE_RESET_STRATIFY,
                     [EVENT_SUBTYPE_VISIBILITY]: EVENT_SUBTYPE_RESET_VISIBILITY,
                     [EVENT_SUBTYPE_SAMPLES]: EVENT_SUBTYPE_RESET_SAMPLES,
+                    [EVENT_SUBTYPE_SIZES]: EVENT_SUBTYPE_RESET_SIZES,
                     ...EVENT_SUBTYPE_RESETS
                 }
             );
@@ -128,6 +141,10 @@ export default {
         initVisibility() {
             const visibility = new Visibility([PLOT_GROUPS.NORMALIZED_EXPOSURES, PLOT_GROUPS.COSINE_SIMILARITY]);
             this.setVisibility(visibility);
+        },
+        initSizes() {
+            const sizes = new Sizes();
+            this.setSizes(sizes);
         },
         initSamples() {
             const samples = new Samples();
@@ -428,7 +445,8 @@ export default {
             'setScale',
             'setStratification',
             'setVisibility',
-            'setSamples'
+            'setSamples',
+            'setSizes'
         ])
     }
 }
@@ -451,16 +469,7 @@ export default {
             }
         }
     }
-    .explorer-main {
-        flex: 5;
-    }
-    .explorer-overview {
-        flex: 3;
-        border-left: 1px solid $color-lgray;
-    }
     .explorer-legend {
-        flex: 2;
-        border-left: 1px solid $color-lgray;
         &>div {
             margin-left: 10px;
         }

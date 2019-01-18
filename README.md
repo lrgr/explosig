@@ -1,15 +1,21 @@
 [![Build Status](https://travis-ci.org/lrgr/mutation-signature-explorer.svg?branch=master)](https://travis-ci.org/lrgr/mutation-signature-explorer)
 
-# Mutation Signature Explorer
+# interactive Mutation Signature Explorer (iMuSE)
 
 Hosted: [https://imuse.lrgr.io](https://imuse.lrgr.io)
 
-### Dependencies
+### Docker Setup
+We recommend using the docker configuration at [iMuSE-docker](https://github.com/lrgr/imuse-docker) to run iMuSE and iMuSE Server locally.
+
+### Docker-less Setup
+For development purposes, iMuSE can be run without Docker.
+
+#### Dependencies
 - nodejs
 - yarn (`npm install -g yarn`)
 - `yarn install`
 
-### Run
+#### Run
 [http://localhost:8080](http://localhost:8080)
 ```
 yarn serve
@@ -17,6 +23,5 @@ yarn serve
 
 ### Build
 ```
-yarn build
+bash scripts/build.sh
 ```
-

@@ -5,6 +5,7 @@ const state = {
     stratification: null,
     visibility: null,
     samples: null,
+    sizes: null,
     data: {},
     scales: {}
 }
@@ -25,6 +26,9 @@ const getters = {
     },
     getSamples: (state) => () => {
         return state.samples;
+    },
+    getSizes: (state) => () => {
+        return state.sizes;
     },
     getData: (state) => (key) => {
         return state.data[key];
@@ -55,6 +59,9 @@ const mutations = {
     },
     setSamples(state, samples) {
         state.samples = samples;
+    },
+    setSizes(state, sizes) {
+        state.sizes = sizes;
     },
     setData(state, { key, data }) {
         state.data[key] = data;

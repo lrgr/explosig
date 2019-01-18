@@ -2,7 +2,6 @@
     <div>
         <StratificationPlots 
             :key="explorerOverviewKey"
-            :widthProportion="widthProportion"
         />
         <!-- Counts -->
         <PlotInfo title="Number of Mutations by Mutation Type" :showTitle="true">
@@ -266,7 +265,7 @@
             />
         </PlotContainer>
 
-        <VisibilityButtons style="margin: 20px 0px;"/>
+        <!--<VisibilityButtons style="margin: 20px 0px;"/>-->
  
     </div>
 </template>
@@ -277,7 +276,8 @@ import PlotInfo from './PlotInfo.vue';
 import StratificationPlots from './StratificationPlots.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 
-import { PLOT_GROUPS } from './../vdp/Visibility';
+import { PLOT_GROUPS } from './../vdp/Visibility.js';
+import { IMUSE_COLUMNS } from '../vdp/Sizes.js';
 
 export default {
     name: 'ExplorerOverview',
@@ -285,11 +285,6 @@ export default {
         PlotInfo,
         StratificationPlots,
         VisibilityButtons
-    },
-    props: {
-        'widthProportion': {
-            type: Number
-        }
     },
     data() {
         return {
@@ -311,7 +306,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.widthProportion - 25;
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);
@@ -336,7 +331,8 @@ export default {
             'getData',
             'getScale',
             'getVisibility',
-            'getStratification'
+            'getStratification',
+            'getSizes'
         ])
     }
 }

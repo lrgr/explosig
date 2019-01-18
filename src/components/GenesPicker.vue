@@ -42,8 +42,6 @@
 </template>
 
 <script>
-import { set as d3_set } from 'd3-collection';
-
 import API from '../api.js';
 
 import VSpinner from './VSpinner.vue';

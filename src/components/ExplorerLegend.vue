@@ -73,17 +73,15 @@
 import { mapGetters } from 'vuex';
 import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
+import { IMUSE_COLUMNS } from './../vdp/Sizes.js';
+
 import SignatureModal from './SignatureModal.vue';
+
 
 export default {
     name: 'ExplorerLegend',
     components: {
         SignatureModal
-    },
-    props: {
-        'widthProportion': {
-            type: Number
-        }
     },
     data() {
         return {
@@ -92,7 +90,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.widthProportion - 25;
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.LEGEND] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);
@@ -118,7 +116,8 @@ export default {
             'getConfig',
             'getStack',
             'getData',
-            'getScale'
+            'getScale',
+            'getSizes'
         ])
     },
     methods: {

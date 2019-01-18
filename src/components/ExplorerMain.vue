@@ -366,12 +366,12 @@
 
         <!-- Gene Alterations -->
         <div v-if="showGenes">
-            <GeneTracks :widthProportion="widthProportion" :sampleClickHandler="sampleClickHandler" />
+            <GeneTracks :sampleClickHandler="sampleClickHandler" />
         </div>
 
         <!-- Clinical Variables -->
         <div v-if="showClinical">
-            <ClinicalTracks :widthProportion="widthProportion" :sampleClickHandler="sampleClickHandler" />
+            <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
         </div>
 
         <!-- Hierarchical Clustering -->
@@ -499,6 +499,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { HistoryEvent } from 'vue-declarative-plots';
+
 import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';
 import GeneTracks from './GeneTracks.vue';
@@ -506,10 +508,9 @@ import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
 
 
-import { PLOT_GROUPS } from './../vdp/Visibility';
-
-import { HistoryEvent } from 'vue-declarative-plots';
-import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples';
+import { PLOT_GROUPS } from './../vdp/Visibility.js';
+import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples.js';
+import { IMUSE_COLUMNS } from './../vdp/Sizes.js';
 
 
 export default {
@@ -520,11 +521,6 @@ export default {
         GeneTracks,
         VisibilityButtons,
         NumSamples
-    },
-    props: {
-        'widthProportion': {
-            type: Number
-        }
     },
     data() {
         return {
@@ -541,7 +537,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.widthProportion - 25;
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.MAIN] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);
@@ -590,7 +586,8 @@ export default {
             'getStack',
             'getData',
             'getScale',
-            'getSamples'
+            'getSamples',
+            'getSizes'
         ])
     },
     methods: {

@@ -53,6 +53,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
+import { IMUSE_COLUMNS } from '../vdp/Sizes';
 
 export default {
     name: 'GeneTracks',
@@ -60,16 +61,13 @@ export default {
         PlotInfo,
     },
     props: {
-        'widthProportion': {
-            type: Number
-        },
         'sampleClickHandler': {
             type: Function
         }
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.widthProportion - 25;
+            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.MAIN] - 25;
         },
         numGenes() {
             return (this.getConfig().selectedGenes.length);
@@ -83,7 +81,8 @@ export default {
             'getConfig',
             'getStack',
             'getData',
-            'getScale'
+            'getScale',
+            'getSizes'
         ])
     }
 }
