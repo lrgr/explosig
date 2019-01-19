@@ -2,7 +2,7 @@
     <div>
         <transition name="fade">
             <div class="featured-table-container" v-if="hasFeaturedItems">
-                <h4>Alternatively, start with a featured configuration:</h4>
+                <h4>Alternatively, start with a configuration:</h4>
                 <div class="featured-table">
                     <div class="row thead">
                         <span class="cell">Configuration</span>

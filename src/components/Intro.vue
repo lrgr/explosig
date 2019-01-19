@@ -94,7 +94,7 @@ export default {
     width: 50%;
     border: 0px solid red;
     .intro-featured {
-        margin-top: 230px;
+        margin-top: 250px;
     }
     .arrow {
         width: 0;
