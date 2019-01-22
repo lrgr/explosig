@@ -9,6 +9,7 @@
                 <div class="stratification-options-wrapper">
                     <h3>Stratification options</h3>
                     <div v-if="showSbs">
+                        <h4 v-if="selectedClinicalVariables.length > 0">SBS Exposures &amp; Clinical Data</h4>
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                             <StratificationOptions
                                 data="exposure_sbs"
@@ -24,6 +25,7 @@
                                 @stratify="closeStratificationModal"
                             />
                         </div>
+                        <h4 v-if="selectedGenes.length > 0">SBS Exposures &amp; Genes</h4>
                         <div v-for="geneId in selectedGenes" :key="geneId">
                             <StratificationOptions
                                 data="exposure_sbs"
@@ -41,6 +43,7 @@
                         </div>
                     </div>
                     <div v-if="showDbs">
+                        <h4 v-if="selectedClinicalVariables.length > 0">DBS Exposures &amp; Clinical Data</h4>
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                             <StratificationOptions
                                 data="exposure_dbs"
@@ -56,6 +59,7 @@
                                 @stratify="closeStratificationModal"
                             />
                         </div>
+                        <h4 v-if="selectedGenes.length > 0">DBS Exposures &amp; Genes</h4>
                         <div v-for="geneId in selectedGenes" :key="geneId">
                             <StratificationOptions
                                 data="exposure_dbs"
@@ -73,6 +77,7 @@
                         </div>
                     </div>
                     <div v-if="showIndel">
+                        <h4 v-if="selectedClinicalVariables.length > 0">INDEL Exposures &amp; Clinical Data</h4>
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                             <StratificationOptions
                                 data="exposure_indel"
@@ -88,6 +93,7 @@
                                 @stratify="closeStratificationModal"
                             />
                         </div>
+                        <h4 v-if="selectedGenes.length > 0">INDEL Exposures &amp; Genes</h4>
                         <div v-for="geneId in selectedGenes" :key="geneId">
                             <StratificationOptions
                                 data="exposure_indel"
@@ -104,6 +110,7 @@
                             />
                         </div>
                     </div>
+                    <br/><br/>
                 </div>
             </div>
         </div>

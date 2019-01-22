@@ -300,9 +300,268 @@
             </PlotContainer>
         </ResizablePlotContainer>
 
-        <div class="overview-footer"></div>
+        <!-- Samples with Signatures -->
+        <PlotInfo title="Samples with Signatures" :showTitle="true">
+            <p slot="info">
+                This plot displays the number of samples with greater than 1 mutation attributed to each signature.
+            </p>
+        </PlotInfo>
+        <ResizablePlotContainer v-if="showSbs" :key="('sbs_sws_' + explorerOverviewKey)"
+            plotCode="overview_sbs_sws"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="num_samples"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CountBarPlot
+                    slot="plot"
+                    data="exposure_sbs"
+                    x="sig_SBS"
+                    y="num_samples"
+                    o="sample_id"
+                    :filterFunction="(val) => (val > 1)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="sig_SBS"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showDbs" :key="('dbs_sws_' + explorerOverviewKey)"
+            plotCode="overview_dbs_sws"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="num_samples"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CountBarPlot
+                    slot="plot"
+                    data="exposure_dbs"
+                    x="sig_DBS"
+                    y="num_samples"
+                    o="sample_id"
+                    :filterFunction="(val) => (val > 1)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="sig_DBS"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showIndel" :key="('indel_sws_' + explorerOverviewKey)"
+            plotCode="overview_indel_sws"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="num_samples"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CountBarPlot
+                    slot="plot"
+                    data="exposure_indel"
+                    x="sig_INDEL"
+                    y="num_samples"
+                    o="sample_id"
+                    :filterFunction="(val) => (val > 1)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="sig_INDEL"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
 
-        <!--<VisibilityButtons style="margin: 20px 0px;"/>-->
+        <!-- Survival by Dominant Signature -->
+        <PlotInfo title="Survival by Dominant Signature" :showTitle="true">
+            <p slot="info">
+                This plot displays patient survival stratified by dominant signature for each signature type.<br>
+                For each sample, the dominant signature is the signature with the maximum exposure.
+            </p>
+        </PlotInfo>
+        <ResizablePlotContainer v-if="showSbs" :key="('sbs_dominant_' + explorerOverviewKey)"
+            plotCode="overview_sbs_dominant"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="survival_pct"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StratifiedKaplanMeierPlot
+                    slot="plot"
+                    data="survival"
+                    s="dominant_sig_sbs"
+                    variable="sig_SBS"
+                    c="sig_SBS"
+                    x="survival_time"
+                    y="survival_pct"
+                    o="sample_id"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="survival_time"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="false"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showDbs" :key="('dbs_dominant_' + explorerOverviewKey)"
+            plotCode="overview_dbs_dominant"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="survival_pct"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StratifiedKaplanMeierPlot
+                    slot="plot"
+                    data="survival"
+                    s="dominant_sig_dbs"
+                    variable="sig_DBS"
+                    c="sig_DBS"
+                    x="survival_time"
+                    y="survival_pct"
+                    o="sample_id"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="survival_time"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="false"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showIndel" :key="('indel_dominant_' + explorerOverviewKey)"
+            plotCode="overview_indel_dominant"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="survival_pct"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <StratifiedKaplanMeierPlot
+                    slot="plot"
+                    data="survival"
+                    s="dominant_sig_indel"
+                    variable="sig_INDEL"
+                    c="sig_INDEL"
+                    x="survival_time"
+                    y="survival_pct"
+                    o="sample_id"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="survival_time"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="false"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+
+        <div class="overview-footer"></div>
  
     </div>
 </template>

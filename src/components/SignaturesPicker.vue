@@ -66,15 +66,17 @@ export default {
   },
   mounted: function() {
         const vm = this;
-        API.fetchDataListing().then(function(listing) {
+        API.fetchDataListing().then((listing) => {
             vm.allSignaturesSbs = listing["signatures"].filter(el => el["mut_type"] === "SBS");
             vm.allSignaturesDbs = listing["signatures"].filter(el => el["mut_type"] === "DBS");
             vm.allSignaturesIndel = listing["signatures"].filter(el => el["mut_type"] === "INDEL");
 
             vm.cancerTypeMap = listing["cancer_type_map"];
-            vm.cancerTypeMapGroups = d3_set(vm.cancerTypeMap.map(el => el["group"])).values();
+            vm.cancerTypeMapGroups = d3_set(listing["signatures"].map(el => el["group"])).values();
             
             vm.loading = false;
+
+            console.log(listing);
             vm.drawPlot();
         });
   },
@@ -198,6 +200,11 @@ export default {
             let index = this[mapping[sigType]].findIndex((el) => el === name);
             if(index === -1) {
               this[mapping[sigType]].push(name);
+              this[mapping[sigType]].sort((a, b) => {
+                let aVal = this.getSignature(a)[0]["index"];
+                let bVal = this.getSignature(b)[0]["index"];
+                return aVal - bVal;
+              });
             } else {
               this[mapping[sigType]].splice(index, 1);
             }

@@ -29,6 +29,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import { max as d3_max } from 'd3-array';
 import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
 
@@ -367,7 +368,7 @@ export default {
             const geneScale = new CategoricalScale("gene", "Gene", this.getConfig().selectedGenes);
             this.setScale({key: "gene", scale: geneScale});
 
-            const geneEventScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#FFFFFF"});
+            const geneEventScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#F5F5F5"});
             this.setScale({key: "mut_class", scale: geneEventScale});
 
             for(const geneId of this.getConfig().selectedGenes) {
@@ -383,7 +384,7 @@ export default {
                 "Clinical Variable", 
                 this.getConfig().selectedClinicalVariables
             );
-            this.setScale({key:"clinical_variable", scale: clinicalVariableScale});
+            this.setScale({key: "clinical_variable", scale: clinicalVariableScale});
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
                 if(CONTINUOUS_CLINICAL_VARS.includes(clinicalVar)) {
@@ -404,6 +405,84 @@ export default {
                 }))});
             }
 
+            /* SURVIVAL DATA */
+            const survivalPctScale = new ContinuousScale("survival_pct", "Percent Survival", [0, 100]);
+            this.setScale({key: "survival_pct", scale: survivalPctScale});
+
+            const survivalTimeScale = new ContinuousScale("survival_time", "Days", API.fetchPlotSurvival({
+                    "projects": this.getConfig().selectedSamples
+                }).then((data) => {
+                    return [0, Math.max(d3_max(data, d => (d["days_to_death"] === "nan" ? NaN : d["days_to_death"])), d3_max(data, d => (d["days_to_last_followup"] === "nan" ? NaN : d["days_to_last_followup"])))]
+                })
+            );
+            this.setScale({key: "survival_time", scale: survivalTimeScale});
+
+            const survivalData = new DataContainer("survival", "Survival", API.fetchPlotSurvival({
+                    "projects": this.getConfig().selectedSamples
+                })
+            );
+            this.setData({key: "survival", data: survivalData});
+
+
+            const makeDominantSigFunction = (sigs, sigs_name) => {
+                return (data) => {
+                    let result = data.map(d => {
+                        let maxVal = 0;
+                        let maxKey = "nan";
+                        for(let sig of sigs) {
+                            if(d[sig] > maxVal) {
+                                maxVal = d[sig];
+                                maxKey = sig;
+                            }
+                        }
+                        return {
+                            "sample_id": d["sample_id"],
+                            [sigs_name]: maxKey
+                        };
+                    });
+                    return result;
+                }
+            };
+
+            /* Dominant Signatures */
+            const dominantSigSbsData = new DataContainer("dominant_sig_sbs", "SBS Dominant Signature", API.fetchPlotExposures({
+                    "projects": this.getConfig().selectedSamples,
+                    "signatures": this.getConfig().selectedSignaturesSbs,
+                    "mut_type": "SBS"
+                }).then(
+                    makeDominantSigFunction(this.getConfig().selectedSignaturesSbs, "sig_SBS")
+                )
+            );
+            this.setData({key: "dominant_sig_sbs", data: dominantSigSbsData});
+
+            const dominantSigDbsData = new DataContainer("dominant_sig_dbs", "DBS Dominant Signature", API.fetchPlotExposures({
+                    "projects": this.getConfig().selectedSamples,
+                    "signatures": this.getConfig().selectedSignaturesDbs,
+                    "mut_type": "DBS"
+                }).then(
+                    makeDominantSigFunction(this.getConfig().selectedSignaturesDbs, "sig_DBS")
+                )
+            );
+            this.setData({key: "dominant_sig_dbs", data: dominantSigDbsData});
+
+            const dominantSigIndelData = new DataContainer("dominant_sig_indel", "INDEL Dominant Signature", API.fetchPlotExposures({
+                    "projects": this.getConfig().selectedSamples,
+                    "signatures": this.getConfig().selectedSignaturesIndel,
+                    "mut_type": "INDEL"
+                }).then(
+                    makeDominantSigFunction(this.getConfig().selectedSignaturesIndel, "sig_INDEL")
+                )
+            );
+            this.setData({key: "dominant_sig_indel", data: dominantSigIndelData});
+
+            /* Samples with Signatures */
+            const numSamplesScale = new ContinuousScale("num_samples", "Number of Samples", API.fetchScaleSamples({
+                    "projects": this.getConfig().selectedSamples
+                }).then((data) => {
+                    return [0, data.length];
+                })
+            );
+            this.setScale({key: "num_samples", scale: numSamplesScale});
 
             /* EXPLICIT LINKING IF NECESSARY */
             samplesScale.onHighlight("explorer", (sample_id) => {

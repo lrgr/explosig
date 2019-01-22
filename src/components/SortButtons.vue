@@ -8,6 +8,7 @@
                 <span class="modal-close" @click="closeSortModal">Close</span>
                 <div class="sort-options-wrapper">
                     <h3>Sort options</h3>
+                    <h4>Mutation Data</h4>
                     <SortOptions 
                         variable="sample_id" 
                         data="mut_count" 
@@ -18,6 +19,7 @@
                         :getStack="getStack"
                         @sort="closeSortModal"
                     />
+                    <h4>Exposures Data</h4>
                     <SortOptions v-if="showSbs"
                         variable="sample_id" 
                         data="exposure_sbs" 
@@ -33,6 +35,17 @@
                         data="exposure_sbs_normalized" 
                         optionScale="sig_SBS"
                         comparatorScale="exposure_sbs_normalized"
+                        :getScale="getScale" 
+                        :getData="getData"
+                        :getStack="getStack"
+                        @sort="closeSortModal"
+                    />
+                    <SortOptions v-if="showSbs"
+                        variable="sample_id" 
+                        data="dominant_sig_sbs" 
+                        optionName="SBS Signature"
+                        optionVariable="sig_SBS"
+                        comparatorScale="sig_SBS"
                         :getScale="getScale" 
                         :getData="getData"
                         :getStack="getStack"
@@ -58,6 +71,17 @@
                         :getStack="getStack"
                         @sort="closeSortModal"
                     />
+                    <SortOptions v-if="showDbs"
+                        variable="sample_id" 
+                        data="dominant_sig_dbs" 
+                        optionName="DBS Signature"
+                        optionVariable="sig_DBS"
+                        comparatorScale="sig_DBS"
+                        :getScale="getScale" 
+                        :getData="getData"
+                        :getStack="getStack"
+                        @sort="closeSortModal"
+                    />
                      <SortOptions v-if="showIndel"
                         variable="sample_id" 
                         data="exposure_indel" 
@@ -78,20 +102,19 @@
                         :getStack="getStack"
                         @sort="closeSortModal"
                     />
-                    <div v-if="showGenes">
-                        <SortOptions v-for="geneId in selectedGenes" :key="geneId"
-                            variable="sample_id" 
-                            :data="('gene_' + geneId)" 
-                            optionName="Mutation Classification"
-                            optionVariable="mut_class"
-                            comparatorScale="mut_class"
-                            :getScale="getScale" 
-                            :getData="getData"
-                            :getStack="getStack"
-                            @sort="closeSortModal"
-                        />
-                    </div>
+                    <SortOptions v-if="showIndel"
+                        variable="sample_id" 
+                        data="dominant_sig_indel" 
+                        optionName="INDEL Signature"
+                        optionVariable="sig_INDEL"
+                        comparatorScale="sig_INDEL"
+                        :getScale="getScale" 
+                        :getData="getData"
+                        :getStack="getStack"
+                        @sort="closeSortModal"
+                    />
                     <div v-if="showClinical">
+                        <h4>Clinical Data</h4>
                         <SortOptions v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar"
                             variable="sample_id" 
                             :data="('cv_' + clinicalVar)" 
@@ -104,6 +127,21 @@
                             @sort="closeSortModal"
                         />
                     </div>
+                    <div v-if="showGenes">
+                        <h4>Genes Data</h4>
+                        <SortOptions v-for="geneId in selectedGenes" :key="geneId"
+                            variable="sample_id" 
+                            :data="('gene_' + geneId)" 
+                            optionName="Mutation Classification"
+                            optionVariable="mut_class"
+                            comparatorScale="mut_class"
+                            :getScale="getScale" 
+                            :getData="getData"
+                            :getStack="getStack"
+                            @sort="closeSortModal"
+                        />
+                    </div>
+                    <br/><br/>
                 </div>
             </div>
         </div>

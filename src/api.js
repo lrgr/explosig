@@ -137,52 +137,6 @@ export default class API {
         return d3.json(url, { method: "POST", body: JSON.stringify({"state": JSON.stringify(state) }) });
     }
 
-   /* 
-   static fetchKaryotype() {
-        let url = API.api_base + "karyotype";
-
-        return API.request(
-            d3.csv(url, { method: "POST" }),
-            url,
-            null
-        );
-    }
-    */
-
-   /* 
-   static fetchGenomeSignatureBins(dataOptions) {
-        let url = API.api_base + "signature-genome-bins";
-        dataOptions['regionWidth'] = 5000000;
-
-        return API.request(
-                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
-                url,
-                dataOptions
-            );
-    }
-    */
-    /*
-    static fetchKataegis(dataOptions) {
-        let url = API.api_base + "kataegis";
-
-        return API.request(
-                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
-                url,
-                dataOptions
-            );
-    }
-    */
-    /*
-    static fetchRainfall(dataOptions) {
-        let url = API.api_base + "kataegis-rainfall";
-
-        return API.request(
-            d3.csv(url, { method: "POST", body: JSON.stringify(dataOptions) }),
-            url,
-            dataOptions
-        );
-    }
-    */
     static fetchPlotSamplesMeta(dataOptions) {
         let url = API.api_base + "plot-samples-meta";
 
@@ -221,8 +175,6 @@ export default class API {
             dataOptions
         );
     }
-
-
 
     static fetchPlotCountsPerCategorySingleSample(dataOptions) {
         let url = API.api_base + "plot-counts-per-category-single-sample";
@@ -294,19 +246,6 @@ export default class API {
         );
     }
 
-
-    /*
-    static fetchSingleDonorExposures(dataOptions) {
-        let url = API.api_base + "exposures-single-donor";
-        
-        return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
-            url,
-            dataOptions
-        );
-    }
-    */
-    
     static fetchPlotSignature(dataOptions) {
         let url = API.api_base + "plot-signature";
         
@@ -408,20 +347,18 @@ export default class API {
         );
     }
     
-    /*
-    static fetchSingleDonorGenomeSignatureBins(dataOptions) {
-        let url = API.api_base + "signature-genome-bins-single-donor";
-        dataOptions['regionWidth'] = 5000000;
-
+    static fetchClustering(dataOptions) {
+        let url = API.api_base + "clustering";
+        
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
             url,
             dataOptions
         );
     }
-    */
-    static fetchClustering(dataOptions) {
-        let url = API.api_base + "clustering";
+
+    static fetchPlotSurvival(dataOptions) {
+        let url = API.api_base + "plot-survival";
         
         return API.request(
             d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),

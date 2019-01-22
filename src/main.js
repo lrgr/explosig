@@ -19,6 +19,9 @@ import {
   HierarchicalMultiTrackPlot,
   StratifiedBoxPlot,
   StratifiedScatterPlot,
+  StratifiedSinaPlot,
+  StratifiedKaplanMeierPlot,
+  CountBarPlot,
   GenomeScatterPlot,
   GenomeTrackPlot,
   GenomeMultiTrackPlot,
@@ -45,6 +48,9 @@ Vue.component(MultiTrackPlot.name, MultiTrackPlot);
 Vue.component(HierarchicalMultiTrackPlot.name, HierarchicalMultiTrackPlot);
 Vue.component(StratifiedBoxPlot.name, StratifiedBoxPlot);
 Vue.component(StratifiedScatterPlot.name, StratifiedScatterPlot);
+Vue.component(StratifiedSinaPlot.name, StratifiedSinaPlot);
+Vue.component(StratifiedKaplanMeierPlot.name, StratifiedKaplanMeierPlot);
+Vue.component(CountBarPlot.name, CountBarPlot);
 Vue.component(GenomeScatterPlot.name, GenomeScatterPlot);
 Vue.component(GenomeTrackPlot.name, GenomeTrackPlot);
 Vue.component(GenomeMultiTrackPlot.name, GenomeMultiTrackPlot);

@@ -28,7 +28,7 @@
                         :getScale="getScale"
                         :getStack="getStack"
                     />
-                    <StratifiedBoxPlot
+                    <StratifiedSinaPlot
                         slot="plot"
                         :variable="choice.variable"
                         :data="choice.data"
@@ -38,7 +38,7 @@
                         :o="choice.o"
                         :getData="getData"
                         :getScale="getScale"
-                        :drawOutliers="true"
+                        strokeColor="gray"
                     />
                     <Axis
                         :variable="choice.x"
@@ -81,6 +81,7 @@
                         :getData="getData"
                         :getScale="getScale"
                         :fillPoints="true"
+                        strokeColor="gray"
                     />
                     <Axis
                         :variable="choice.x"

@@ -65,6 +65,28 @@
             </div>
         </div>
 
+        <ContinuousLegend v-if="showSbs"
+            variable="exposure_sbs_normalized"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
+        <ContinuousLegend v-if="showDbs"
+            variable="exposure_dbs_normalized"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
+        <ContinuousLegend v-if="showIndel"
+            variable="exposure_indel_normalized"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
+
         <SignatureModal :clickedSignature="clickedSignature" @close-modal="unclickSignature" />
     </div>
 </template>

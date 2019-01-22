@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/lrgr/mutation-signature-explorer.svg?branch=master)](https://travis-ci.org/lrgr/mutation-signature-explorer)
+[![Build Status](https://travis-ci.org/lrgr/imuse.svg?branch=master)](https://travis-ci.org/lrgr/imuse)
 
 # interactive Mutation Signature Explorer (iMuSE)
 

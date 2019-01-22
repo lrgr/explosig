@@ -115,7 +115,7 @@
         </div>
 
         <!-- Genes -->
-        <PlotInfo title="Genes" :showTitle="true">
+        <PlotInfo title="Genes" :showTitle="true" v-if="selectedGenes.length > 0">
             <p slot="info">
                 These plots display mutation classes of the selected genes for sample {{ sampleId }}.
             </p>
@@ -172,7 +172,7 @@
         </div>
 
         <!-- Clinical -->
-        <PlotInfo title="Clinical Variables" :showTitle="true">
+        <PlotInfo title="Clinical Variables" :showTitle="true" v-if="selectedClinicalVariables.length > 0">
             <p slot="info">
                 These plots display values of the selected clinical variables for sample {{ sampleId }}.
             </p>
