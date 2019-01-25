@@ -76,7 +76,6 @@ export default {
             
             vm.loading = false;
 
-            console.log(listing);
             vm.drawPlot();
         });
   },

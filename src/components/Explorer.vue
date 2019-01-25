@@ -445,6 +445,9 @@ export default {
             };
 
             /* Dominant Signatures */
+            const dominantSigSbsMetaScale = new CategoricalScale("dominant_sig_sbs_meta", "", ["Dominant SBS Signature"]);
+            this.setScale({key: "dominant_sig_sbs_meta", scale: dominantSigSbsMetaScale});
+
             const dominantSigSbsData = new DataContainer("dominant_sig_sbs", "SBS Dominant Signature", API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesSbs,
@@ -455,6 +458,9 @@ export default {
             );
             this.setData({key: "dominant_sig_sbs", data: dominantSigSbsData});
 
+            const dominantSigDbsMetaScale = new CategoricalScale("dominant_sig_dbs_meta", "", ["Dominant DBS Signature"]);
+            this.setScale({key: "dominant_sig_dbs_meta", scale: dominantSigDbsMetaScale});
+
             const dominantSigDbsData = new DataContainer("dominant_sig_dbs", "DBS Dominant Signature", API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesDbs,
@@ -464,6 +470,9 @@ export default {
                 )
             );
             this.setData({key: "dominant_sig_dbs", data: dominantSigDbsData});
+
+            const dominantSigIndelMetaScale = new CategoricalScale("dominant_sig_indel_meta", "", ["Dominant INDEL Signature"]);
+            this.setScale({key: "dominant_sig_indel_meta", scale: dominantSigIndelMetaScale});
 
             const dominantSigIndelData = new DataContainer("dominant_sig_indel", "INDEL Dominant Signature", API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,

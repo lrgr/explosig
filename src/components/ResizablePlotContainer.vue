@@ -140,5 +140,6 @@ export default {
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
+    z-index: 1;
 }
 </style>

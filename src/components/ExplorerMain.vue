@@ -116,6 +116,32 @@
         </ResizablePlotContainer>
 
         <!-- Exposures -->
+        <PlotContainer v-if="showSbs" :key="('sbs_dominant' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="20"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="dominant_sig_sbs_meta"
+                side="left"
+                :disableBrushing="true"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="dominant_sig_sbs"
+                x="sample_id"
+                c="sig_SBS"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
         <PlotInfo title="Mutation Signature Exposures per Sample">
             <p slot="info">
                 This group of plots displays mutation signature exposures for each sample.<br>
@@ -219,6 +245,32 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
+        <PlotContainer v-if="showDbs" :key="('dbs_dominant' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="20"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="dominant_sig_dbs_meta"
+                side="left"
+                :disableBrushing="true"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="dominant_sig_dbs"
+                x="sample_id"
+                c="sig_DBS"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
         <ResizablePlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
             plotCode="main_dbs"
             :pWidth="(colWidth-150-5)"
@@ -312,6 +364,32 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
+        <PlotContainer v-if="showIndel" :key="('indel_dominant' + explorerMainKey)"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="20"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+        >
+            <Axis 
+                slot="axisLeft"
+                variable="dominant_sig_indel_meta"
+                side="left"
+                :disableBrushing="true"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="dominant_sig_indel"
+                x="sample_id"
+                c="sig_INDEL"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
         <ResizablePlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
             plotCode="main_indel"
             :pWidth="(colWidth-150-5)"
