@@ -32,6 +32,34 @@
                 {{ citation.volume }}({{ citation.number }}):{{ citation.pages }}, {{ citation.year }}.
             </div>
         </div>
+
+        <span class="intro-modal-link" @click="showModal">Open Source</span>
+
+        <div class="modal" v-show="modalVisible">
+            <div class="modal-inner">
+                <span class="modal-close" @click="closeModal">Close</span>
+                <div class="oss-modal">
+                    <h3>Open Source</h3>
+                    <div>
+                        This web application includes code from the following modules.
+                        <h4>MIT</h4>
+                        <a href="https://www.npmjs.com/package/colorjoe" target="_blank">colorjoe</a> &copy; Evan Juho Veps&#228;l&#228;inen<br>
+                        <a href="https://www.npmjs.com/package/json2csv" target="_blank">json2csv</a> &copy; Mirco Zeiss<br>
+                        <a href="https://www.npmjs.com/package/lodash" target="_blank">lodash</a> &copy; JS Foundation<br>
+                        <a href="https://www.npmjs.com/package/vue" target="_blank">vue</a> &copy; Yuxi (Evan) You<br>
+                        <a href="https://www.npmjs.com/package/vue-resize" target="_blank">vue-resize</a> &copy; Guillaume Chau<br>
+                        <a href="https://www.npmjs.com/package/vuex" target="_blank">vuex</a> &copy; Evan You<br>
+
+                        <h4>BSD-3-Clause</h4>
+                        <a href="https://www.npmjs.com/package/d3" target="_blank">d3</a> &copy; Mike Bostock<br>
+
+                        <h4>ISC</h4>
+                        <a href="https://www.npmjs.com/package/d3-delaunay" target="_blank">d3-delaunay</a> &copy; Observable, Inc.<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-background" v-show="modalVisible" @click="closeModal"></div>
     </div>
 </template>
 
@@ -44,17 +72,31 @@ export default {
   components: {
       CiteP
   },
+  data() {
+      return {
+          modalVisible: false
+      };
+  },
   computed: {
       ...mapGetters([
           'bibliography'
       ])
+  },
+  methods: {
+      closeModal() {
+          this.modalVisible = false;
+      },
+      showModal() {
+          this.modalVisible = true;
+      }
   }
 }
 </script>
 
 <style scoped lang="scss">
-
 @import './../style/variables.scss';
+@import './../style/modal.scss';
+
 .intro-text-inner {
     text-align: justify;
     .acronym {
@@ -71,6 +113,28 @@ export default {
     .reference-index {
         padding-right: 10px;
     }
+}
+
+.oss-modal {
+    padding: 1rem;
+    h3 {
+        margin-top: 0;
+    }
+    h4 {
+        margin-bottom: 0;
+    }
+    a {
+        color: rgb(65, 120, 223);
+        text-decoration: none;
+    }
+}
+
+.intro-modal-link {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 </style>

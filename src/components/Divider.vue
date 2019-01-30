@@ -63,7 +63,7 @@ export default {
     border-left: 1px solid silver;
     opacity: 0.5;
     cursor: col-resize;
-    z-index: 3;
+    z-index: 6;
 
     transition: border-left 0.1s;
 

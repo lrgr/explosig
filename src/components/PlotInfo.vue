@@ -12,7 +12,7 @@
             <div class="modal-inner">
                 <span class="modal-close" @click="closeModal">Close</span>
                 <div class="plot-info-modal">
-                    <h3>Plot info</h3><span class="plot-info-modal-title">{{ title }}</span>
+                    <h3>Plot Info</h3><span class="plot-info-modal-title">{{ title }}</span>
                     
                     <slot name="info"></slot>
                 </div>
