@@ -133,13 +133,29 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .plot-container-resizable {
     box-sizing: border-box;
     resize: vertical;
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
-    z-index: 1;
+}
+
+.explorer-main {
+    .plot-container-resizable {
+        z-index: 6;
+        .vdp-tooltip {
+            z-index: 106;
+        }
+    }
+}
+.explorer-overview {
+    .plot-container-resizable {
+        z-index: 5;
+        .vdp-tooltip {
+            z-index: 105;
+        }
+    }
 }
 </style>

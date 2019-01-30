@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "d3": "^5.0.0",
+    "json2csv": "^4.3.3",
     "lodash": "^4.17.5",
     "vue": "^2.5.17",
     "vue-declarative-plots": "^1.0.0",

@@ -35,7 +35,10 @@ const getters = {
     },
     getScale: (state) => (key) => {
         return state.scales[key];
-    }
+    },
+    getDataKeys: (state) => () => {
+        return Object.keys(state.data);
+    },
 }
 
 // actions

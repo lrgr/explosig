@@ -1,18 +1,31 @@
 <template>
     <div>
-        <span class="explorer-control-title">Share</span>
-        <button @click="exportHistory" :disabled="isExporting">Export</button>
+        <span class="explorer-control-title">Export</span>
+        <button @click="exportData">Data</button>
+        <button @click="exportHistory" :disabled="isExporting">URL</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" @click="closeSharingModal">Close</span>
-                <div class="sharing-options-wrapper">
-                    <h3>Share</h3>
+                <div class="sharing-options-wrapper" v-if="historyModalVisible">
+                    <h3>Export URL</h3>
                     <p>Share the current iMuSE state and history via the following URL:</p>
                     <div class="sharing-url" v-if="currSlug.length > 0">
                         <pre>http://imuse.lrgr.io/#export-{{ currSlug }}</pre>
                     </div>
                     <VSpinner v-if="isExporting" class="spinner" />
+                </div>
+                <div class="sharing-options-wrapper" v-if="dataModalVisible">
+                    <h3>Export Data</h3>
+                    <table>
+                        <tr v-for="dataKey of getDataKeys()" :key="dataKey">
+                            <td>{{ getData(dataKey).name }}</td>
+                            <td><button @click="downloadData(dataKey, 'JSON')">JSON</button></td>
+                            <td><button @click="downloadData(dataKey, 'CSV')" v-if="dataIsArray(dataKey)">CSV</button></td>
+                            <td><button @click="downloadData(dataKey, 'TSV')" v-if="dataIsArray(dataKey)">TSV</button></td>
+                        </tr>
+                    </table>
+                    <br/>
                 </div>
             </div>
         </div>
@@ -22,6 +35,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { parse as json2csv } from 'json2csv';
 import API from './../api.js';
 
 import VSpinner from './VSpinner.vue';
@@ -38,7 +52,8 @@ export default {
             currSlug: "",
             isExporting: false,
             modalVisible: false,
-
+            historyModalVisible: false,
+            dataModalVisible: false
         };
     },
     computed: {
@@ -47,17 +62,22 @@ export default {
             'getScale',
             'getData',
             'getStack',
-            'getStratification'
+            'getStratification',
+            'getDataKeys'
         ])
     },
     methods: {
         closeSharingModal() {
             this.modalVisible = false;
+            this.historyModalVisible = false;
+            this.dataModalVisible = false;
+
             this.currSlug = "";
         },
         exportHistory() {
             this.isExporting = true
             this.modalVisible = true;
+            this.historyModalVisible = true;
             
             let state = {
                 "history": this.getStack().export(),
@@ -67,6 +87,47 @@ export default {
                 this.isExporting = false;
                 this.currSlug = dataSet.slug;
             });
+        },
+        exportData() {
+            this.modalVisible = true;
+            this.dataModalVisible = true;
+        },
+        dataIsArray(dataKey) {
+            return Array.isArray(this.getData(dataKey).data);
+        },
+        downloadData(dataKey, fileType) {
+            const dataArray = this.getData(dataKey).dataCopy;
+            const exportName = this.getData(dataKey).id;
+            let dataStr, fileExtension;
+            if(fileType === 'JSON') {
+                fileExtension = "json";
+                dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataArray));
+            } else if(fileType === 'CSV' || fileType === 'TSV') {
+                if(Array.isArray(dataArray) && dataArray.length > 0) {
+                    let delimeter;
+                    if(fileType === 'CSV') {
+                        fileExtension = "csv";
+                        delimeter = ',';
+                    } else {
+                        fileExtension = "tsv";
+                        delimeter = '\t';
+                    }
+                    try {
+                        const csv = json2csv(dataArray, { fields: Object.keys(dataArray[0]), delimeter: delimeter });
+                        dataStr = "data:text/" + fileExtension + ";charset=utf-8," + encodeURIComponent(csv);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                } else {
+                    alert("No data available.");
+                }
+            }
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", exportName + "." + fileExtension);
+            document.body.appendChild(downloadAnchorNode); // required for firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
         }
     }
 }
@@ -78,6 +139,9 @@ export default {
 
 .sharing-options-wrapper {
     padding: 1rem;
+    overflow-y: scroll;
+    height: 80vh;
+    box-sizing: border-box;
     h3 {
         margin-top: 0;
     }
