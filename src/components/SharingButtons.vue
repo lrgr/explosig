@@ -104,22 +104,20 @@ export default {
                 dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataArray));
             } else if(fileType === 'CSV' || fileType === 'TSV') {
                 if(Array.isArray(dataArray) && dataArray.length > 0) {
-                    let delimeter;
+                    let delimiter;
                     if(fileType === 'CSV') {
                         fileExtension = "csv";
-                        delimeter = ',';
+                        delimiter = ',';
                     } else {
                         fileExtension = "tsv";
-                        delimeter = '\t';
+                        delimiter = '\t';
                     }
                     try {
-                        const csv = json2csv(dataArray, { fields: Object.keys(dataArray[0]), delimeter: delimeter });
+                        const csv = json2csv(dataArray, { fields: Object.keys(dataArray[0]), delimiter: delimiter });
                         dataStr = "data:text/" + fileExtension + ";charset=utf-8," + encodeURIComponent(csv);
                     } catch (err) {
                         console.error(err);
                     }
-                } else {
-                    alert("No data available.");
                 }
             }
             const downloadAnchorNode = document.createElement('a');
