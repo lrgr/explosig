@@ -5,7 +5,7 @@
 Hosted: [https://imuse.lrgr.io](https://imuse.lrgr.io)
 
 ### Docker Setup
-We recommend using the docker configuration at [iMuSE-docker](https://github.com/lrgr/imuse-docker) to run iMuSE and iMuSE Server locally.
+We recommend using the docker configuration at [imuse-docker](https://github.com/lrgr/imuse-docker) to run iMuSE and [iMuSE Server](https://github.com/lrgr/imuse-server) locally.
 
 ### Docker-less Setup
 For development purposes, iMuSE can be run without Docker.
