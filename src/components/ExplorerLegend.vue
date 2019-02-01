@@ -49,14 +49,14 @@
         <div v-if="showClinical">
             <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                 <CategoricalLegend v-if="!isContinuousClinicalVariable(clinicalVar)"
-                    :variable="('cv_' + clinicalVar)"
+                    :variable="clinicalVar"
                     lStyle="bar"
                     :lWidth="colWidth"
                     :getScale="getScale"
                     :getStack="getStack"
                 />
                 <ContinuousLegend v-if="isContinuousClinicalVariable(clinicalVar)"
-                    :variable="('cv_' + clinicalVar)"
+                    :variable="clinicalVar"
                     lStyle="bar"
                     :lWidth="colWidth"
                     :getScale="getScale"
@@ -93,7 +93,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
 import { IMUSE_COLUMNS } from './../vdp/Sizes.js';
 
@@ -135,6 +134,7 @@ export default {
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
+            'continuousClinicalVariables',
             'getConfig',
             'getStack',
             'getData',
@@ -144,7 +144,7 @@ export default {
     },
     methods: {
         isContinuousClinicalVariable(clinicalVar) {
-            return CONTINUOUS_CLINICAL_VARS.includes(clinicalVar);
+            return this.continuousClinicalVariables.includes(clinicalVar);
         },
         clickSignature(sig) {
             this.clickedSignature = sig;

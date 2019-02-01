@@ -53,7 +53,6 @@ import ExplorerMain from './ExplorerMain.vue';
 import Divider from './Divider.vue';
 
 import API from './../api.js';
-import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 
 import { 
     SBS_SUPERCAT_COLORS, DBS_SUPERCAT_COLORS, INDEL_SUPERCAT_COLORS,
@@ -95,6 +94,7 @@ export default {
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
+            'continuousClinicalVariables',
             'getConfig',
             'getStack',
             'getStratification',
@@ -386,23 +386,26 @@ export default {
             );
             this.setScale({key: "clinical_variable", scale: clinicalVariableScale});
 
+            this.setData({key: "clinical_data", data: new DataContainer("clinical_data", "Clinical Data", API.fetchPlotClinical({
+                "projects": this.getConfig().selectedSamples
+            }))});
+
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
-                if(CONTINUOUS_CLINICAL_VARS.includes(clinicalVar)) {
-                    this.setScale({key: ("cv_" + clinicalVar), scale: new ContinuousScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
-                        "projects": this.getConfig().selectedSamples,
-                        "clinical_variable": clinicalVar
+                if(this.continuousClinicalVariables.includes(clinicalVar)) {
+                    this.setScale({key: clinicalVar, scale: new ContinuousScale(clinicalVar, clinicalVar, API.fetchScaleClinical({
+                        "projects": this.getConfig().selectedSamples
+                    }).then((data) => {
+                        return data[clinicalVar];
                     }))});
                 } else {
-                    this.setScale({key: ("cv_" + clinicalVar), scale: new CategoricalScale("cv_" + clinicalVar, clinicalVar, API.fetchScaleClinicalTrack({
-                        "projects": this.getConfig().selectedSamples,
-                        "clinical_variable": clinicalVar
+                    this.setScale({key: clinicalVar, scale: new CategoricalScale(clinicalVar, clinicalVar, API.fetchScaleClinical({
+                        "projects": this.getConfig().selectedSamples
+                    }).then((data) => {
+                        return data[clinicalVar];
                     }))});
                 }
                 
-                this.setData({key: ("cv_" + clinicalVar), data: new DataContainer("cv_" + clinicalVar, clinicalVar, API.fetchClinicalTrack({
-                    "projects": this.getConfig().selectedSamples,
-                    "clinical_variable": clinicalVar
-                }))});
+                
             }
 
             /* SURVIVAL DATA */

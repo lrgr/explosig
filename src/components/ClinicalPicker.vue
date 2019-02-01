@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 import API from '../api.js';
 import VSpinner from './VSpinner.vue';
 
@@ -40,7 +41,9 @@ export default {
   mounted: function() {
         var vm = this;
         API.fetchClinicalVariableList().then(function(listing) {
-            vm.allClinicalVariables = listing;
+            vm.allClinicalVariables = listing.map(el => el['Clinical Column']);
+            const continuousVars = listing.filter(el => el['Scale Type'] === 'continuous').map(el => el['Clinical Column']);
+            vm.setContinuousClinicalVariables(continuousVars);
             vm.selectedClinicalVariables = vm.allClinicalVariables.slice()
             vm.loading = false;
         });
@@ -53,6 +56,9 @@ export default {
             this.selectedClinicalVariables = this.allClinicalVariables.slice();
         }
     },
+    ...mapMutations([
+      'setContinuousClinicalVariables'
+    ])
   }
 }
 </script>

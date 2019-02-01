@@ -40,8 +40,6 @@ import API from './../api.js';
 
 import VSpinner from './VSpinner.vue';
 
-import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
-
 export default {
     name: 'SharingButtons',
     components: {

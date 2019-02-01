@@ -37,9 +37,9 @@
                 >
                     <TrackPlot 
                         slot="plot"
-                        :data="('cv_' + clinicalVar)"
+                        data="clinical_data"
                         x="sample_id"
-                        :c="('cv_' + clinicalVar)"
+                        :c="clinicalVar"
                         :getData="getData"
                         :getScale="getScale"
                         :clickHandler="sampleClickHandler"

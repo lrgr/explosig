@@ -4,7 +4,8 @@ const state = {
     windowHeight: 0,
     isImporting: false,
     fromImport: false,
-    isLoading: false
+    isLoading: false,
+    continuousClinicalVariables: []
 }
 
 // getters
@@ -13,7 +14,8 @@ const getters = {
     windowHeight: state => state.windowHeight,
     isImporting: state => state.isImporting,
     fromImport: state => state.fromImport,
-    isLoading: state => state.isLoading
+    isLoading: state => state.isLoading,
+    continuousClinicalVariables: state => state.continuousClinicalVariables
 }
 
 // actions
@@ -38,6 +40,9 @@ const mutations = {
     setIsLoading (state, isLoading) {
         state.isLoading = isLoading;
     },
+    setContinuousClinicalVariables (state, clinicalVars) {
+        state.continuousClinicalVariables = clinicalVars;
+    }
 }
 
 export default {

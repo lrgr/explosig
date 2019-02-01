@@ -13,11 +13,11 @@
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                             <StratificationOptions
                                 data="exposure_sbs"
-                                :variable="('cv_' + clinicalVar)"
+                                :variable="clinicalVar"
                                 optionScale="sig_SBS"
                                 o="sample_id"
                                 y="exposure_sbs"
-                                :s="('cv_' + clinicalVar)"
+                                s="clinical_data"
                                 :getScale="getScale"
                                 :getData="getData"
                                 :getStack="getStack"
@@ -47,11 +47,11 @@
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                             <StratificationOptions
                                 data="exposure_dbs"
-                                :variable="('cv_' + clinicalVar)"
+                                :variable="clinicalVar"
                                 optionScale="sig_DBS"
                                 o="sample_id"
                                 y="exposure_dbs"
-                                :s="('cv_' + clinicalVar)"
+                                s="clinical_data"
                                 :getScale="getScale"
                                 :getData="getData"
                                 :getStack="getStack"
@@ -81,11 +81,11 @@
                         <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
                             <StratificationOptions
                                 data="exposure_indel"
-                                :variable="('cv_' + clinicalVar)"
+                                :variable="clinicalVar"
                                 optionScale="sig_INDEL"
                                 o="sample_id"
                                 y="exposure_indel"
-                                :s="('cv_' + clinicalVar)"
+                                s="clinical_data"
                                 :getScale="getScale"
                                 :getData="getData"
                                 :getStack="getStack"

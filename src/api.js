@@ -105,8 +105,8 @@ export default class API {
         );
     }
 
-    static fetchClinicalTrack(dataOptions) {
-        let url = API.api_base + "plot-clinical-track";
+    static fetchPlotClinical(dataOptions) {
+        let url = API.api_base + "plot-clinical";
 
         return API.request(
                 d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
@@ -115,8 +115,8 @@ export default class API {
             );
     }
 
-    static fetchScaleClinicalTrack(dataOptions) {
-        let url = API.api_base + "scale-clinical-track";
+    static fetchScaleClinical(dataOptions) {
+        let url = API.api_base + "scale-clinical";
 
         return API.request(
                 d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),

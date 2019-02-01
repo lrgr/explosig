@@ -103,7 +103,6 @@ import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
 
-import { CONTINUOUS_CLINICAL_VARS } from './../constants.js';
 import { IMUSE_COLUMNS } from '../vdp/Sizes';
 
 export default {
@@ -125,6 +124,7 @@ export default {
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
+            'continuousClinicalVariables',
             'getConfig',
             'getStack',
             'getData',
@@ -135,7 +135,7 @@ export default {
     },
     methods: {
         isContinuousClinicalVariable(clinicalVar) {
-            return CONTINUOUS_CLINICAL_VARS.includes(clinicalVar.substring(3));
+            return this.continuousClinicalVariables.includes(clinicalVar);
         }
     }
 }

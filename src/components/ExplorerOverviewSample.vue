@@ -209,9 +209,9 @@
                 >
                     <RectPlot 
                         slot="plot"
-                        :data="('cv_' + clinicalVar)"
+                        data="clinical_data"
                         z="sample_id"
-                        :c="('cv_' + clinicalVar)"
+                        :c="clinicalVar"
                         :o="sampleId"
                         :getData="getData"
                         :getScale="getScale"
@@ -222,7 +222,7 @@
             <div class="clinical-axis-wrapper" :style="{'height': (25*numClinicalVariables) + 'px', 'left': 0, 'top': 0}">
                 <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
                     <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar" class="clinical-value">
-                        {{ clinical[('cv_' + clinicalVar)] }}
+                        {{ clinical[clinicalVar] }}
                     </div>
                 </div>
             </div>
@@ -583,8 +583,8 @@ export default {
             }
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
-                const clinicalValue = this.getData(("cv_" + clinicalVar)).dataCopy.find(el => el["sample_id"] === this.sampleId)[("cv_" + clinicalVar)];
-                this.clinical[("cv_" + clinicalVar)] = this.getScale(("cv_" + clinicalVar)).toHuman(clinicalValue);
+                const clinicalValue = this.getData("clinical_Data").dataCopy.find(el => el["sample_id"] === this.sampleId)[clinicalVar];
+                this.clinical[clinicalVar] = this.getScale(clinicalVar).toHuman(clinicalValue);
             }
         },
         initScalesAndData() {

@@ -117,10 +117,10 @@
                         <h4>Clinical Data</h4>
                         <SortOptions v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar"
                             variable="sample_id" 
-                            :data="('cv_' + clinicalVar)" 
+                            data="clinical_data" 
                             :optionName="clinicalVar"
-                            :optionVariable="('cv_' + clinicalVar)"
-                            :comparatorScale="('cv_' + clinicalVar)"
+                            :optionVariable="clinicalVar"
+                            :comparatorScale="clinicalVar"
                             :getScale="getScale" 
                             :getData="getData"
                             :getStack="getStack"
