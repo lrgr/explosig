@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <NavBar/>
-    <Intro v-if="showIntro" :replayImport="replayImport" :resumeImport="resumeImport" :importSlug="importSlug" />
+    <Intro v-if="showIntro" :restartImport="restartImport" :resumeImport="resumeImport" :importSlug="importSlug" />
     <Explorer v-if="!showIntro" :key="explorerKey" />
   </div>
 </template>
@@ -121,7 +121,7 @@ export default {
         });
       }
     },
-    replayImport() {
+    restartImport() {
       if(this.importedState !== null) {
         this.getConfig().import(this.importedState.config);
         this.$nextTick(() => {

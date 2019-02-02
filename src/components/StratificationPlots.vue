@@ -103,7 +103,7 @@ import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
 
-import { IMUSE_COLUMNS } from '../vdp/Sizes';
+import { EXPLORER_COLUMNS } from '../vdp/Sizes';
 
 export default {
     name: 'StratificationPlots',
@@ -113,7 +113,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW] - 25;
+            return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.OVERVIEW] - 25;
         },
         showStratified() {
             return (this.getStratification().choices.length > 0);

@@ -1,5 +1,5 @@
 .DS_Store
 dist
 node_modules
-imuse-vue-deployment.yaml
-imuse-vue-service.yaml
+*-vue-deployment.yaml
+*-vue-service.yaml

@@ -54,7 +54,7 @@
 import { mapGetters } from 'vuex';
 import PlotInfo from './PlotInfo.vue';
 
-import { IMUSE_COLUMNS } from './../vdp/Sizes.js';
+import { EXPLORER_COLUMNS } from './../vdp/Sizes.js';
 
 export default {
     name: 'ClinicalTracks',
@@ -68,7 +68,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.MAIN] - 25;
+            return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         numClinicalVariables() {
             return (this.getConfig().selectedClinicalVariables.length);
