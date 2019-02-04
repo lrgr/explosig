@@ -574,7 +574,7 @@ import VisibilityButtons from './VisibilityButtons.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
 
 import { PLOT_GROUPS } from './../vdp/Visibility.js';
-import { IMUSE_COLUMNS } from '../vdp/Sizes.js';
+import { EXPLORER_COLUMNS } from '../vdp/Sizes.js';
 
 export default {
     name: 'ExplorerOverview',
@@ -604,7 +604,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW] - 25;
+            return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.OVERVIEW] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);

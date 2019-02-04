@@ -10,11 +10,11 @@
                         <span class="cell">Publication</span>
                         <span class="cell"></span>
                     </div>
-                    <div v-for="item of listing" :key="item['iMuSE Export Code']" class="row tbody">
+                    <div v-for="item of listing" :key="item['Export Code']" class="row tbody">
                         <span class="cell">{{ item['Description'] }}</span>
                         <span class="cell">{{ item['Name'] }}</span>
                         <span class="cell publication">{{ item['Publication'] }}</span>
-                        <span class="cell"><a class="go" :href="('/#export-' + item['iMuSE Export Code'])">Go</a></span>
+                        <span class="cell"><a class="go" :href="('/#export-' + item['Export Code'])">Go</a></span>
                     </div>
                 </div>
             </div>

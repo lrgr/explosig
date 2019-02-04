@@ -94,7 +94,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import { IMUSE_COLUMNS } from './../vdp/Sizes.js';
+import { EXPLORER_COLUMNS } from './../vdp/Sizes.js';
 
 import SignatureModal from './SignatureModal.vue';
 
@@ -111,7 +111,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.LEGEND] - 25;
+            return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.LEGEND] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);

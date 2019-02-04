@@ -3,7 +3,7 @@
         <!-- Meta -->
         <PlotInfo title="Samples">
             <p slot="info">
-                This axis (and most other axes in iMuSE) show an "overview" (zoomed-out) view to provide context and enable interaction. 
+                This axis (and most other axes) show an "overview" (zoomed-out) view to provide context and enable interaction. 
                 Here we also display a zoomed-out version of the Mutation Count plot behind the zoomed-out Sample axis for additional context.
                 Samples can be filtered by panning or dragging the window along the zoomed-out view.
                 <br><br>
@@ -635,7 +635,7 @@ import ResizablePlotContainer from './ResizablePlotContainer.vue';
 
 import { PLOT_GROUPS } from './../vdp/Visibility.js';
 import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples.js';
-import { IMUSE_COLUMNS } from './../vdp/Sizes.js';
+import { EXPLORER_COLUMNS } from './../vdp/Sizes.js';
 
 
 export default {
@@ -663,7 +663,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.MAIN] - 25;
+            return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);

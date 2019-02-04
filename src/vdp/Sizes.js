@@ -8,7 +8,7 @@ export const EVENT_SUBTYPE_RESET_COLUMNS = "resetColumns";
 export const EVENT_SUBTYPE_HEIGHTS = 104;
 export const EVENT_SUBTYPE_RESET_HEIGHTS = "resetHeights";
 
-export const IMUSE_COLUMNS = Object.freeze({
+export const EXPLORER_COLUMNS = Object.freeze({
     'MAIN': 1,
     'OVERVIEW': 2,
     'LEGEND': 3
@@ -22,9 +22,9 @@ export default class Sizes {
     constructor() {
         this._dispatch = d3_dispatch(DISPATCH_EVENT_UPDATE);
         this._columns = {
-            [IMUSE_COLUMNS.MAIN]: 0.5,
-            [IMUSE_COLUMNS.OVERVIEW]: 0.3,
-            [IMUSE_COLUMNS.LEGEND]: 0.2
+            [EXPLORER_COLUMNS.MAIN]: 0.5,
+            [EXPLORER_COLUMNS.OVERVIEW]: 0.3,
+            [EXPLORER_COLUMNS.LEGEND]: 0.2
         };
         this._plotHeights = {};
     }
@@ -52,9 +52,9 @@ export default class Sizes {
      */
     resetColumns() {
         this._columns = {
-            [IMUSE_COLUMNS.MAIN]: 0.5,
-            [IMUSE_COLUMNS.OVERVIEW]: 0.3,
-            [IMUSE_COLUMNS.LEGEND]: 0.2
+            [EXPLORER_COLUMNS.MAIN]: 0.5,
+            [EXPLORER_COLUMNS.OVERVIEW]: 0.3,
+            [EXPLORER_COLUMNS.LEGEND]: 0.2
         };
         this.emitUpdate();
     }

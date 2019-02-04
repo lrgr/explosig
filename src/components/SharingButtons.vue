@@ -9,9 +9,9 @@
                 <span class="modal-close" @click="closeSharingModal">Close</span>
                 <div class="sharing-options-wrapper" v-if="historyModalVisible">
                     <h3>Export URL</h3>
-                    <p>Share the current iMuSE state and history via the following URL:</p>
+                    <p>Share the current ExploSig state and history via the following URL:</p>
                     <div class="sharing-url" v-if="currSlug.length > 0">
-                        <pre>http://imuse.lrgr.io/#export-{{ currSlug }}</pre>
+                        <pre>http://explosig.lrgr.io/#export-{{ currSlug }}</pre>
                     </div>
                     <VSpinner v-if="isExporting" class="spinner" />
                 </div>

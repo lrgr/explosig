@@ -29,3 +29,17 @@ export const getHashCode = function(s, obj) {
         h = (h << 5) - h + s.charCodeAt(i++) | 0;
     return h.toString();
 };
+
+export const getRetinaRatio = function(c) {
+    let devicePixelRatio = window.devicePixelRatio || 1;
+    let backingStoreRatio = [
+        c.webkitBackingStorePixelRatio,
+        c.mozBackingStorePixelRatio,
+        c.msBackingStorePixelRatio,
+        c.oBackingStorePixelRatio,
+        c.backingStorePixelRatio,
+        1
+    ].reduce(function(a, b) { return a || b });
+
+    return devicePixelRatio / backingStoreRatio;
+}

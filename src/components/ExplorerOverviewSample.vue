@@ -547,7 +547,7 @@ import API from './../api.js';
 
 
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
-import { IMUSE_COLUMNS } from '../vdp/Sizes';
+import { EXPLORER_COLUMNS } from '../vdp/Sizes';
 
 export default {
     name: 'ExplorerOverviewSample',
@@ -888,7 +888,7 @@ export default {
     },
     computed: {
         colWidth() {
-            return this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW] - 25;
+            return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.OVERVIEW] - 25;
         },
         showSbs() {
             return (this.getConfig().selectedSignaturesSbs.length > 0);

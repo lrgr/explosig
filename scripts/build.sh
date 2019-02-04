@@ -3,4 +3,4 @@ cd "$(dirname "$0")"
 cd "../"
 
 yarn build
-docker build -t lrgr/imuse .
+docker build -t lrgr/explosig .

@@ -14,16 +14,17 @@
                 <span id="text2" class="text"><span class="bubble">2</span>Select signatures</span>
 
                 <IntroFeatured class="intro-featured" />
+
             </div>
             <div class="intro-importing" v-if="fromImport">
-                <h3 v-if="isImporting">Loading configuration...</h3>
+                <h3 v-if="isImporting">Loading...</h3>
                 <div v-if="!isImporting">
-                    <h3>Loaded configuration</h3>
+                    <h3>ExploSig Analysis <pre>{{ importSlug }}</pre></h3>
                     <p>
-                        When loading from a previous iMuSE state,
+                        When loading a previous ExploSig analysis,
                         <ul>
-                            <li><button @click="resumeImport">resume</button> to start from the final action, or</li>
-                            <li><button @click="replayImport">replay</button> to step through the previous actions.</li>
+                            <li><button @click="restartImport">restart</button> to step forward through each action, or</li>
+                            <li><button @click="resumeImport">resume</button> to begin where the analysis left off.</li>
                         </ul>
                     </p>
                 </div>
@@ -40,7 +41,7 @@ import IntroFeatured from './IntroFeatured.vue';
 
 export default {
   name: 'Intro',
-  props: ['replayImport', 'resumeImport'],
+  props: ['restartImport', 'resumeImport', 'importSlug'],
   components: {
       IntroText,
       IntroFeatured

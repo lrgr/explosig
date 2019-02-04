@@ -6,16 +6,16 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { IMUSE_COLUMNS } from '../vdp/Sizes';
+import { EXPLORER_COLUMNS } from '../vdp/Sizes';
 
 export default {
   name: 'Divider',
   props: ['side'],
   computed: {
       offsetLeft() {
-          let result = this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.MAIN];
+          let result = this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN];
           if(this.side === "right") {
-              result += this.windowWidth * this.getSizes().columns[IMUSE_COLUMNS.OVERVIEW];
+              result += this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.OVERVIEW];
           }
           return result + this.addOffsetLeft;
       },
@@ -35,16 +35,16 @@ export default {
           let clientX = e.screenX;
           if(this.side === "left") {
             let newProportionMain = clientX / this.windowWidth;
-            columns[IMUSE_COLUMNS.MAIN] = Math.min(columns[IMUSE_COLUMNS.MAIN] + columns[IMUSE_COLUMNS.OVERVIEW], Math.max(0, newProportionMain));
+            columns[EXPLORER_COLUMNS.MAIN] = Math.min(columns[EXPLORER_COLUMNS.MAIN] + columns[EXPLORER_COLUMNS.OVERVIEW], Math.max(0, newProportionMain));
 
-            let newProportionOverview = 1.0 - columns[IMUSE_COLUMNS.LEGEND] - newProportionMain;
-            columns[IMUSE_COLUMNS.OVERVIEW] = newProportionOverview;
+            let newProportionOverview = 1.0 - columns[EXPLORER_COLUMNS.LEGEND] - newProportionMain;
+            columns[EXPLORER_COLUMNS.OVERVIEW] = newProportionOverview;
           } else {
             let newProportionLegend = (this.windowWidth - clientX) / this.windowWidth;
-            columns[IMUSE_COLUMNS.LEGEND] = Math.min(columns[IMUSE_COLUMNS.LEGEND] + columns[IMUSE_COLUMNS.OVERVIEW], Math.max(0, newProportionLegend));
+            columns[EXPLORER_COLUMNS.LEGEND] = Math.min(columns[EXPLORER_COLUMNS.LEGEND] + columns[EXPLORER_COLUMNS.OVERVIEW], Math.max(0, newProportionLegend));
 
-            let newProportionOverview = 1.0 - columns[IMUSE_COLUMNS.MAIN] - newProportionLegend;
-            columns[IMUSE_COLUMNS.OVERVIEW] = newProportionOverview;
+            let newProportionOverview = 1.0 - columns[EXPLORER_COLUMNS.MAIN] - newProportionLegend;
+            columns[EXPLORER_COLUMNS.OVERVIEW] = newProportionOverview;
           }
           this.getSizes().updateColumns(columns);
       }
