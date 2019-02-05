@@ -2,8 +2,7 @@
     <div>
         <div class="navbar">
             <span class="title">
-                <a href="/" @mouseenter="startAnimation" @mouseleave="stopAnimation">ExploSig</a>
-                <ExploSig :showAnimation="showAnimation" />
+                <a href="/">ExploSig</a>
             </span>
             <VSpinner v-if="isLoading" color="white" margin="0 0 0 20px" display="inline-block"/>
             <div class="right-button-group">
@@ -32,7 +31,6 @@ import { mapGetters } from 'vuex';
 import DataPicker from './DataPicker.vue';
 import VButton from './VButton.vue';
 import VSpinner from './VSpinner.vue';
-import ExploSig from './ExploSig.vue';
 
 
 export default {
@@ -40,15 +38,13 @@ export default {
   data: function() { 
         return {
             modalVisible: false,
-            selectedDataPicker: null,
-            showAnimation: false
+            selectedDataPicker: null
         };
   },
   components: {
       DataPicker,
       VButton,
-      VSpinner,
-      ExploSig
+      VSpinner
   },
   computed: {
       ...mapGetters([
@@ -62,12 +58,6 @@ export default {
       },
       closeModal: function() {
           this.modalVisible = false;
-      },
-      startAnimation() {
-          this.showAnimation = true;
-      },
-      stopAnimation() {
-          this.showAnimation = false;
       }
   }
 }

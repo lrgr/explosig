@@ -300,8 +300,8 @@ export default {
     display: inline;
     height: 49px;
     position: relative;
-    top: -0.5rem;
     canvas {
+        top: -0.5rem;
         position: absolute;
     }
 }
