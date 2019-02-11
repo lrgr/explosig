@@ -200,21 +200,24 @@ export default {
             const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
+                "mut_type": "SBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setScale({key: "exposure_sbs", scale: exposureSbsScale});
 
             const exposureSumSbsScale = new ContinuousScale("exposure_sum_sbs", "SBS Exposure", API.fetchScaleExposuresSum({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
+                "mut_type": "SBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setScale({key: "exposure_sum_sbs", scale: exposureSumSbsScale});
 
             const exposureSbsNormalizedScale = new ContinuousScale("exposure_sbs_normalized", "SBS Normalized Exposure", API.fetchScaleExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
+                "mut_type": "SBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }), "Greys");
             this.setScale({key: "exposure_sbs_normalized", scale: exposureSbsNormalizedScale});
 
@@ -224,14 +227,16 @@ export default {
             const exposureSbsData = new DataContainer("exposure_sbs", "SBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
+                "mut_type": "SBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposure_sbs", data: exposureSbsData});
 
             const exposureSbsNormalizedData = new DataContainer("exposure_sbs_normalized", "SBS Normalized Exposure", API.fetchPlotExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
+                "mut_type": "SBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposure_sbs_normalized", data: exposureSbsNormalizedData});
 
@@ -241,7 +246,8 @@ export default {
             const exposureSbsCosineSimilarityData = new DataContainer("cosine_similarity_SBS", "SBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
-                "mut_type": "SBS"
+                "mut_type": "SBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "cosine_similarity_SBS", data: exposureSbsCosineSimilarityData});
 
@@ -249,21 +255,24 @@ export default {
             const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
+                "mut_type": "DBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setScale({key: "exposure_dbs", scale: exposureDbsScale});
 
             const exposureSumDbsScale = new ContinuousScale("exposure_sum_dbs", "DBS Exposure", API.fetchScaleExposuresSum({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
+                "mut_type": "DBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setScale({key: "exposure_sum_dbs", scale: exposureSumDbsScale});
 
             const exposureDbsNormalizedScale = new ContinuousScale("exposure_dbs_normalized", "DBS Normalized Exposure", API.fetchScaleExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
+                "mut_type": "DBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }), "Greys");
             this.setScale({key: "exposure_dbs_normalized", scale: exposureDbsNormalizedScale});
 
@@ -273,14 +282,16 @@ export default {
             const exposureDbsData = new DataContainer("exposure_dbs", "DBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
+                "mut_type": "DBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposure_dbs", data: exposureDbsData});
 
             const exposureDbsNormalizedData = new DataContainer("exposure_dbs_normalized", "DBS Normalized Exposure", API.fetchPlotExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
+                "mut_type": "DBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposure_dbs_normalized", data: exposureDbsNormalizedData});
 
@@ -290,7 +301,8 @@ export default {
             const exposureDbsCosineSimilarityData = new DataContainer("cosine_similarity_DBS", "DBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
-                "mut_type": "DBS"
+                "mut_type": "DBS",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "cosine_similarity_DBS", data: exposureDbsCosineSimilarityData});
 
@@ -298,21 +310,24 @@ export default {
             const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
+                "mut_type": "INDEL",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setScale({key: "exposure_indel", scale: exposureIndelScale});
 
             const exposureSumIndelScale = new ContinuousScale("exposure_sum_indel", "INDEL Exposure", API.fetchScaleExposuresSum({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
+                "mut_type": "INDEL",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setScale({key: "exposure_sum_indel", scale: exposureSumIndelScale});
 
             const exposureIndelNormalizedScale = new ContinuousScale("exposure_indel_normalized", "INDEL Normalized Exposure", API.fetchScaleExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
+                "mut_type": "INDEL",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }), "Greys");
             this.setScale({key: "exposure_indel_normalized", scale: exposureIndelNormalizedScale});
 
@@ -322,14 +337,16 @@ export default {
             const exposureIndelData = new DataContainer("exposure_indel", "INDEL Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
+                "mut_type": "INDEL",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposure_indel", data: exposureIndelData});
 
             const exposureIndelNormalizedData = new DataContainer("exposure_indel_normalized", "INDEL Normalized Exposure", API.fetchPlotExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
+                "mut_type": "INDEL",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
 
@@ -339,7 +356,8 @@ export default {
             const exposureIndelCosineSimilarityData = new DataContainer("cosine_similarity_INDEL", "INDEL Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
-                "mut_type": "INDEL"
+                "mut_type": "INDEL",
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "cosine_similarity_INDEL", data: exposureIndelCosineSimilarityData});
 
@@ -360,7 +378,8 @@ export default {
                     "SBS": this.getConfig().selectedSignaturesSbs,
                     "DBS": this.getConfig().selectedSignaturesDbs,
                     "INDEL": this.getConfig().selectedSignaturesIndel
-                }
+                },
+                "tricounts_method": this.getConfig().selectedTricountsMethod
             }));
             this.setData({key: "exposures_clustering", data: exposuresClusteringData});
 
@@ -454,7 +473,8 @@ export default {
             const dominantSigSbsData = new DataContainer("dominant_sig_sbs", "SBS Dominant Signature", API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesSbs,
-                    "mut_type": "SBS"
+                    "mut_type": "SBS",
+                    "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then(
                     makeDominantSigFunction(this.getConfig().selectedSignaturesSbs, "sig_SBS")
                 )
@@ -467,7 +487,8 @@ export default {
             const dominantSigDbsData = new DataContainer("dominant_sig_dbs", "DBS Dominant Signature", API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesDbs,
-                    "mut_type": "DBS"
+                    "mut_type": "DBS",
+                    "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then(
                     makeDominantSigFunction(this.getConfig().selectedSignaturesDbs, "sig_DBS")
                 )
@@ -480,7 +501,8 @@ export default {
             const dominantSigIndelData = new DataContainer("dominant_sig_indel", "INDEL Dominant Signature", API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesIndel,
-                    "mut_type": "INDEL"
+                    "mut_type": "INDEL",
+                    "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then(
                     makeDominantSigFunction(this.getConfig().selectedSignaturesIndel, "sig_INDEL")
                 )

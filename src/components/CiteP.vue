@@ -8,7 +8,7 @@ import { mapGetters } from 'vuex';
 export default {
   name: 'CiteP',
   props: ['code'],
-  data: function() {
+  data() {
       return {
           nums: []
       };
@@ -18,7 +18,7 @@ export default {
           'citationNumber'
       ])
   },
-  mounted: function() {
+  mounted() {
       let codes = this.code.split(",");
       for(let code of codes) {
         this.$store.commit('addCitation', code);

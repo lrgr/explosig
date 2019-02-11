@@ -3,8 +3,16 @@ import { getHashCode } from './helpers';
 
 const globalPlotData = {};
 
+const withToken = (body, token) => {
+    return JSON.stringify({
+        token: token,
+        ...body
+    });
+}
+
 export default class API {
     static api_base = process.env.VUE_APP_API_BASE;
+    static token = '';
 
     // Cache helpers
     static checkStored(hashCode) {
@@ -13,8 +21,8 @@ export default class API {
         }
     }
 
-    static request(pr, url, dataOptions) {
-        let hashCode = getHashCode(url, dataOptions);
+    static request(pr, url, body) {
+        let hashCode = getHashCode(url, body);
         var stored = API.checkStored(hashCode);
         if(stored == null) {
             // Use the promise that was passed in
@@ -28,11 +36,35 @@ export default class API {
         return Promise.all(Object.values(globalPlotData))
     }
 
+    /**
+     * Check if authenticated.
+     * @param {string} token
+     * @throws Will throw 403 if not authenticated.
+     * @returns {Promise} The response.
+     */
+    static checkToken(token) {
+        const url = API.api_base + "check-token";
+
+        return d3.json(url, { method: "POST", body: withToken(undefined, token) });
+    }
+
+    /**
+     * Attempt to log in.
+     * @param {string} password
+     * @throws Will throw 403 if not authenticated.
+     * @returns {Promise} The response.
+     */
+    static login(password) {
+        const url = API.api_base + "login";
+        const body = { password: password };
+        return d3.json(url, { method: "POST", body: JSON.stringify(body) });
+    }
+
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
         
         return API.request(
-            d3.json(url, { method: "POST" }),
+            d3.json(url, { method: "POST", body: withToken(undefined, API.token) }),
             url,
             {}
         );
@@ -42,7 +74,7 @@ export default class API {
         let url = API.api_base + "featured-listing";
         
         return API.request(
-            d3.json(url, { method: "POST" }),
+            d3.json(url, { method: "POST", body: withToken(undefined, API.token) }),
             url,
             {}
         );
@@ -57,7 +89,7 @@ export default class API {
         };
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(body) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
             body
         );
@@ -65,13 +97,13 @@ export default class API {
 
     // Fetches with cacheing
 
-    static fetchGeneEventTrack(dataOptions) {
+    static fetchGeneEventTrack(body) {
         let url = API.api_base + "plot-gene-event-track";
 
         return API.request(
-                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+                d3.json(url, { method: "POST", body: withToken(body, API.token) }),
                 url,
-                dataOptions
+                body
             );
     }
 
@@ -79,7 +111,7 @@ export default class API {
         let url = API.api_base + "clinical-variable-list";
         
         return API.request(
-            d3.json(url, { method: "POST" }),
+            d3.json(url, { method: "POST", body: withToken(undefined, API.token) }),
             url,
             {}
         );
@@ -89,7 +121,7 @@ export default class API {
         let url = API.api_base + "pathways-listing";
         
         return API.request(
-            d3.json(url, { method: "POST" }),
+            d3.json(url, { method: "POST", body: withToken(undefined, API.token) }),
             url,
             {}
         );
@@ -99,271 +131,272 @@ export default class API {
         let url = API.api_base + "scale-gene-alterations";
         
         return API.request(
-            d3.json(url, { method: "POST" }),
+            d3.json(url, { method: "POST", body: withToken(undefined, API.token) }),
             url,
             {}
         );
     }
 
-    static fetchPlotClinical(dataOptions) {
+    static fetchPlotClinical(body) {
         let url = API.api_base + "plot-clinical";
 
         return API.request(
-                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+                d3.json(url, { method: "POST", body: withToken(body, API.token) }),
                 url,
-                dataOptions
+                body
             );
     }
 
-    static fetchScaleClinical(dataOptions) {
+    static fetchScaleClinical(body) {
         let url = API.api_base + "scale-clinical";
 
         return API.request(
-                d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+                d3.json(url, { method: "POST", body: withToken(body, API.token) }),
                 url,
-                dataOptions
+                body
             );
     }
 
     static getSharingState(slug) {
         let url = API.api_base + "sharing-get";
-
-        return d3.json(url, { method: "POST", body: JSON.stringify({"slug": slug}) });
+        const body = { "slug": slug };
+        return d3.json(url, { method: "POST", body: withToken(body, API.token) });
     }
 
     static setSharingState(state) {
         let url = API.api_base + "sharing-set";
 
-        return d3.json(url, { method: "POST", body: JSON.stringify({"state": JSON.stringify(state) }) });
+        const body = { "state": JSON.stringify(state) };
+        return d3.json(url, { method: "POST", body: withToken(body, API.token) });
     }
 
-    static fetchPlotSamplesMeta(dataOptions) {
+    static fetchPlotSamplesMeta(body) {
         let url = API.api_base + "plot-samples-meta";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
-    static fetchPlotCounts(dataOptions) {
+    static fetchPlotCounts(body) {
         let url = API.api_base + "plot-counts";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotExposures(dataOptions) {
+    static fetchPlotExposures(body) {
         let url = API.api_base + "plot-exposures";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotExposuresNormalized(dataOptions) {
+    static fetchPlotExposuresNormalized(body) {
         let url = API.api_base + "plot-exposures-normalized";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotCountsPerCategorySingleSample(dataOptions) {
+    static fetchPlotCountsPerCategorySingleSample(body) {
         let url = API.api_base + "plot-counts-per-category-single-sample";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotReconstructionSingleSample(dataOptions) {
+    static fetchPlotReconstructionSingleSample(body) {
         let url = API.api_base + "plot-reconstruction-single-sample";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleReconstructionSingleSample(dataOptions) {
+    static fetchScaleReconstructionSingleSample(body) {
         let url = API.api_base + "scale-reconstruction-single-sample";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotReconstructionErrorSingleSample(dataOptions) {
+    static fetchPlotReconstructionErrorSingleSample(body) {
         let url = API.api_base + "plot-reconstruction-error-single-sample";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleReconstructionErrorSingleSample(dataOptions) {
+    static fetchScaleReconstructionErrorSingleSample(body) {
         let url = API.api_base + "scale-reconstruction-error-single-sample";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotReconstructionCosineSimilaritySingleSample(dataOptions) {
+    static fetchPlotReconstructionCosineSimilaritySingleSample(body) {
         let url = API.api_base + "plot-reconstruction-cosine-similarity-single-sample";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotReconstructionCosineSimilarity(dataOptions) {
+    static fetchPlotReconstructionCosineSimilarity(body) {
         let url = API.api_base + "plot-reconstruction-cosine-similarity";
 
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotSignature(dataOptions) {
+    static fetchPlotSignature(body) {
         let url = API.api_base + "plot-signature";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleSamples(dataOptions) {
+    static fetchScaleSamples(body) {
         let url = API.api_base + "scale-samples";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleCounts(dataOptions) {
+    static fetchScaleCounts(body) {
         let url = API.api_base + "scale-counts";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleCountsSum(dataOptions) {
+    static fetchScaleCountsSum(body) {
         let url = API.api_base + "scale-counts-sum";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleExposures(dataOptions) {
+    static fetchScaleExposures(body) {
         let url = API.api_base + "scale-exposures";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleExposuresSum(dataOptions) {
+    static fetchScaleExposuresSum(body) {
         let url = API.api_base + "scale-exposures-sum";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleExposuresNormalized(dataOptions) {
+    static fetchScaleExposuresNormalized(body) {
         let url = API.api_base + "scale-exposures-normalized";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleContexts(dataOptions) {
+    static fetchScaleContexts(body) {
         let url = API.api_base + "scale-contexts";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
 
-    static fetchPlotExposuresSingleSample(dataOptions) {
+    static fetchPlotExposuresSingleSample(body) {
         let url = API.api_base + "plot-exposures-single-sample";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchScaleExposuresSingleSample(dataOptions) {
+    static fetchScaleExposuresSingleSample(body) {
         let url = API.api_base + "scale-exposures-single-sample";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
     
-    static fetchClustering(dataOptions) {
+    static fetchClustering(body) {
         let url = API.api_base + "clustering";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
 
-    static fetchPlotSurvival(dataOptions) {
+    static fetchPlotSurvival(body) {
         let url = API.api_base + "plot-survival";
         
         return API.request(
-            d3.json(url, { method: "POST", body: JSON.stringify(dataOptions) }),
+            d3.json(url, { method: "POST", body: withToken(body, API.token) }),
             url,
-            dataOptions
+            body
         );
     }
     

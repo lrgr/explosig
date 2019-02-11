@@ -8,6 +8,7 @@
                 @choose-indel="updateSignaturesIndel"
                 @choose-sig-group="updateSignaturesGroup"
                 @choose-auto-selected="updateSignaturesAutoSelected"
+                @choose-tricounts-method="updateTricountsMethod"
                 :selectedMapping="chosenSignaturesGroupMapping"
              />
             <SamplesPicker 
@@ -27,7 +28,7 @@
             />
         </div>
         <div class="actions-bar">
-            <span>
+            <span class="action-text">
                 {{ getSelectedText() }}
             </span>
             <VButton 
@@ -76,7 +77,6 @@ import SamplesPicker from './SamplesPicker.vue';
 import GenesPicker from './GenesPicker.vue';
 import ClinicalPicker from './ClinicalPicker.vue';
 
-
 import VButton from './VButton.vue';
 
 export default {
@@ -97,6 +97,7 @@ export default {
           chosenSignaturesGroup: "COSMIC",
           chosenSignaturesGroupMapping: null,
           chosenSignaturesAutoSelected: false,
+          chosenTricountsMethod: "None",
           chosenSamples: [],
           chosenSamplesNum: 0,
           chosenGenes: [],
@@ -172,6 +173,9 @@ export default {
     updateClinicalVariables(chosenClinicalVariables) {
         this.chosenClinicalVariables = chosenClinicalVariables;
     },
+    updateTricountsMethod(chosenTricountsMethod) {
+        this.chosenTricountsMethod = chosenTricountsMethod;
+    },
     emitUpdate() {
         // Update samples/signatures in config
         this.getConfig().updateConfig(
@@ -180,7 +184,8 @@ export default {
             this.chosenSignaturesDbs.slice(), 
             this.chosenSignaturesIndel.slice(), 
             this.chosenGenes.slice(), 
-            this.chosenClinicalVariables.slice()
+            this.chosenClinicalVariables.slice(),
+            this.chosenTricountsMethod
         );
         // Notify parent to close modal
         this.$emit('update');
@@ -211,6 +216,35 @@ export default {
         float: right;
         margin: 0rem 0rem 0rem 1rem;
     }
+}
+
+@media (max-width: 1015px) {
+  .actions-bar {
+    .action-text {
+        font-size: 14px;
+    }
+    .btn {
+        margin: 0rem 0rem 0rem 0.3rem;
+        font-size: 11px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .actions-bar {
+    .action-text {
+        display: none;
+    }
+  }
+}
+
+@media (max-width: 490px) {
+  .actions-bar {
+    .btn {
+        margin: 0rem 0rem 0rem 0.1rem;
+        font-size: 11px;
+    }
+  }
 }
 
 </style>

@@ -8,6 +8,13 @@
             <option v-for="pctg in cancerTypeMapGroups" :key="pctg" :value="pctg" :selected="pctg === selectedCancerTypeMapGroup ? 'selected' : ''">{{ pctg }}</option>
         </select>
       </span>
+      <span id="tricounts-source">
+        <label>Trinucleotide normalization method: </label>
+        <select v-model="selectedTricountsMethod">
+            <option value="None" :selected="'None' === selectedTricountsMethod ? 'selected' : ''">None</option>
+            <option v-for="tcm in tricountsMethods" :key="tcm" :value="tcm" :selected="tcm === selectedTricountsMethod ? 'selected' : ''">{{ tcm }}</option>
+        </select>
+      </span>
       <SignatureTooltip 
         :hoveredSignature="hoveredSignature" 
         :hoveredViewportX="hoveredViewportX"
@@ -43,6 +50,8 @@ export default {
           autoSelected: false,
           autoSelectedBy: null,
           cancerTypeMapGroups: [],
+          tricountsMethods: [],
+          selectedTricountsMethod: "None",
           loading: true,
           allSignaturesSbs: [],
           allSignaturesDbs: [],
@@ -73,6 +82,8 @@ export default {
 
             vm.cancerTypeMap = listing["cancer_type_map"];
             vm.cancerTypeMapGroups = d3_set(listing["signatures"].map(el => el["group"])).values();
+
+            vm.tricountsMethods = listing["tricounts_methods"];
             
             vm.loading = false;
 
@@ -90,7 +101,9 @@ export default {
         this.drawPlot();
         this.$emit('choose-sig-group', val);
         this.tryToAutoSelect(this.selectedMapping);
-        
+      },
+      selectedTricountsMethod(val) {
+          this.$emit('choose-tricounts-method', val)
       },
       selectedSignaturesSbs(val) {
           this.$emit('choose-sbs', val)
@@ -324,7 +337,7 @@ export default {
             .enter().append("rect")
                 .style("pointer-events", "none")
                 .attr("class", "signatureCell")
-                .attr("width", x.bandwidth() - 4)
+                .attr("width", Math.max(x.bandwidth() - 4, 1))
                 .attr("height", rowHeight - 4)
                 .attr("x", (d) => x(d["cancer_type"]) + 2)
                 .attr("y", (d) => y(d["signature"]) + 2)
@@ -436,24 +449,27 @@ export default {
 .signatures-title {
   margin-bottom: 5px;
 }
+#tricounts-source {
+  float: right;
+}
 #signaturePicker {
-            position: relative;
-            overflow-x: hidden;
-            overflow-y: hidden;
-            #signaturePickerCheckboxes {
-                position: absolute;
-                top: 125px;
-                width: 100px;
-                text-align: right;
-                .tooltip {
-                    label {
-                        font-size: 11px;
-                    }
-                    input[type=checkbox] {
-                        transform: scale(0.8);
-                    }
-                }
-            }
-        }
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  #signaturePickerCheckboxes {
+      position: absolute;
+      top: 125px;
+      width: 100px;
+      text-align: right;
+      .tooltip {
+          label {
+              font-size: 11px;
+          }
+          input[type=checkbox] {
+              transform: scale(0.8);
+          }
+      }
+  }
+}
 
 </style>
