@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="auth">
     <App v-if="authenticated" />
     <Login v-if="!loading && !authenticated" @login="checkToken" />
     <div v-if="loading" class="auth-loader">
@@ -57,6 +57,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#auth {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $color-darkgray;
+  margin: 0px;
+  overflow-x: hidden;
+}
+
 .auth-loader {
     display: inline-block;
     text-align: center;
