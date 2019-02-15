@@ -5,7 +5,8 @@ const state = {
     isImporting: false,
     fromImport: false,
     isLoading: false,
-    continuousClinicalVariables: []
+    continuousClinicalVariables: [],
+    isProtected: true
 }
 
 // getters
@@ -15,7 +16,8 @@ const getters = {
     isImporting: state => state.isImporting,
     fromImport: state => state.fromImport,
     isLoading: state => state.isLoading,
-    continuousClinicalVariables: state => state.continuousClinicalVariables
+    continuousClinicalVariables: state => state.continuousClinicalVariables,
+    isProtected: state => state.isProtected
 }
 
 // actions
@@ -42,6 +44,9 @@ const mutations = {
     },
     setContinuousClinicalVariables (state, clinicalVars) {
         state.continuousClinicalVariables = clinicalVars;
+    },
+    setIsProtected (state, isProtected) {
+        state.isProtected = isProtected;
     }
 }
 

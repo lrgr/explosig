@@ -60,6 +60,17 @@ export default class API {
         return d3.json(url, { method: "POST", body: JSON.stringify(body) });
     }
 
+    /**
+     * Make a log out request.
+     * @throws Will throw 403 if not authenticated.
+     * @returns {Promise} The response.
+     */
+    static logout() {
+        const url = API.api_base + "logout";
+
+        return d3.json(url, { method: "POST", body: withToken(undefined, API.token) });
+    }
+
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
         

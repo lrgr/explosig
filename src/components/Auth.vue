@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 import API from './../api.js';
 
 // child components
@@ -43,6 +44,14 @@ export default {
                 API.token = currToken;
                 this.loading = false;
                 this.authenticated = true;
+
+                if(currToken !== undefined && currToken !== null && currToken.length > 0) {
+                  // Set isProtected to know to show a log out button
+                  this.setIsProtected(true);
+                } else {
+                  // No need for log out button, so set to false
+                  this.setIsProtected(false);
+                }
             })
             .catch(() => {
                 this.loading = false;
@@ -51,7 +60,10 @@ export default {
     },
     getToken() {
       return window.localStorage.getItem('EXPLOSIG_API_TOKEN');
-    }
+    },
+    ...mapMutations([
+      'setIsProtected'
+    ])
   }
 }
 </script>

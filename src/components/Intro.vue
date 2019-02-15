@@ -1,5 +1,6 @@
 <template>
     <div class="intro-col-container">
+        <Logout class="logout" v-if="isProtected" />
         <div class="intro-col">
             <div class="intro-text">
                 <IntroText />
@@ -38,19 +39,22 @@ import { mapGetters } from 'vuex';
 
 import IntroText from './IntroText.vue';
 import IntroFeatured from './IntroFeatured.vue';
+import Logout from './Logout.vue';
 
 export default {
   name: 'Intro',
   props: ['restartImport', 'resumeImport', 'importSlug'],
   components: {
       IntroText,
-      IntroFeatured
+      IntroFeatured,
+      Logout
   },
   computed: {
       ...mapGetters([
           'bibliography',
           'isImporting',
-          'fromImport'
+          'fromImport',
+          'isProtected'
       ])
   }
 }
@@ -63,8 +67,15 @@ export default {
     display: flex;
     flex-direction: row;
     width: 100%;
+    position: relative;
     .intro-col {
         width: 50%;
+    }
+    .logout {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        z-index: 10;
     }
 }
 .intro-text {
