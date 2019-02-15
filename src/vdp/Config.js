@@ -83,7 +83,7 @@ export default class Config {
         this._signaturesIndel = [];
         this._genes = [];
         this._clinicalVariables = [];
-        this._tricountsMethod = null;
+        this._tricountsMethod = "None";
 
         this.emitUpdate();
     }
