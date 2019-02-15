@@ -11,14 +11,11 @@ import debounce from 'lodash/debounce';
 import { mapMutations, mapGetters } from 'vuex';
 
 import Config from './../vdp/Config.js';
-
 import API from './../api.js';
-
 
 // child components
 import NavBar from './NavBar.vue';
 import Intro from './Intro.vue';
-
 import Explorer from './Explorer.vue';
 
 export default {
@@ -42,7 +39,7 @@ export default {
     const config = new Config();
     config.onUpdate(vm.name, vm.rerender);
     vm.setConfig(config);
-   
+
 
     vm.checkHash();
     window.addEventListener('hashchange', vm.checkHash);
@@ -86,9 +83,8 @@ export default {
       }
     },
     rerender() {
-       // Force a re-render by updating the key prop
+      // Force a re-render by updating the key prop
       this.explorerKey++;
-      
     },
     clearImport() {
       this.setIsImporting(false);
@@ -101,7 +97,7 @@ export default {
       API.promiseAll().then(() => {
         if(stack.canGoForward()) {
           stack.goForward();
-          this.resumeImportAux();
+          setTimeout(this.resumeImportAux, 10); // give the browser a tiny chance to breathe
         } else {
           this.setIsLoading(false);
         }

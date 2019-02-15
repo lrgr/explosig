@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import Vue from 'vue';
 import store from './store';
-import App from './components/App.vue';
+import Auth from './components/Auth.vue';
 import {
   PlotContainer,
   SortOptions,
@@ -60,7 +60,7 @@ Vue.component(ContinuousLegend.name, ContinuousLegend);
 
 new Vue({
   store,
-  render: h => h(App)
+  render: h => h(Auth)
 }).$mount('#app')
 
 

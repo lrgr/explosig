@@ -2,7 +2,8 @@
     <div>
         <div class="navbar">
             <span class="title">
-                <a href="/">ExploSig</a>
+                <a href="/" @mouseenter="startAnimation" @mouseleave="stopAnimation">ExploSig</a>
+                <!--<ExploSig :showAnimation="showAnimation" />-->
             </span>
             <VSpinner v-if="isLoading" color="white" margin="0 0 0 20px" display="inline-block"/>
             <div class="right-button-group">
@@ -31,6 +32,7 @@ import { mapGetters } from 'vuex';
 import DataPicker from './DataPicker.vue';
 import VButton from './VButton.vue';
 import VSpinner from './VSpinner.vue';
+import ExploSig from './ExploSig.vue';
 
 
 export default {
@@ -38,13 +40,15 @@ export default {
   data: function() { 
         return {
             modalVisible: false,
-            selectedDataPicker: null
+            selectedDataPicker: null,
+            showAnimation: false
         };
   },
   components: {
       DataPicker,
       VButton,
-      VSpinner
+      VSpinner,
+      ExploSig
   },
   computed: {
       ...mapGetters([
@@ -58,16 +62,20 @@ export default {
       },
       closeModal: function() {
           this.modalVisible = false;
+      },
+      startAnimation() {
+          this.showAnimation = true;
+      },
+      stopAnimation() {
+          this.showAnimation = false;
       }
   }
 }
 </script>
 
 <style scoped lang="scss">
-
 @import './../style/variables.scss';
 @import './../style/modal.scss';
-
 
 .navbar {
     width: 100%;
@@ -107,5 +115,18 @@ span.btn {
     }
 }
 
+@media (max-width: 510px) {
+  .right-button-group .btn {
+      font-size: 14px;
+      margin: 0 0.2rem;
+  }
+}
+
+@media (max-width: 436px) {
+  .right-button-group .btn {
+      font-size: 12px;
+      margin: 0 0.1rem;
+  }
+}
 
 </style>

@@ -16,6 +16,7 @@ export default class Config {
         this._signaturesIndel = [];
         this._genes = [];
         this._clinicalVariables = [];
+        this._tricountsMethod = "None";
     }
 
     /**
@@ -32,13 +33,15 @@ export default class Config {
         )
     }
 
-    updateConfig(samples, signaturesSbs, signaturesDbs, signaturesIndel, genes, clinicalVariables) {
+    updateConfig(samples, signaturesSbs, signaturesDbs, signaturesIndel, genes, clinicalVariables, tricountsMethod) {
         this._samples = samples;
         this._signaturesSbs = signaturesSbs;
         this._signaturesDbs = signaturesDbs;
         this._signaturesIndel = signaturesIndel;
         this._genes = genes;
         this._clinicalVariables = clinicalVariables;
+        this._tricountsMethod = tricountsMethod || "None";
+        
         this.emitUpdate();
     }
     
@@ -66,6 +69,10 @@ export default class Config {
         return this._clinicalVariables;
     }
 
+    get selectedTricountsMethod() {
+        return this._tricountsMethod;
+    }
+
     /**
      * Reset the configuration.
      */
@@ -76,6 +83,7 @@ export default class Config {
         this._signaturesIndel = [];
         this._genes = [];
         this._clinicalVariables = [];
+        this._tricountsMethod = "None";
 
         this.emitUpdate();
     }
@@ -103,7 +111,8 @@ export default class Config {
             "signaturesDbs": this._signaturesDbs,
             "signaturesIndel": this._signaturesIndel,
             "genes": this._genes,
-            "clinicalVariables": this._clinicalVariables
+            "clinicalVariables": this._clinicalVariables,
+            "tricountsMethod": this._tricountsMethod
         };
     }
 
@@ -121,6 +130,7 @@ export default class Config {
         this._signaturesIndel = config.signaturesIndel;
         this._genes = config.genes;
         this._clinicalVariables = config.clinicalVariables;
+        this._tricountsMethod = config.tricountsMethod || "None";
 
         this.emitUpdate();
     }
