@@ -52,7 +52,7 @@ import {
 
 export default {
     name: 'SignatureTooltip',
-    props: ['hoveredSignature', 'hoveredViewportX', 'hoveredViewportY'],
+    props: ['hoveredSignature', 'hoveredViewportX', 'hoveredViewportY', 'tricountsMethod'],
     components: {
         VSpinner,
     },
@@ -119,7 +119,8 @@ export default {
                 // set up scales and data
                 this.plotData["signature"] = new DataContainer("signature", sigInfo.id, API.fetchPlotSignature({
                     "signature": sigInfo.id,
-                    "mut_type": sigInfo.mut_type
+                    "mut_type": sigInfo.mut_type,
+                    "tricounts_method": (this.tricountsMethod || "None")
                 }));
                 this.sigTooltipKey++;
             }

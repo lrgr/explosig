@@ -19,6 +19,7 @@
         :hoveredSignature="hoveredSignature" 
         :hoveredViewportX="hoveredViewportX"
         :hoveredViewportY="hoveredViewportY"
+        :tricountsMethod="selectedTricountsMethod"
       />
       <div id="signaturePicker"></div>
       <VSpinner v-if="loading" class="spinner"/>
