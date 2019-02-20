@@ -596,7 +596,8 @@ export default {
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesSbs,
                     "mut_type": "SBS",
-                    "sample_id": this.sampleId
+                    "sample_id": this.sampleId,
+                    "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then((data) => {
                     this.cosineSimilaritySbs = data["cosine_similarity_SBS"];
                 });
@@ -607,7 +608,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "exp_SBS_" + this.sampleId, data: expsSbsData});
                 }
@@ -616,7 +618,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "exp_SBS_" + this.sampleId, scale: expsSbsScale});
                 }
@@ -628,7 +631,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "count_SBS_" + this.sampleId, data: countsSbsData});
                 }
@@ -637,7 +641,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "count_SBS_" + this.sampleId, scale: countsSbsScale});
                 }
@@ -648,7 +653,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "reconstruction_SBS_" + this.sampleId, data: reconstructionSbsData});
                 }
@@ -658,7 +664,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "reconstruction_SBS_" + this.sampleId, scale: reconstructionSbsScale});
                 }
@@ -669,7 +676,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "error_SBS_" + this.sampleId, data: errorSbsData});
                 }
@@ -679,7 +687,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "error_SBS_" + this.sampleId, scale: errorSbsScale});
                 }
@@ -693,7 +702,8 @@ export default {
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesDbs,
                     "mut_type": "DBS",
-                    "sample_id": this.sampleId
+                    "sample_id": this.sampleId,
+                    "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then((data) => {
                     this.cosineSimilarityDbs = data["cosine_similarity_DBS"];
                 });
@@ -704,7 +714,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "exp_DBS_" + this.sampleId, data: expsDbsData});
                 }
@@ -713,7 +724,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "exp_DBS_" + this.sampleId, scale: expsDbsScale});
                 }
@@ -724,7 +736,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "count_DBS_" + this.sampleId, data: countsDbsData});
                 }
@@ -733,7 +746,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "count_DBS_" + this.sampleId, scale: countsDbsScale});
                 }
@@ -744,7 +758,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "reconstruction_DBS_" + this.sampleId, data: reconstructionDbsData});
                 }
@@ -754,7 +769,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "reconstruction_DBS_" + this.sampleId, scale: reconstructionDbsScale});
                 }
@@ -765,7 +781,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "error_DBS_" + this.sampleId, data: errorDbsData});
                 }
@@ -775,7 +792,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "error_DBS_" + this.sampleId, scale: errorDbsScale});
                 }
@@ -789,7 +807,8 @@ export default {
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesIndel,
                     "mut_type": "INDEL",
-                    "sample_id": this.sampleId
+                    "sample_id": this.sampleId,
+                    "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then((data) => {
                     this.cosineSimilarityIndel = data["cosine_similarity_INDEL"];
                 });
@@ -800,7 +819,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "exp_INDEL_" + this.sampleId, data: expsIndelData});
                 }
@@ -809,7 +829,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "exp_INDEL_" + this.sampleId, scale: expsIndelScale});
                 }
@@ -821,7 +842,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "count_INDEL_" + this.sampleId, data: countsIndelData});
                 }
@@ -830,7 +852,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "count_INDEL_" + this.sampleId, scale: countsIndelScale});
                 }
@@ -841,7 +864,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "reconstruction_INDEL_" + this.sampleId, data: reconstructionIndelData});
                 }
@@ -851,7 +875,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "reconstruction_INDEL_" + this.sampleId, scale: reconstructionIndelScale});
                 }
@@ -862,7 +887,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setData({key: "error_INDEL_" + this.sampleId, data: errorIndelData});
                 }
@@ -872,7 +898,8 @@ export default {
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
-                        "sample_id": this.sampleId
+                        "sample_id": this.sampleId,
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
                     }));
                     this.setScale({key: "error_INDEL_" + this.sampleId, scale: errorIndelScale});
                 }
