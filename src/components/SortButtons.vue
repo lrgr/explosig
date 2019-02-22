@@ -128,13 +128,37 @@
                         />
                     </div>
                     <div v-if="showGenes">
-                        <h4>Genes Data</h4>
+                        <h4>Gene Mutation Data</h4>
                         <SortOptions v-for="geneId in selectedGenes" :key="geneId"
                             variable="sample_id" 
-                            :data="('gene_' + geneId)" 
+                            :data="('gene_mut_' + geneId)" 
                             optionName="Mutation Classification"
                             optionVariable="mut_class"
                             comparatorScale="mut_class"
+                            :getScale="getScale" 
+                            :getData="getData"
+                            :getStack="getStack"
+                            @sort="closeSortModal"
+                        />
+                        <h4>Gene Expression Data</h4>
+                        <SortOptions v-for="geneId in selectedGenes" :key="geneId"
+                            variable="sample_id" 
+                            :data="('gene_exp_' + geneId)" 
+                            optionName="Gene Expression"
+                            optionVariable="gene_expression"
+                            comparatorScale="gene_expression"
+                            :getScale="getScale" 
+                            :getData="getData"
+                            :getStack="getStack"
+                            @sort="closeSortModal"
+                        />
+                        <h4>Gene CNA Data</h4>
+                        <SortOptions v-for="geneId in selectedGenes" :key="geneId"
+                            variable="sample_id" 
+                            :data="('gene_cna_' + geneId)" 
+                            optionName="Copy Number"
+                            optionVariable="copy_number"
+                            comparatorScale="copy_number"
                             :getScale="getScale" 
                             :getData="getData"
                             :getStack="getStack"

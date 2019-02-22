@@ -384,14 +384,36 @@ export default {
             this.setData({key: "exposures_clustering", data: exposuresClusteringData});
 
             /* GENE ALTERATION DATA */
-            const geneScale = new CategoricalScale("gene", "Gene", this.getConfig().selectedGenes);
-            this.setScale({key: "gene", scale: geneScale});
+            const geneScaleMut = new CategoricalScale("gene_mut", (this.getConfig().selectedGenes.length > 3 ? "Gene Mut." : "Mut."), this.getConfig().selectedGenes);
+            this.setScale({key: "gene_mut", scale: geneScaleMut});
 
-            const geneEventScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#F5F5F5"});
-            this.setScale({key: "mut_class", scale: geneEventScale});
+            const geneScaleExp = new CategoricalScale("gene_exp", (this.getConfig().selectedGenes.length > 3 ? "Gene Expr." : "Expr."), this.getConfig().selectedGenes);
+            this.setScale({key: "gene_exp", scale: geneScaleExp});
+
+            const geneScaleCNA = new CategoricalScale("gene_cna", (this.getConfig().selectedGenes.length > 3 ? "Gene CNA" : "CNA"), this.getConfig().selectedGenes);
+            this.setScale({key: "gene_cna", scale: geneScaleCNA});
+
+            const geneMutScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#F5F5F5"});
+            this.setScale({key: "mut_class", scale: geneMutScale});
+
+            const geneExpScale = new CategoricalScale("gene_expression", "Gene Expression", ["Under", "Over"]);
+            this.setScale({key: "gene_expression", scale: geneExpScale});
+
+            const geneCNAScale = new CategoricalScale("copy_number", "Copy Number", ["-2", "-1", "0", "1", "2"]);
+            this.setScale({key: "copy_number", scale: geneCNAScale});
 
             for(const geneId of this.getConfig().selectedGenes) {
-                this.setData({key: ("gene_" + geneId), data: new DataContainer("gene_" + geneId, geneId + " Mutation Type", API.fetchGeneEventTrack({
+                this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", API.fetchPlotGeneMutTrack({
+                    "projects": this.getConfig().selectedSamples,
+                    "gene_id": geneId
+                }))});
+
+                this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", API.fetchPlotGeneExpTrack({
+                    "projects": this.getConfig().selectedSamples,
+                    "gene_id": geneId
+                }))});
+
+                this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", API.fetchPlotGeneCNATrack({
                     "projects": this.getConfig().selectedSamples,
                     "gene_id": geneId
                 }))});

@@ -45,6 +45,20 @@
             :getScale="getScale"
             :getStack="getStack"
         />
+        <CategoricalLegend v-if="showGenes"
+            variable="gene_expression"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
+        <CategoricalLegend v-if="showGenes"
+            variable="copy_number"
+            lStyle="bar"
+            :lWidth="colWidth"
+            :getScale="getScale"
+            :getStack="getStack"
+        />
         <!-- Clinical Variables -->
         <div v-if="showClinical">
             <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">

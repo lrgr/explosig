@@ -117,9 +117,10 @@
         <!-- Genes -->
         <PlotInfo title="Genes" :showTitle="true" v-if="selectedGenes.length > 0">
             <p slot="info">
-                These plots display mutation classes of the selected genes for sample {{ sampleId }}.
+                These plots display mutation classifications of the selected genes for sample {{ sampleId }}.
             </p>
         </PlotInfo>
+        <!-- Gene Mutation -->
         <div class="gene-rects-wrapper">
             <div class="gene-axis-wrapper">
                 <PlotContainer
@@ -134,7 +135,7 @@
                         slot="axisLeft"
                         side="left"
                         :tickRotation="0"
-                        variable="gene"
+                        variable="gene_mut"
                         :getScale="getScale"
                         :getStack="getStack"
                         :disableBrushing="true"
@@ -152,7 +153,7 @@
                 >
                     <RectPlot 
                         slot="plot"
-                        :data="('gene_' + geneId)"
+                        :data="('gene_mut_' + geneId)"
                         z="sample_id"
                         c="mut_class"
                         :o="sampleId"
@@ -165,7 +166,111 @@
             <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
                 <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
                     <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
-                        {{ genes[('gene_' + geneId)] }}
+                        {{ genes[('gene_mut_' + geneId)] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gene-data-type-divider"></div>
+        <!-- Gene Expression -->
+        <div class="gene-rects-wrapper">
+            <div class="gene-axis-wrapper">
+                <PlotContainer
+                    :pWidth="0"
+                    :pHeight="(numGenes * 25)"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="0"
+                    :pMarginBottom="0"
+                >
+                    <Axis
+                        slot="axisLeft"
+                        side="left"
+                        :tickRotation="0"
+                        variable="gene_exp"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div v-for="geneId in selectedGenes" :key="geneId">
+                <PlotContainer
+                    :pWidth="25"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <RectPlot 
+                        slot="plot"
+                        :data="('gene_exp_' + geneId)"
+                        z="sample_id"
+                        c="gene_expression"
+                        :o="sampleId"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :disableTooltip="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
+                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
+                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
+                        {{ genes[('gene_exp_' + geneId)] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gene-data-type-divider"></div>
+        <!-- Gene CNA -->
+        <div class="gene-rects-wrapper">
+            <div class="gene-axis-wrapper">
+                <PlotContainer
+                    :pWidth="0"
+                    :pHeight="(numGenes * 25)"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="0"
+                    :pMarginBottom="0"
+                >
+                    <Axis
+                        slot="axisLeft"
+                        side="left"
+                        :tickRotation="0"
+                        variable="gene_cna"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div v-for="geneId in selectedGenes" :key="geneId">
+                <PlotContainer
+                    :pWidth="25"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <RectPlot 
+                        slot="plot"
+                        :data="('gene_cna_' + geneId)"
+                        z="sample_id"
+                        c="copy_number"
+                        :o="sampleId"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :disableTooltip="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
+                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
+                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
+                        {{ genes[('gene_cna_' + geneId)] }}
                     </div>
                 </div>
             </div>
@@ -578,8 +683,14 @@ export default {
         },
         initGeneAndClinicalValues() {
             for(const geneId of this.getConfig().selectedGenes) {
-                const geneValue = this.getData(("gene_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["mut_class"];
-                this.genes[("gene_" + geneId)] = this.getScale("mut_class").toHuman(geneValue);
+                const geneMutValue = this.getData(("gene_mut_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["mut_class"];
+                this.genes[("gene_mut_" + geneId)] = this.getScale("mut_class").toHuman(geneMutValue);
+
+                const geneExpValue = this.getData(("gene_exp_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["gene_expression"];
+                this.genes[("gene_exp_" + geneId)] = this.getScale("gene_expression").toHuman(geneExpValue);
+
+                const geneCNAValue = this.getData(("gene_cna_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["copy_number"];
+                this.genes[("gene_cna_" + geneId)] = this.getScale("copy_number").toHuman(geneCNAValue);
             }
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
@@ -950,6 +1061,11 @@ export default {
     font-size: 13px;
     line-height: 25px;
     margin-left: 5px;
+}
+
+.gene-data-type-divider {
+    width: 100%;
+    height: 10px;
 }
 
 </style>

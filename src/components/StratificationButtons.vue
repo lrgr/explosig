@@ -10,7 +10,7 @@
                     <h3>Stratification options</h3>
                     <div v-if="showSbs">
                         <h4 v-if="selectedClinicalVariables.length > 0">SBS Exposures &amp; Clinical Data</h4>
-                        <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+                        <div v-for="clinicalVar in selectedClinicalVariables" :key="('strat_sbs_cv_' + clinicalVar)">
                             <StratificationOptions
                                 data="exposure_sbs"
                                 :variable="clinicalVar"
@@ -25,15 +25,47 @@
                                 @stratify="closeStratificationModal"
                             />
                         </div>
-                        <h4 v-if="selectedGenes.length > 0">SBS Exposures &amp; Genes</h4>
-                        <div v-for="geneId in selectedGenes" :key="geneId">
+                        <h4 v-if="selectedGenes.length > 0">SBS Exposures &amp; Gene Mutation Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_sbs_gene_mut_' + geneId)">
                             <StratificationOptions
                                 data="exposure_sbs"
                                 variable="mut_class"
                                 optionScale="sig_SBS"
                                 o="sample_id"
                                 y="exposure_sbs"
-                                :s="('gene_' + geneId)"
+                                :s="('gene_mut_' + geneId)"
+                                :getScale="getScale"
+                                :getData="getData"
+                                :getStack="getStack"
+                                :getStratification="getStratification"
+                                @stratify="closeStratificationModal"
+                            />
+                        </div>
+                        <h4 v-if="selectedGenes.length > 0">SBS Exposures &amp; Gene Expression Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_sbs_gene_exp_' + geneId)">
+                            <StratificationOptions
+                                data="exposure_sbs"
+                                variable="gene_expression"
+                                optionScale="sig_SBS"
+                                o="sample_id"
+                                y="exposure_sbs"
+                                :s="('gene_exp_' + geneId)"
+                                :getScale="getScale"
+                                :getData="getData"
+                                :getStack="getStack"
+                                :getStratification="getStratification"
+                                @stratify="closeStratificationModal"
+                            />
+                        </div>
+                        <h4 v-if="selectedGenes.length > 0">SBS Exposures &amp; Gene CNA Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_sbs_gene_cna_' + geneId)">
+                            <StratificationOptions
+                                data="exposure_sbs"
+                                variable="copy_number"
+                                optionScale="sig_SBS"
+                                o="sample_id"
+                                y="exposure_sbs"
+                                :s="('gene_cna_' + geneId)"
                                 :getScale="getScale"
                                 :getData="getData"
                                 :getStack="getStack"
@@ -44,7 +76,7 @@
                     </div>
                     <div v-if="showDbs">
                         <h4 v-if="selectedClinicalVariables.length > 0">DBS Exposures &amp; Clinical Data</h4>
-                        <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+                        <div v-for="clinicalVar in selectedClinicalVariables" :key="('strat_dbs_cv_' + clinicalVar)">
                             <StratificationOptions
                                 data="exposure_dbs"
                                 :variable="clinicalVar"
@@ -59,15 +91,47 @@
                                 @stratify="closeStratificationModal"
                             />
                         </div>
-                        <h4 v-if="selectedGenes.length > 0">DBS Exposures &amp; Genes</h4>
-                        <div v-for="geneId in selectedGenes" :key="geneId">
+                        <h4 v-if="selectedGenes.length > 0">DBS Exposures &amp; Gene Mutation Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_dbs_gene_mut_' + geneId)">
                             <StratificationOptions
                                 data="exposure_dbs"
                                 variable="mut_class"
                                 optionScale="sig_DBS"
                                 o="sample_id"
                                 y="exposure_dbs"
-                                :s="('gene_' + geneId)"
+                                :s="('gene_mut_' + geneId)"
+                                :getScale="getScale"
+                                :getData="getData"
+                                :getStack="getStack"
+                                :getStratification="getStratification"
+                                @stratify="closeStratificationModal"
+                            />
+                        </div>
+                        <h4 v-if="selectedGenes.length > 0">DBS Exposures &amp; Gene Expression Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_dbs_gene_exp_' + geneId)">
+                            <StratificationOptions
+                                data="exposure_dbs"
+                                variable="gene_expression"
+                                optionScale="sig_DBS"
+                                o="sample_id"
+                                y="exposure_dbs"
+                                :s="('gene_exp_' + geneId)"
+                                :getScale="getScale"
+                                :getData="getData"
+                                :getStack="getStack"
+                                :getStratification="getStratification"
+                                @stratify="closeStratificationModal"
+                            />
+                        </div>
+                        <h4 v-if="selectedGenes.length > 0">DBS Exposures &amp; Gene CNA Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_dbs_gene_cna_' + geneId)">
+                            <StratificationOptions
+                                data="exposure_dbs"
+                                variable="copy_number"
+                                optionScale="sig_DBS"
+                                o="sample_id"
+                                y="exposure_dbs"
+                                :s="('gene_cna_' + geneId)"
                                 :getScale="getScale"
                                 :getData="getData"
                                 :getStack="getStack"
@@ -78,7 +142,7 @@
                     </div>
                     <div v-if="showIndel">
                         <h4 v-if="selectedClinicalVariables.length > 0">INDEL Exposures &amp; Clinical Data</h4>
-                        <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+                        <div v-for="clinicalVar in selectedClinicalVariables" :key="('strat_indel_cv_' + clinicalVar)">
                             <StratificationOptions
                                 data="exposure_indel"
                                 :variable="clinicalVar"
@@ -93,15 +157,47 @@
                                 @stratify="closeStratificationModal"
                             />
                         </div>
-                        <h4 v-if="selectedGenes.length > 0">INDEL Exposures &amp; Genes</h4>
-                        <div v-for="geneId in selectedGenes" :key="geneId">
+                        <h4 v-if="selectedGenes.length > 0">INDEL Exposures &amp; Gene Mutation Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_indel_gene_mut_' + geneId)">
                             <StratificationOptions
                                 data="exposure_indel"
                                 variable="mut_class"
                                 optionScale="sig_INDEL"
                                 o="sample_id"
                                 y="exposure_indel"
-                                :s="('gene_' + geneId)"
+                                :s="('gene_mut_' + geneId)"
+                                :getScale="getScale"
+                                :getData="getData"
+                                :getStack="getStack"
+                                :getStratification="getStratification"
+                                @stratify="closeStratificationModal"
+                            />
+                        </div>
+                        <h4 v-if="selectedGenes.length > 0">INDEL Exposures &amp; Gene Expression Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_indel_gene_exp_' + geneId)">
+                            <StratificationOptions
+                                data="exposure_indel"
+                                variable="gene_expression"
+                                optionScale="sig_INDEL"
+                                o="sample_id"
+                                y="exposure_indel"
+                                :s="('gene_exp_' + geneId)"
+                                :getScale="getScale"
+                                :getData="getData"
+                                :getStack="getStack"
+                                :getStratification="getStratification"
+                                @stratify="closeStratificationModal"
+                            />
+                        </div>
+                        <h4 v-if="selectedGenes.length > 0">INDEL Exposures &amp; Gene CNA Data</h4>
+                        <div v-for="geneId in selectedGenes" :key="('strat_indel_gene_cna_' + geneId)">
+                            <StratificationOptions
+                                data="exposure_indel"
+                                variable="copy_number"
+                                optionScale="sig_INDEL"
+                                o="sample_id"
+                                y="exposure_indel"
+                                :s="('gene_cna_' + geneId)"
                                 :getScale="getScale"
                                 :getData="getData"
                                 :getStack="getStack"

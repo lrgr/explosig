@@ -108,8 +108,28 @@ export default class API {
 
     // Fetches with cacheing
 
-    static fetchGeneEventTrack(body) {
-        let url = API.api_base + "plot-gene-event-track";
+    static fetchPlotGeneMutTrack(body) {
+        let url = API.api_base + "plot-gene-mut-track";
+
+        return API.request(
+                d3.json(url, { method: "POST", body: withToken(body, API.token) }),
+                url,
+                body
+            );
+    }
+
+    static fetchPlotGeneExpTrack(body) {
+        let url = API.api_base + "plot-gene-exp-track";
+
+        return API.request(
+                d3.json(url, { method: "POST", body: withToken(body, API.token) }),
+                url,
+                body
+            );
+    }
+
+    static fetchPlotGeneCNATrack(body) {
+        let url = API.api_base + "plot-gene-cna-track";
 
         return API.request(
                 d3.json(url, { method: "POST", body: withToken(body, API.token) }),

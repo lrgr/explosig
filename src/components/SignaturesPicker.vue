@@ -8,13 +8,6 @@
             <option v-for="pctg in cancerTypeMapGroups" :key="pctg" :value="pctg" :selected="pctg === selectedCancerTypeMapGroup ? 'selected' : ''">{{ pctg }}</option>
         </select>
       </span>
-      <span id="tricounts-source">
-        <label>Trinucleotide normalization method: </label>
-        <select v-model="selectedTricountsMethod">
-            <option value="None" :selected="'None' === selectedTricountsMethod ? 'selected' : ''">None</option>
-            <option v-for="tcm in tricountsMethods" :key="tcm" :value="tcm" :selected="tcm === selectedTricountsMethod ? 'selected' : ''">{{ tcm }}</option>
-        </select>
-      </span>
       <SignatureTooltip 
         :hoveredSignature="hoveredSignature" 
         :hoveredViewportX="hoveredViewportX"
