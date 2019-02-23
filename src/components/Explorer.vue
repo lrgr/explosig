@@ -4,6 +4,8 @@
             <HistoryButtons />
             <SortButtons />
             <StratificationButtons />
+            <FilterButtons />
+
             <SharingButtons :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
@@ -41,6 +43,7 @@ import Sizes, { EVENT_TYPE_SIZES, EVENT_SUBTYPE_COLUMNS, EVENT_SUBTYPE_RESET_COL
 import HistoryButtons from './HistoryButtons.vue';
 import SortButtons from './SortButtons.vue';
 import StratificationButtons from './StratificationButtons.vue';
+import FilterButtons from './FilterButtons.vue';
 import SharingButtons from './SharingButtons.vue';
 
 import ExplorerOverviewTabs from './ExplorerOverviewTabs.vue';
@@ -67,6 +70,7 @@ export default {
         HistoryButtons,
         SortButtons,
         StratificationButtons,
+        FilterButtons,
         SharingButtons,
         ExplorerLegend,
         ExplorerOverview,
