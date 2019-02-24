@@ -79,6 +79,7 @@
                 This plot displays mutation counts for each sample, stacked by mutation type (single base substitution, doublet base substitution, indel).<br>
                 Samples are on the x-axis and counts are on the y-axis.<br>
                 Bar color signifies mutation type.
+                <DownloadButton plotRef="Mutation Counts" :getRef="getRef" />
             </p>
         </PlotInfo>
         <ResizablePlotContainer
@@ -92,6 +93,7 @@
         >
             <PlotContainer
                 slot="inner"
+                ref="Mutation Counts"
             >
                 <Axis 
                     slot="axisLeft"
@@ -123,6 +125,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            ref="Dominant SBS Signatures"
         >
             <Axis 
                 slot="axisLeft"
@@ -145,9 +148,22 @@
         <PlotInfo title="Mutation Signature Exposures per Sample">
             <p slot="info">
                 This group of plots displays mutation signature exposures for each sample.<br>
-                Exposures are stacked and colored by signature.<br>
-                Plots are separated by mutation type.<br>
-                Every other plot shows exposures after normalizing (to sum to 1).
+                Exposures are stacked and colored by signature.
+
+                <DownloadButton plotRef="Dominant SBS Signatures" :getRef="getRef" v-if="showSbs" />
+                <DownloadButton plotRef="SBS Exposures" :getRef="getRef" v-if="showSbs" />
+                <DownloadButton plotRef="SBS Normalized Exposures" :getRef="getRef" v-if="showSbs && showNormalizedExposures" />
+                <DownloadButton plotRef="SBS Cosine Similarity" :getRef="getRef" v-if="showSbs && showCosineSimilarity" />
+                <br/>
+                <DownloadButton plotRef="Dominant DBS Signatures" :getRef="getRef" v-if="showDbs" />
+                <DownloadButton plotRef="DBS Exposures" :getRef="getRef" v-if="showDbs" />
+                <DownloadButton plotRef="DBS Normalized Exposures" :getRef="getRef" v-if="showDbs && showNormalizedExposures" />
+                <DownloadButton plotRef="DBS Cosine Similarity" :getRef="getRef" v-if="showDbs && showCosineSimilarity" />
+                <br/>
+                <DownloadButton plotRef="Dominant INDEL Signatures" :getRef="getRef" v-if="showIndel" />
+                <DownloadButton plotRef="INDEL Exposures" :getRef="getRef" v-if="showIndel" />
+                <DownloadButton plotRef="INDEL Normalized Exposures" :getRef="getRef" v-if="showIndel && showNormalizedExposures" />
+                <DownloadButton plotRef="INDEL Cosine Similarity" :getRef="getRef" v-if="showIndel && showCosineSimilarity" />
             </p>
         </PlotInfo>
         <ResizablePlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
@@ -158,6 +174,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="4"
+            ref="SBS Exposures"
         >
             <PlotContainer
                 slot="inner"
@@ -190,6 +207,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="3"
+            ref="SBS Normalized Exposures"
         >
             <PlotContainer
                 slot="inner"
@@ -222,6 +240,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="5"
+            ref="SBS Cosine Similarity"
         >
             <PlotContainer
                 slot="inner"
@@ -252,6 +271,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            ref="Dominant DBS Signatures"
         >
             <Axis 
                 slot="axisLeft"
@@ -282,6 +302,7 @@
         >
             <PlotContainer
                 slot="inner"
+                ref="DBS Exposures"
             >
                 <Axis 
                     slot="axisLeft"
@@ -313,6 +334,7 @@
         >
             <PlotContainer
                 slot="inner"
+                ref="DBS Normalized Exposures"
             >
                 <Axis 
                     slot="axisLeft"
@@ -344,6 +366,7 @@
         >
             <PlotContainer
                 slot="inner"
+                ref="DBS Cosine Similarity"
             >
                 <Axis 
                     slot="axisLeft"
@@ -509,7 +532,7 @@
                 Ward linkage has been used to cluster samples.
             </p>
         </PlotInfo>
-
+        <DownloadButton plotRef="ClusteringSBS" :getRef="getRef" v-if="showSbs" />
         <PlotContainer v-if="showSbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numSbs * 30)"
@@ -517,6 +540,7 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+            ref="ClusteringSBS"
         >
             <Axis
                 slot="axisLeft"
@@ -539,7 +563,7 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-
+        <DownloadButton plotRef="ClusteringDBS" :getRef="getRef" v-if="showDbs" />
         <PlotContainer v-if="showDbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numDbs * 30)"
@@ -547,6 +571,7 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+            ref="ClusteringDBS"
         >
             <Axis
                 slot="axisLeft"
@@ -569,7 +594,7 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-
+        <DownloadButton plotRef="ClusteringINDEL" :getRef="getRef" v-if="showIndel" />
         <PlotContainer v-if="showIndel"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numIndel * 30)"
@@ -577,6 +602,7 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+            ref="ClusteringINDEL"
         >
             <Axis
                 slot="axisLeft"
@@ -632,6 +658,7 @@ import GeneTracks from './GeneTracks.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
+import DownloadButton from './DownloadButton.vue';
 
 import { PLOT_GROUPS } from './../vdp/Visibility.js';
 import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples.js';
@@ -646,7 +673,8 @@ export default {
         GeneTracks,
         VisibilityButtons,
         NumSamples,
-        ResizablePlotContainer
+        ResizablePlotContainer,
+        DownloadButton
     },
     data() {
         return {
@@ -741,6 +769,9 @@ export default {
                     ));
                 }
             }
+        },
+        getRef(ref) {
+            return this.$refs[ref];
         }
     }
 }

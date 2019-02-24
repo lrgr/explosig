@@ -8,7 +8,7 @@
             <button @click="modalVisible = true">?</button>
         </div>
 
-        <div class="modal" v-show="modalVisible">
+        <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" @click="closeModal">Close</span>
                 <div class="plot-info-modal">
@@ -70,6 +70,7 @@ export default {
             font-size: 14px;
             border-radius: 3px;
             cursor: pointer;
+            user-select: none;
         }
         h4 {
             margin-bottom: 0;
