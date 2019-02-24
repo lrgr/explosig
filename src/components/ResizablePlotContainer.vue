@@ -104,9 +104,6 @@ export default {
         },
         rerender() {
             this.initialKey++;
-        },
-        download() {
-            return this.$slots.inner[0].componentInstance.download();
         }
     },
     render(h) {

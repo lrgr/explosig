@@ -8,7 +8,7 @@
             <button @click="modalVisible = true">?</button>
         </div>
 
-        <div class="modal" v-if="modalVisible">
+        <div class="modal" v-show="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" @click="closeModal">Close</span>
                 <div class="plot-info-modal">
