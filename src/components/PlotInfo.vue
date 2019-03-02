@@ -70,6 +70,7 @@ export default {
             font-size: 14px;
             border-radius: 3px;
             cursor: pointer;
+            user-select: none;
         }
         h4 {
             margin-bottom: 0;

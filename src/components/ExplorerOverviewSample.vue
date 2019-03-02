@@ -694,7 +694,7 @@ export default {
             }
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
-                const clinicalValue = this.getData("clinical_Data").dataCopy.find(el => el["sample_id"] === this.sampleId)[clinicalVar];
+                const clinicalValue = this.getData("clinical_data").dataCopy.find(el => el["sample_id"] === this.sampleId)[clinicalVar];
                 this.clinical[clinicalVar] = this.getScale(clinicalVar).toHuman(clinicalValue);
             }
         },
