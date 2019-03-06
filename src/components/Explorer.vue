@@ -400,7 +400,7 @@ export default {
             const geneMutScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#F5F5F5"});
             this.setScale({key: "mut_class", scale: geneMutScale});
 
-            const geneExpScale = new CategoricalScale("gene_expression", "Gene Expression", ["Under", "Over"]);
+            const geneExpScale = new CategoricalScale("gene_expression", "Gene Expression", ["Under", "Not differentially expressed", "Over"]);
             this.setScale({key: "gene_expression", scale: geneExpScale});
 
             const geneCNAScale = new CategoricalScale("copy_number", "Copy Number", ["-2", "-1", "0", "1", "2"]);
