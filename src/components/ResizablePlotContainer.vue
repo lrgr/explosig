@@ -22,12 +22,13 @@ const addProp = function(slotArray, newProps) {
             }
             return vnode;
         });
-        return slotArray
+        return slotArray;
     }
     return [];
 }
+
 /**
- * This component is a container for a vue-declarative-plots PlotContainer component,
+ * This component is a container for a vueplotlib PlotContainer component,
  * to make it vertically resizable.
  * Using the plotCode prop, it will check the current object of sizes for an existing pHeight prop.
  *  - If no pHeight is found in the Sizes object, it will use the passed pHeight.
@@ -112,7 +113,6 @@ export default {
         let props = Object.assign({}, this.$props);
         props["pHeight"] = pHeight;
         this.$slots.inner = addProp(this.$slots.inner, props);
-
         
         let children = ([]).concat(
             h('div', { key: this.initialKey }, this.$slots.inner), 

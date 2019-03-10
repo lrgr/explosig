@@ -44,6 +44,10 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            :showDownloadButton="false"
+            :downloadButtonOffsetY="130"
+            :downloadButtonOffsetX="4"
+            :downloadButtonSize="12"
         >
             <Axis 
                 slot="axisTop"
@@ -92,6 +96,10 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="false"
+                :downloadButtonOffsetY="30"
+                :downloadButtonOffsetX="4"
+                :downloadButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -123,6 +131,10 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            :showDownloadButton="false"
+            :downloadButtonOffsetY="0"
+            :downloadButtonOffsetX="4"
+            :downloadButtonSize="12"
         >
             <Axis 
                 slot="axisLeft"
@@ -624,7 +636,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { HistoryEvent } from 'vue-declarative-plots';
+import { HistoryEvent } from 'vueplotlib';
 
 import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';

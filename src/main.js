@@ -28,7 +28,7 @@ import {
   GenomeStackedBarPlot,
   CategoricalLegend,
   ContinuousLegend
-} from 'vue-declarative-plots';
+} from 'vueplotlib';
 
 Vue.config.productionTip = false
 

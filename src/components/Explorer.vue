@@ -32,8 +32,8 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import { max as d3_max, sum as d3_sum } from 'd3-array';
-import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vueplotlib';
+import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';

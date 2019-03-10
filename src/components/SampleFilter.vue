@@ -20,7 +20,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { HistoryEvent, EVENT_TYPES, EVENT_SUBTYPES } from 'vue-declarative-plots';
+import { HistoryEvent, EVENT_TYPES, EVENT_SUBTYPES } from 'vueplotlib';
 
 import VButton from './VButton.vue';
 

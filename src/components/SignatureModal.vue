@@ -68,8 +68,8 @@ import { mapGetters } from 'vuex';
 
 import VSpinner from './VSpinner.vue';
 
-import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vueplotlib';
+import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
 import { 
     SBS_SUPERCAT_COLORS, DBS_SUPERCAT_COLORS, INDEL_SUPERCAT_COLORS,
     SBS_SUPERCAT_MAP, DBS_SUPERCAT_MAP, INDEL_SUPERCAT_MAP,

@@ -651,7 +651,7 @@ import { min as d3_min, max as d3_max, sum as d3_sum } from 'd3-array';
 import PlotInfo from './PlotInfo.vue';
 import API from './../api.js';
 
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
 import { EXPLORER_COLUMNS } from '../vdp/Sizes';
 
 export default {
