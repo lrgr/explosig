@@ -44,10 +44,6 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
-            :showDownloadButton="false"
-            :downloadButtonOffsetY="130"
-            :downloadButtonOffsetX="4"
-            :downloadButtonSize="12"
         >
             <Axis 
                 slot="axisTop"
@@ -96,10 +92,6 @@
         >
             <PlotContainer
                 slot="inner"
-                :showDownloadButton="false"
-                :downloadButtonOffsetY="30"
-                :downloadButtonOffsetX="4"
-                :downloadButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -131,10 +123,6 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
-            :showDownloadButton="false"
-            :downloadButtonOffsetY="0"
-            :downloadButtonOffsetX="4"
-            :downloadButtonSize="12"
         >
             <Axis 
                 slot="axisLeft"
