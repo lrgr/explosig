@@ -624,7 +624,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { HistoryEvent } from 'vue-declarative-plots';
+import { HistoryEvent } from 'vueplotlib';
 
 import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';

@@ -647,11 +647,11 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import { min as d3_min, max as d3_max, sum as d3_sum } from 'd3-array';
 import PlotInfo from './PlotInfo.vue';
 import API from './../api.js';
 
-
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
 import { EXPLORER_COLUMNS } from '../vdp/Sizes';
 
 export default {
@@ -723,11 +723,13 @@ export default {
                     this.setData({key: "exp_SBS_" + this.sampleId, data: expsSbsData});
                 }
                 if(this.getScale("exp_SBS_" + this.sampleId) === undefined) {
-                    const expsSbsScale = new ContinuousScale("exp_SBS_" + this.sampleId, "SBS Exposure", API.fetchScaleExposuresSingleSample({
+                    const expsSbsScale = new ContinuousScale("exp_SBS_" + this.sampleId, "SBS Exposure", API.fetchPlotExposuresSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["exp_SBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "exp_SBS_" + this.sampleId, scale: expsSbsScale});
                 }
@@ -744,11 +746,13 @@ export default {
                     this.setData({key: "count_SBS_" + this.sampleId, data: countsSbsData});
                 }
                 if(this.getScale("count_SBS_" + this.sampleId) === undefined) {
-                    const countsSbsScale = new ContinuousScale("count_SBS_" + this.sampleId, "SBS Category Count", API.fetchScaleReconstructionSingleSample({
+                    const countsSbsScale = new ContinuousScale("count_SBS_" + this.sampleId, "SBS Category Count", API.fetchPlotCountsPerCategorySingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["count_SBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "count_SBS_" + this.sampleId, scale: countsSbsScale});
                 }
@@ -765,11 +769,13 @@ export default {
                 }
 
                 if(this.getScale("reconstruction_SBS_" + this.sampleId) === undefined) {
-                    const reconstructionSbsScale = new ContinuousScale("reconstruction_SBS_" + this.sampleId, "SBS Category Reconstruction", API.fetchScaleReconstructionSingleSample({
+                    const reconstructionSbsScale = new ContinuousScale("reconstruction_SBS_" + this.sampleId, "SBS Category Reconstruction", API.fetchPlotReconstructionSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["reconstruction_SBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "reconstruction_SBS_" + this.sampleId, scale: reconstructionSbsScale});
                 }
@@ -786,11 +792,16 @@ export default {
                 }
 
                 if(this.getScale("error_SBS_" + this.sampleId) === undefined) {
-                    const errorSbsScale = new ContinuousScale("error_SBS_" + this.sampleId, "SBS Error", API.fetchScaleReconstructionErrorSingleSample({
+                    const errorSbsScale = new ContinuousScale("error_SBS_" + this.sampleId, "SBS Error", API.fetchPlotReconstructionErrorSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [
+                            d3_min(data.map(d => d["error_SBS_" + this.sampleId])), 
+                            d3_max(data.map(d => d["error_SBS_" + this.sampleId]))
+                        ];
                     }));
                     this.setScale({key: "error_SBS_" + this.sampleId, scale: errorSbsScale});
                 }
@@ -820,11 +831,13 @@ export default {
                     this.setData({key: "exp_DBS_" + this.sampleId, data: expsDbsData});
                 }
                 if(this.getScale("exp_DBS_" + this.sampleId) === undefined) {
-                    const expsDbsScale = new ContinuousScale("exp_DBS_" + this.sampleId, "DBS Exposure", API.fetchScaleExposuresSingleSample({
+                    const expsDbsScale = new ContinuousScale("exp_DBS_" + this.sampleId, "DBS Exposure", API.fetchPlotExposuresSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["exp_DBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "exp_DBS_" + this.sampleId, scale: expsDbsScale});
                 }
@@ -840,11 +853,13 @@ export default {
                     this.setData({key: "count_DBS_" + this.sampleId, data: countsDbsData});
                 }
                 if(this.getScale("count_DBS_" + this.sampleId) === undefined) {
-                    const countsDbsScale = new ContinuousScale("count_DBS_" + this.sampleId, "DBS Category Count", API.fetchScaleReconstructionSingleSample({
+                    const countsDbsScale = new ContinuousScale("count_DBS_" + this.sampleId, "DBS Category Count", API.fetchPlotCountsPerCategorySingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["count_DBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "count_DBS_" + this.sampleId, scale: countsDbsScale});
                 }
@@ -861,11 +876,13 @@ export default {
                 }
 
                 if(this.getScale("reconstruction_DBS_" + this.sampleId) === undefined) {
-                    const reconstructionDbsScale = new ContinuousScale("reconstruction_DBS_" + this.sampleId, "DBS Category Reconstruction", API.fetchScaleReconstructionSingleSample({
+                    const reconstructionDbsScale = new ContinuousScale("reconstruction_DBS_" + this.sampleId, "DBS Category Reconstruction", API.fetchPlotReconstructionSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["reconstruction_DBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "reconstruction_DBS_" + this.sampleId, scale: reconstructionDbsScale});
                 }
@@ -882,11 +899,16 @@ export default {
                 }
 
                 if(this.getScale("error_DBS_" + this.sampleId) === undefined) {
-                    const errorDbsScale = new ContinuousScale("error_DBS_" + this.sampleId, "DBS Error", API.fetchScaleReconstructionErrorSingleSample({
+                    const errorDbsScale = new ContinuousScale("error_DBS_" + this.sampleId, "DBS Error", API.fetchPlotReconstructionErrorSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [
+                            d3_min(data.map(d => d["error_DBS_" + this.sampleId])), 
+                            d3_max(data.map(d => d["error_DBS_" + this.sampleId]))
+                        ];
                     }));
                     this.setScale({key: "error_DBS_" + this.sampleId, scale: errorDbsScale});
                 }
@@ -916,11 +938,13 @@ export default {
                     this.setData({key: "exp_INDEL_" + this.sampleId, data: expsIndelData});
                 }
                 if(this.getScale("exp_INDEL_" + this.sampleId) === undefined) {
-                    const expsIndelScale = new ContinuousScale("exp_INDEL_" + this.sampleId, "INDEL Exposure", API.fetchScaleExposuresSingleSample({
+                    const expsIndelScale = new ContinuousScale("exp_INDEL_" + this.sampleId, "INDEL Exposure", API.fetchPlotExposuresSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["exp_INDEL_" + this.sampleId]))];
                     }));
                     this.setScale({key: "exp_INDEL_" + this.sampleId, scale: expsIndelScale});
                 }
@@ -937,11 +961,13 @@ export default {
                     this.setData({key: "count_INDEL_" + this.sampleId, data: countsIndelData});
                 }
                 if(this.getScale("count_INDEL_" + this.sampleId) === undefined) {
-                    const countsIndelScale = new ContinuousScale("count_INDEL_" + this.sampleId, "INDEL Category Count", API.fetchScaleReconstructionSingleSample({
+                    const countsIndelScale = new ContinuousScale("count_INDEL_" + this.sampleId, "INDEL Category Count", API.fetchPlotCountsPerCategorySingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["count_INDEL_" + this.sampleId]))];
                     }));
                     this.setScale({key: "count_INDEL_" + this.sampleId, scale: countsIndelScale});
                 }
@@ -958,11 +984,13 @@ export default {
                 }
 
                 if(this.getScale("reconstruction_INDEL_" + this.sampleId) === undefined) {
-                    const reconstructionIndelScale = new ContinuousScale("reconstruction_INDEL_" + this.sampleId, "INDEL Category Reconstruction", API.fetchScaleReconstructionSingleSample({
+                    const reconstructionIndelScale = new ContinuousScale("reconstruction_INDEL_" + this.sampleId, "INDEL Category Reconstruction", API.fetchPlotReconstructionSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["reconstruction_INDEL_" + this.sampleId]))];
                     }));
                     this.setScale({key: "reconstruction_INDEL_" + this.sampleId, scale: reconstructionIndelScale});
                 }
@@ -979,11 +1007,16 @@ export default {
                 }
 
                 if(this.getScale("error_INDEL_" + this.sampleId) === undefined) {
-                    const errorIndelScale = new ContinuousScale("error_INDEL_" + this.sampleId, "INDEL Error", API.fetchScaleReconstructionErrorSingleSample({
+                    const errorIndelScale = new ContinuousScale("error_INDEL_" + this.sampleId, "INDEL Error", API.fetchPlotReconstructionErrorSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId
+                    }).then((data) => {
+                        return [
+                            d3_min(data.map(d => d["error_INDEL_" + this.sampleId])), 
+                            d3_max(data.map(d => d["error_INDEL_" + this.sampleId]))
+                        ];
                     }));
                     this.setScale({key: "error_INDEL_" + this.sampleId, scale: errorIndelScale});
                 }

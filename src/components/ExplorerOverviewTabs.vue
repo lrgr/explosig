@@ -46,7 +46,7 @@ import API from './../api.js';
 
 import VSpinner from './VSpinner.vue';
 
-import { HistoryEvent } from 'vue-declarative-plots';
+import { HistoryEvent } from 'vueplotlib';
 import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples';
 
 export default {

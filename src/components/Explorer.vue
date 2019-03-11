@@ -31,9 +31,9 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import { max as d3_max } from 'd3-array';
-import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vue-declarative-plots';
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+import { max as d3_max, sum as d3_sum } from 'd3-array';
+import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vueplotlib';
+import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
@@ -185,13 +185,19 @@ export default {
             this.setScale({key: "sample_id", scale: samplesScale});
 
             /* MUTATION COUNTS */
-            const countScale = new ContinuousScale("mut_count", "Mutation Count", API.fetchScaleCounts({
+            const countScale = new ContinuousScale("mut_count", "Mutation Count", API.fetchPlotCounts({
                 "projects": this.getConfig().selectedSamples
+            }).then((data) => {
+                const mutTypes = mutTypeScale.domain;
+                return [0, d3_max(data.map(d => d3_max(mutTypes.map(mt => d[mt]))))];
             }));
             this.setScale({key: "mut_count", scale: countScale});
 
-            const countSumScale = new ContinuousScale("mut_count_sum", "Mutation Count", API.fetchScaleCountsSum({
+            const countSumScale = new ContinuousScale("mut_count_sum", "Mutation Count", API.fetchPlotCounts({
                 "projects": this.getConfig().selectedSamples
+            }).then((data) => {
+                const mutTypes = mutTypeScale.domain;
+                return [0, d3_max(data.map(d => d3_sum(mutTypes.map(mt => d[mt]))))];
             }));
             this.setScale({key: "mut_count_sum", scale: countSumScale});
 
@@ -201,19 +207,25 @@ export default {
             this.setData({key: "mut_count", data: countData});
 
             /* SIGNATURE EXPOSURES: SBS */
-            const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", API.fetchScaleExposures({
+            const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
+            }).then((data) => {
+                const sigNames = this.getConfig().selectedSignaturesSbs;
+                return [0, d3_max(data.map(d => d3_max(sigNames.map(sn => d[sn]))))];
             }));
             this.setScale({key: "exposure_sbs", scale: exposureSbsScale});
 
-            const exposureSumSbsScale = new ContinuousScale("exposure_sum_sbs", "SBS Exposure", API.fetchScaleExposuresSum({
+            const exposureSumSbsScale = new ContinuousScale("exposure_sum_sbs", "SBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
+            }).then((data) => {
+                const sigNames = this.getConfig().selectedSignaturesSbs;
+                return [0, d3_max(data.map(d => d3_sum(sigNames.map(sn => d[sn]))))];
             }));
             this.setScale({key: "exposure_sum_sbs", scale: exposureSumSbsScale});
 
@@ -256,19 +268,25 @@ export default {
             this.setData({key: "cosine_similarity_SBS", data: exposureSbsCosineSimilarityData});
 
             /* SIGNATURE EXPOSURES: DBS */
-            const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchScaleExposures({
+            const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
+            }).then((data) => {
+                const sigNames = this.getConfig().selectedSignaturesDbs;
+                return [0, d3_max(data.map(d => d3_max(sigNames.map(sn => d[sn]))))];
             }));
             this.setScale({key: "exposure_dbs", scale: exposureDbsScale});
 
-            const exposureSumDbsScale = new ContinuousScale("exposure_sum_dbs", "DBS Exposure", API.fetchScaleExposuresSum({
+            const exposureSumDbsScale = new ContinuousScale("exposure_sum_dbs", "DBS Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
+            }).then((data) => {
+                const sigNames = this.getConfig().selectedSignaturesDbs;
+                return [0, d3_max(data.map(d => d3_sum(sigNames.map(sn => d[sn]))))];
             }));
             this.setScale({key: "exposure_sum_dbs", scale: exposureSumDbsScale});
 
@@ -311,19 +329,25 @@ export default {
             this.setData({key: "cosine_similarity_DBS", data: exposureDbsCosineSimilarityData});
 
             /* SIGNATURE EXPOSURES: INDEL */
-            const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchScaleExposures({
+            const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
+            }).then((data) => {
+                const sigNames = this.getConfig().selectedSignaturesIndel;
+                return [0, d3_max(data.map(d => d3_max(sigNames.map(sn => d[sn]))))];
             }));
             this.setScale({key: "exposure_indel", scale: exposureIndelScale});
 
-            const exposureSumIndelScale = new ContinuousScale("exposure_sum_indel", "INDEL Exposure", API.fetchScaleExposuresSum({
+            const exposureSumIndelScale = new ContinuousScale("exposure_sum_indel", "INDEL Exposure", API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
+            }).then((data) => {
+                const sigNames = this.getConfig().selectedSignaturesIndel;
+                return [0, d3_max(data.map(d => d3_sum(sigNames.map(sn => d[sn]))))];
             }));
             this.setScale({key: "exposure_sum_indel", scale: exposureSumIndelScale});
 
