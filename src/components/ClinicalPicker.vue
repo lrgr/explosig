@@ -40,7 +40,8 @@ export default {
   },
   mounted: function() {
         var vm = this;
-        API.fetchClinicalVariableList().then(function(listing) {
+        API.fetchDataListing().then(function(data) {
+            const listing = data['clinical_variable_scale_types'];
             vm.allClinicalVariables = listing.map(el => el['Clinical Column']);
             const continuousVars = listing.filter(el => el['Scale Type'] === 'continuous').map(el => el['Clinical Column']);
             vm.setContinuousClinicalVariables(continuousVars);

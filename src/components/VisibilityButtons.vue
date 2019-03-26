@@ -12,7 +12,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import { HistoryEvent } from 'vue-declarative-plots';
+import { HistoryEvent } from 'vueplotlib';
 import { PLOT_GROUPS, EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY } from './../vdp/Visibility';
 
 export default {

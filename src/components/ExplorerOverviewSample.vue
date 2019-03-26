@@ -117,9 +117,10 @@
         <!-- Genes -->
         <PlotInfo title="Genes" :showTitle="true" v-if="selectedGenes.length > 0">
             <p slot="info">
-                These plots display mutation classes of the selected genes for sample {{ sampleId }}.
+                These plots display mutation classifications of the selected genes for sample {{ sampleId }}.
             </p>
         </PlotInfo>
+        <!-- Gene Mutation -->
         <div class="gene-rects-wrapper">
             <div class="gene-axis-wrapper">
                 <PlotContainer
@@ -134,7 +135,7 @@
                         slot="axisLeft"
                         side="left"
                         :tickRotation="0"
-                        variable="gene"
+                        variable="gene_mut"
                         :getScale="getScale"
                         :getStack="getStack"
                         :disableBrushing="true"
@@ -152,7 +153,7 @@
                 >
                     <RectPlot 
                         slot="plot"
-                        :data="('gene_' + geneId)"
+                        :data="('gene_mut_' + geneId)"
                         z="sample_id"
                         c="mut_class"
                         :o="sampleId"
@@ -165,7 +166,111 @@
             <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
                 <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
                     <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
-                        {{ genes[('gene_' + geneId)] }}
+                        {{ genes[('gene_mut_' + geneId)] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gene-data-type-divider"></div>
+        <!-- Gene Expression -->
+        <div class="gene-rects-wrapper">
+            <div class="gene-axis-wrapper">
+                <PlotContainer
+                    :pWidth="0"
+                    :pHeight="(numGenes * 25)"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="0"
+                    :pMarginBottom="0"
+                >
+                    <Axis
+                        slot="axisLeft"
+                        side="left"
+                        :tickRotation="0"
+                        variable="gene_exp"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div v-for="geneId in selectedGenes" :key="geneId">
+                <PlotContainer
+                    :pWidth="25"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <RectPlot 
+                        slot="plot"
+                        :data="('gene_exp_' + geneId)"
+                        z="sample_id"
+                        c="gene_expression"
+                        :o="sampleId"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :disableTooltip="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
+                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
+                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
+                        {{ genes[('gene_exp_' + geneId)] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gene-data-type-divider"></div>
+        <!-- Gene CNA -->
+        <div class="gene-rects-wrapper">
+            <div class="gene-axis-wrapper">
+                <PlotContainer
+                    :pWidth="0"
+                    :pHeight="(numGenes * 25)"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="0"
+                    :pMarginBottom="0"
+                >
+                    <Axis
+                        slot="axisLeft"
+                        side="left"
+                        :tickRotation="0"
+                        variable="gene_cna"
+                        :getScale="getScale"
+                        :getStack="getStack"
+                        :disableBrushing="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div v-for="geneId in selectedGenes" :key="geneId">
+                <PlotContainer
+                    :pWidth="25"
+                    :pHeight="20"
+                    :pMarginTop="0"
+                    :pMarginLeft="150"
+                    :pMarginRight="5"
+                    :pMarginBottom="5"
+                >
+                    <RectPlot 
+                        slot="plot"
+                        :data="('gene_cna_' + geneId)"
+                        z="sample_id"
+                        c="copy_number"
+                        :o="sampleId"
+                        :getData="getData"
+                        :getScale="getScale"
+                        :disableTooltip="true"
+                    />
+                </PlotContainer>
+            </div>
+            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
+                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
+                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
+                        {{ genes[('gene_cna_' + geneId)] }}
                     </div>
                 </div>
             </div>
@@ -542,11 +647,11 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
+import { min as d3_min, max as d3_max, sum as d3_sum } from 'd3-array';
 import PlotInfo from './PlotInfo.vue';
 import API from './../api.js';
 
-
-import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vue-declarative-plots';
+import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
 import { EXPLORER_COLUMNS } from '../vdp/Sizes';
 
 export default {
@@ -578,12 +683,18 @@ export default {
         },
         initGeneAndClinicalValues() {
             for(const geneId of this.getConfig().selectedGenes) {
-                const geneValue = this.getData(("gene_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["mut_class"];
-                this.genes[("gene_" + geneId)] = this.getScale("mut_class").toHuman(geneValue);
+                const geneMutValue = this.getData(("gene_mut_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["mut_class"];
+                this.genes[("gene_mut_" + geneId)] = this.getScale("mut_class").toHuman(geneMutValue);
+
+                const geneExpValue = this.getData(("gene_exp_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["gene_expression"];
+                this.genes[("gene_exp_" + geneId)] = this.getScale("gene_expression").toHuman(geneExpValue);
+
+                const geneCNAValue = this.getData(("gene_cna_" + geneId)).dataCopy.find(el => el["sample_id"] === this.sampleId)["copy_number"];
+                this.genes[("gene_cna_" + geneId)] = this.getScale("copy_number").toHuman(geneCNAValue);
             }
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
-                const clinicalValue = this.getData("clinical_Data").dataCopy.find(el => el["sample_id"] === this.sampleId)[clinicalVar];
+                const clinicalValue = this.getData("clinical_data").dataCopy.find(el => el["sample_id"] === this.sampleId)[clinicalVar];
                 this.clinical[clinicalVar] = this.getScale(clinicalVar).toHuman(clinicalValue);
             }
         },
@@ -614,12 +725,14 @@ export default {
                     this.setData({key: "exp_SBS_" + this.sampleId, data: expsSbsData});
                 }
                 if(this.getScale("exp_SBS_" + this.sampleId) === undefined) {
-                    const expsSbsScale = new ContinuousScale("exp_SBS_" + this.sampleId, "SBS Exposure", API.fetchScaleExposuresSingleSample({
+                    const expsSbsScale = new ContinuousScale("exp_SBS_" + this.sampleId, "SBS Exposure", API.fetchPlotExposuresSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["exp_SBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "exp_SBS_" + this.sampleId, scale: expsSbsScale});
                 }
@@ -637,12 +750,14 @@ export default {
                     this.setData({key: "count_SBS_" + this.sampleId, data: countsSbsData});
                 }
                 if(this.getScale("count_SBS_" + this.sampleId) === undefined) {
-                    const countsSbsScale = new ContinuousScale("count_SBS_" + this.sampleId, "SBS Category Count", API.fetchScaleReconstructionSingleSample({
+                    const countsSbsScale = new ContinuousScale("count_SBS_" + this.sampleId, "SBS Category Count", API.fetchPlotCountsPerCategorySingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["count_SBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "count_SBS_" + this.sampleId, scale: countsSbsScale});
                 }
@@ -660,12 +775,14 @@ export default {
                 }
 
                 if(this.getScale("reconstruction_SBS_" + this.sampleId) === undefined) {
-                    const reconstructionSbsScale = new ContinuousScale("reconstruction_SBS_" + this.sampleId, "SBS Category Reconstruction", API.fetchScaleReconstructionSingleSample({
+                    const reconstructionSbsScale = new ContinuousScale("reconstruction_SBS_" + this.sampleId, "SBS Category Reconstruction", API.fetchPlotReconstructionSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["reconstruction_SBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "reconstruction_SBS_" + this.sampleId, scale: reconstructionSbsScale});
                 }
@@ -683,12 +800,17 @@ export default {
                 }
 
                 if(this.getScale("error_SBS_" + this.sampleId) === undefined) {
-                    const errorSbsScale = new ContinuousScale("error_SBS_" + this.sampleId, "SBS Error", API.fetchScaleReconstructionErrorSingleSample({
+                    const errorSbsScale = new ContinuousScale("error_SBS_" + this.sampleId, "SBS Error", API.fetchPlotReconstructionErrorSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesSbs,
                         "mut_type": "SBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [
+                            d3_min(data.map(d => d["error_SBS_" + this.sampleId])), 
+                            d3_max(data.map(d => d["error_SBS_" + this.sampleId]))
+                        ];
                     }));
                     this.setScale({key: "error_SBS_" + this.sampleId, scale: errorSbsScale});
                 }
@@ -720,12 +842,14 @@ export default {
                     this.setData({key: "exp_DBS_" + this.sampleId, data: expsDbsData});
                 }
                 if(this.getScale("exp_DBS_" + this.sampleId) === undefined) {
-                    const expsDbsScale = new ContinuousScale("exp_DBS_" + this.sampleId, "DBS Exposure", API.fetchScaleExposuresSingleSample({
+                    const expsDbsScale = new ContinuousScale("exp_DBS_" + this.sampleId, "DBS Exposure", API.fetchPlotExposuresSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["exp_DBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "exp_DBS_" + this.sampleId, scale: expsDbsScale});
                 }
@@ -742,12 +866,14 @@ export default {
                     this.setData({key: "count_DBS_" + this.sampleId, data: countsDbsData});
                 }
                 if(this.getScale("count_DBS_" + this.sampleId) === undefined) {
-                    const countsDbsScale = new ContinuousScale("count_DBS_" + this.sampleId, "DBS Category Count", API.fetchScaleReconstructionSingleSample({
+                    const countsDbsScale = new ContinuousScale("count_DBS_" + this.sampleId, "DBS Category Count", API.fetchPlotCountsPerCategorySingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["count_DBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "count_DBS_" + this.sampleId, scale: countsDbsScale});
                 }
@@ -765,12 +891,14 @@ export default {
                 }
 
                 if(this.getScale("reconstruction_DBS_" + this.sampleId) === undefined) {
-                    const reconstructionDbsScale = new ContinuousScale("reconstruction_DBS_" + this.sampleId, "DBS Category Reconstruction", API.fetchScaleReconstructionSingleSample({
+                    const reconstructionDbsScale = new ContinuousScale("reconstruction_DBS_" + this.sampleId, "DBS Category Reconstruction", API.fetchPlotReconstructionSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["reconstruction_DBS_" + this.sampleId]))];
                     }));
                     this.setScale({key: "reconstruction_DBS_" + this.sampleId, scale: reconstructionDbsScale});
                 }
@@ -788,12 +916,17 @@ export default {
                 }
 
                 if(this.getScale("error_DBS_" + this.sampleId) === undefined) {
-                    const errorDbsScale = new ContinuousScale("error_DBS_" + this.sampleId, "DBS Error", API.fetchScaleReconstructionErrorSingleSample({
+                    const errorDbsScale = new ContinuousScale("error_DBS_" + this.sampleId, "DBS Error", API.fetchPlotReconstructionErrorSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesDbs,
                         "mut_type": "DBS",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [
+                            d3_min(data.map(d => d["error_DBS_" + this.sampleId])), 
+                            d3_max(data.map(d => d["error_DBS_" + this.sampleId]))
+                        ];
                     }));
                     this.setScale({key: "error_DBS_" + this.sampleId, scale: errorDbsScale});
                 }
@@ -825,12 +958,14 @@ export default {
                     this.setData({key: "exp_INDEL_" + this.sampleId, data: expsIndelData});
                 }
                 if(this.getScale("exp_INDEL_" + this.sampleId) === undefined) {
-                    const expsIndelScale = new ContinuousScale("exp_INDEL_" + this.sampleId, "INDEL Exposure", API.fetchScaleExposuresSingleSample({
+                    const expsIndelScale = new ContinuousScale("exp_INDEL_" + this.sampleId, "INDEL Exposure", API.fetchPlotExposuresSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["exp_INDEL_" + this.sampleId]))];
                     }));
                     this.setScale({key: "exp_INDEL_" + this.sampleId, scale: expsIndelScale});
                 }
@@ -848,12 +983,14 @@ export default {
                     this.setData({key: "count_INDEL_" + this.sampleId, data: countsIndelData});
                 }
                 if(this.getScale("count_INDEL_" + this.sampleId) === undefined) {
-                    const countsIndelScale = new ContinuousScale("count_INDEL_" + this.sampleId, "INDEL Category Count", API.fetchScaleReconstructionSingleSample({
+                    const countsIndelScale = new ContinuousScale("count_INDEL_" + this.sampleId, "INDEL Category Count", API.fetchPlotCountsPerCategorySingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["count_INDEL_" + this.sampleId]))];
                     }));
                     this.setScale({key: "count_INDEL_" + this.sampleId, scale: countsIndelScale});
                 }
@@ -871,12 +1008,14 @@ export default {
                 }
 
                 if(this.getScale("reconstruction_INDEL_" + this.sampleId) === undefined) {
-                    const reconstructionIndelScale = new ContinuousScale("reconstruction_INDEL_" + this.sampleId, "INDEL Category Reconstruction", API.fetchScaleReconstructionSingleSample({
+                    const reconstructionIndelScale = new ContinuousScale("reconstruction_INDEL_" + this.sampleId, "INDEL Category Reconstruction", API.fetchPlotReconstructionSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [0, d3_max(data.map(d => d["reconstruction_INDEL_" + this.sampleId]))];
                     }));
                     this.setScale({key: "reconstruction_INDEL_" + this.sampleId, scale: reconstructionIndelScale});
                 }
@@ -894,12 +1033,17 @@ export default {
                 }
 
                 if(this.getScale("error_INDEL_" + this.sampleId) === undefined) {
-                    const errorIndelScale = new ContinuousScale("error_INDEL_" + this.sampleId, "INDEL Error", API.fetchScaleReconstructionErrorSingleSample({
+                    const errorIndelScale = new ContinuousScale("error_INDEL_" + this.sampleId, "INDEL Error", API.fetchPlotReconstructionErrorSingleSample({
                         "projects": this.getConfig().selectedSamples,
                         "signatures": this.getConfig().selectedSignaturesIndel,
                         "mut_type": "INDEL",
                         "sample_id": this.sampleId,
                         "tricounts_method": this.getConfig().selectedTricountsMethod
+                    }).then((data) => {
+                        return [
+                            d3_min(data.map(d => d["error_INDEL_" + this.sampleId])), 
+                            d3_max(data.map(d => d["error_INDEL_" + this.sampleId]))
+                        ];
                     }));
                     this.setScale({key: "error_INDEL_" + this.sampleId, scale: errorIndelScale});
                 }
@@ -977,6 +1121,11 @@ export default {
     font-size: 13px;
     line-height: 25px;
     margin-left: 5px;
+}
+
+.gene-data-type-divider {
+    width: 100%;
+    height: 10px;
 }
 
 </style>

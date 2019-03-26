@@ -11,7 +11,7 @@
                     <h3>Export URL</h3>
                     <p>Share the current ExploSig state and history via the following URL:</p>
                     <div class="sharing-url" v-if="currSlug.length > 0">
-                        <pre>http://explosig.lrgr.io/#export-{{ currSlug }}</pre>
+                        <pre>{{ baseURL }}/#export-{{ currSlug }}</pre>
                     </div>
                     <VSpinner v-if="isExporting" class="spinner" />
                 </div>
@@ -55,6 +55,9 @@ export default {
         };
     },
     computed: {
+        baseURL() {
+            return window.location.protocol + '//' + window.location.hostname;
+        },
         ...mapGetters([
             'getConfig',
             'getScale',

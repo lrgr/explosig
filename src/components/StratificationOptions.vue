@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import HistoryEvent from 'vue-declarative-plots/src/history/HistoryEvent.js';
+import HistoryEvent from 'vueplotlib/src/history/HistoryEvent.js';
 import { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY } from './../vdp/Stratification.js';
 
 let uuid = 0;
