@@ -44,7 +44,6 @@ export default {
           autoSelected: false,
           autoSelectedBy: null,
           cancerTypeMapGroups: [],
-          tricountsMethods: [],
           selectedTricountsMethod: "None",
           loading: true,
           allSignaturesSbs: [],
@@ -76,8 +75,6 @@ export default {
 
             vm.cancerTypeMap = listing["cancer_type_map"];
             vm.cancerTypeMapGroups = d3_set(listing["signatures"].map(el => el["group"])).values();
-
-            vm.tricountsMethods = listing["tricounts_methods"];
             
             vm.loading = false;
 
@@ -95,9 +92,6 @@ export default {
         this.drawPlot();
         this.$emit('choose-sig-group', val);
         this.tryToAutoSelect(this.selectedMapping);
-      },
-      selectedTricountsMethod(val) {
-          this.$emit('choose-tricounts-method', val)
       },
       selectedSignaturesSbs(val) {
           this.$emit('choose-sbs', val)

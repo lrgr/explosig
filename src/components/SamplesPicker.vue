@@ -13,6 +13,11 @@
           </option>
         </select>
       </div>
+
+      <div class="tricounts-option-wrapper">
+        <input type="checkbox" :value="true" id="tricounts-checkbox" v-model="tricountsValue">
+        <label for="tricounts-checkbox" title="Normalize trinucleotides by frequency (based on sequencing strategy of each selected cohort)">Trinucleotide normalization</label>
+      </div>
     </div>
 
     <div class="col-container">
@@ -60,6 +65,7 @@ export default {
         allProjects: [],
         selectedProjects: [],
         tissueTypes: [],
+        tricountsValue: false,
         // for filtering:
         allSources: [],
         filterBySource: "TCGA"
@@ -93,8 +99,8 @@ export default {
   },
   watch: {
     selectedProjects(val) {
-      this.$emit('chooseNum', this.selectedNumSamples());
-      this.$emit('chooseMappings', this.selectedOncotreeMappings());
+      this.$emit('choose-num', this.selectedNumSamples());
+      this.$emit('choose-mappings', this.selectedOncotreeMappings());
       this.$emit('choose', val);
     },
     allProjects(val) {
@@ -103,7 +109,14 @@ export default {
           this.allSources.push(project["source"]);
         }
       }
-    }
+    },
+    tricountsValue(val) {
+      if(val === true){
+        this.$emit('choose-tricounts-method', "ByCohort");
+      } else {
+        this.$emit('choose-tricounts-method', "None");
+      }
+    },
   },
   mounted: function() {
         var vm = this;
@@ -181,6 +194,9 @@ export default {
   .samples-filter-by-source {
     flex-grow: 1;
   }
+}
+.tricounts-option-wrapper {
+  position: relative;
 }
 
 .col-container {

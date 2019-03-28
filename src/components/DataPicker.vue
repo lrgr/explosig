@@ -8,14 +8,14 @@
                 @choose-indel="updateSignaturesIndel"
                 @choose-sig-group="updateSignaturesGroup"
                 @choose-auto-selected="updateSignaturesAutoSelected"
-                @choose-tricounts-method="updateTricountsMethod"
                 :selectedMapping="chosenSignaturesGroupMapping"
              />
             <SamplesPicker 
                 v-show="samplesVisible" 
                 @choose="updateSamples" 
-                @chooseNum="updateSamplesNum" 
-                @chooseMappings="updateSamplesOncotreeMappings" 
+                @choose-num="updateSamplesNum" 
+                @choose-mappings="updateSamplesOncotreeMappings" 
+                @choose-tricounts-method="updateTricountsMethod"
             />
             <GenesPicker 
                 v-show="genesVisible" 
