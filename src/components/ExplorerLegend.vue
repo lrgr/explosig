@@ -7,6 +7,20 @@
             :getScale="getScale"
             :getStack="getStack"
         />
+        
+        <!-- make a fake legend for whether or not to do trinucleotide normalization -->
+        <div class="tricounts-method-legend">
+            <span class="tricounts-method-legend-title">Trinucleotide Normalization</span>
+            <div>
+                <span class="tricounts-method-legend-item-left">
+                    <input type="checkbox" :checked="selectedTricountsMethod === 'By Study'" disabled="true" />
+                </span>
+                <span class="tricounts-method-legend-item-right" title="Whether or not to normalize trinucleotides by frequency based on sequencing strategy of each cohort">
+                    By Study
+                </span>
+            </div>
+        </div>
+
         <CategoricalLegend
             variable="mut_type"
             lStyle="bar"
@@ -145,6 +159,9 @@ export default {
         selectedClinicalVariables() {
             return (this.getConfig().selectedClinicalVariables);
         },
+        selectedTricountsMethod() {
+            return (this.getConfig().selectedTricountsMethod);
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -173,5 +190,20 @@ export default {
 <style scoped lang="scss">
 @import './../style/variables.scss';
 
-
+.tricounts-method-legend {
+    margin-top: 8px;
+    .tricounts-method-legend-title {
+        color: black;
+    }
+    .tricounts-method-legend-item-left {
+        margin-left: 4px;
+        width: 26px;
+        margin-top: 2px;
+        height: 16px;
+    }
+    .tricounts-method-legend-item-right {
+        font-size: 13px;
+        color: black;
+    }
+}
 </style>

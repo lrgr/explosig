@@ -112,7 +112,7 @@ export default {
     },
     tricountsValue(val) {
       if(val === true){
-        this.$emit('choose-tricounts-method', "ByCohort");
+        this.$emit('choose-tricounts-method', "By Study");
       } else {
         this.$emit('choose-tricounts-method', "None");
       }
