@@ -20,7 +20,7 @@
             <div class="intro-importing" v-if="fromImport">
                 <h3 v-if="isImporting">Loading...</h3>
                 <div v-if="!isImporting">
-                    <h3>ExploSig Analysis <pre>{{ importSlug }}</pre></h3>
+                    <h3>ExploSig Analysis <span class="intro-import-slug">{{ importSlug }}</span></h3>
                     <p>
                         When loading a previous ExploSig analysis,
                         <ul>
@@ -97,6 +97,9 @@ export default {
 
     h3 {
         margin-top: 0;
+    }
+    .intro-import-slug {
+        font-family: 'Courier New', Courier, monospace;
     }
 }
 .intro-figure {

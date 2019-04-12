@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="explorer-divider" :style="{ 'height': (windowHeight-73) + 'px', 'left': offsetLeft + 'px' }" @dragstart="dragStart" @dragend="dragEnd" draggable="true"></div>
+        <!-- buggy; using dummy element for now -->
+        <div class="explorer-divider" :style="{ 'height': (windowHeight-73) + 'px', 'left': offsetLeft + 'px' }"></div>
+        <!--<div class="explorer-divider" :style="{ 'height': (windowHeight-73) + 'px', 'left': offsetLeft + 'px' }" @dragstart="dragStart" @dragend="dragEnd" draggable="true"></div>-->
     </div>
 </template>
 
@@ -62,13 +64,16 @@ export default {
     box-sizing: border-box;
     border-left: 1px solid silver;
     opacity: 0.5;
-    cursor: col-resize;
     z-index: 6;
 
+    /* TODO: uncomment when I have a chance to fix bugs */
+    /* 
+    cursor: col-resize;
     transition: border-left 0.1s;
 
     &:hover {
         border-left: 5px solid silver;
     }
+    */
 }
 </style>

@@ -165,6 +165,10 @@ export default {
                 return [];
             }
         },
+        selectedTricountsMethod() {
+            let config = this.getConfig();
+            return config.selectedTricountsMethod;
+        },
         modalWidth() {
             return (0.8 * 0.9 * this.windowWidth);
         },
@@ -190,7 +194,8 @@ export default {
                 // set up scales and data
                 this.plotData["signature"] = new DataContainer("signature", sigInfo.id, API.fetchPlotSignature({
                     "signature": sigInfo.id,
-                    "mut_type": sigInfo.mut_type
+                    "mut_type": sigInfo.mut_type,
+                    "tricounts_method": this.selectedTricountsMethod
                 }));
                 this.sigModalKey++;
             }
