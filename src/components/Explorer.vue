@@ -7,6 +7,7 @@
             <FilterButtons />
 
             <SharingButtons :style="{'float': 'right'}" />
+            <SessionButtons :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col" :style="{'width': colWidthMain + 'px'}">
@@ -45,6 +46,7 @@ import SortButtons from './SortButtons.vue';
 import StratificationButtons from './StratificationButtons.vue';
 import FilterButtons from './FilterButtons.vue';
 import SharingButtons from './SharingButtons.vue';
+import SessionButtons from './SessionButtons.vue';
 
 import ExplorerOverviewTabs from './ExplorerOverviewTabs.vue';
 import ExplorerOverviewSampleContainer from './ExplorerOverviewSampleContainer.vue';
@@ -72,6 +74,7 @@ export default {
         StratificationButtons,
         FilterButtons,
         SharingButtons,
+        SessionButtons,
         ExplorerLegend,
         ExplorerOverview,
         ExplorerMain,

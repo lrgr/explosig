@@ -10,6 +10,10 @@ const withToken = (body, token) => {
     });
 }
 
+const toWebSocketURL = (url) => {
+    return ('ws://' + url.substring(url.indexOf('://') + 3));
+}
+
 export default class API {
     static api_base = process.env.VUE_APP_API_BASE;
     static token = '';
@@ -85,6 +89,31 @@ export default class API {
         return d3_json(url, { method: "POST", body: withToken(body, API.token) });
     }
 
+    static startSession(state) {
+        let url = API.api_base + "session-start";
+
+        const body = { "state": JSON.stringify(state) };
+        return d3_json(url, { method: "POST", body: withToken(body, API.token) });
+    }
+
+    static connectSession(sessionID) {
+        let url = toWebSocketURL(API.api_base + "session-connect");
+
+        let socket = new WebSocket(url);
+
+        socket.addEventListener('open', () => {
+            const body = { 'session_id': sessionID };
+            socket.send(withToken(body, API.token));
+        });
+
+        socket.addEventListener('message', (event) => {
+            console.log('Message from server ', event.data);
+        })
+
+        socket.addEventListener('close', (event) => {
+            console.log('Closed websocket connection', event);
+        })
+    }
 
     static fetchDataListing() {
         let url = API.api_base + "data-listing";
