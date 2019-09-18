@@ -109,7 +109,10 @@ export default {
             'getSamples',
             'getData',
             'getScale',
-            'getSizes'
+            'getSizes',
+            'isSession',
+            'isEmptySession',
+            'sessionId'
         ])
     },
     created() {
@@ -118,7 +121,11 @@ export default {
         this.initVisibility();
         this.initSizes();
         this.initSamples();
-        this.initScalesAndData();
+        if(this.getConfig() !== null && !this.getConfig().isEmpty()) {
+            this.initScalesAndData();
+        } else if(this.isSession && this.isEmptySession) {
+            this.awaitScalesAndData();
+        }
     },
     methods: {
         initStack() {
@@ -158,6 +165,10 @@ export default {
         initSamples() {
             const samples = new Samples();
             this.setSamples(samples);
+        },
+        awaitScalesAndData() {
+            const projectsScale = new ExpectedCategoricalScale(this.sessionId, "proj_id", "Study");
+            this.setScale({ key: "proj_id", scale: projectsScale });
         },
         initScalesAndData() {
             const projectsScale = new CategoricalScale("proj_id", "Study", this.getConfig().selectedSamples);

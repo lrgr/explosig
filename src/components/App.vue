@@ -56,11 +56,13 @@ export default {
   },
   computed: {
     showIntro() {
-      return (this.getConfig() === null || this.getConfig().isEmpty());
+      return (this.getConfig() === null || this.getConfig().isEmpty()) && !(this.isSession && this.isEmptySession);
     },
     ...mapGetters([
       'getConfig',
-      'getStack'
+      'getStack',
+      'isSession',
+      'isEmptySession'
     ])
   },
   methods: {
@@ -80,6 +82,10 @@ export default {
           this.setIsImporting(false);
           this.importedState = JSON.parse(data.state);
         });
+      } else if(paramStr.length > 0 && paramStr.substring(0,7) === "session") {
+          // Start "empty" session
+          let sessionId = paramStr.substring(8, 16);
+          this.setSession({ isSession: true, isEmptySession: true, sessionId: sessionId});
       }
     },
     rerender() {
@@ -131,7 +137,8 @@ export default {
       'setConfig',
       'setIsImporting',
       'setFromImport',
-      'setIsLoading'
+      'setIsLoading',
+      'setSession',
     ])
   }
 }

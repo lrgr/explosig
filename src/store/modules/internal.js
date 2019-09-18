@@ -6,7 +6,10 @@ const state = {
     fromImport: false,
     isLoading: false,
     continuousClinicalVariables: [],
-    isProtected: true
+    isProtected: true,
+    isSession: false,
+    isEmptySession: false,
+    sessionId: undefined,
 }
 
 // getters
@@ -17,7 +20,10 @@ const getters = {
     fromImport: state => state.fromImport,
     isLoading: state => state.isLoading,
     continuousClinicalVariables: state => state.continuousClinicalVariables,
-    isProtected: state => state.isProtected
+    isProtected: state => state.isProtected,
+    isSession: state => state.isSession,
+    isEmptySession: state => state.isEmptySession,
+    sessionId: state => state.sessionId,
 }
 
 // actions
@@ -47,6 +53,11 @@ const mutations = {
     },
     setIsProtected (state, isProtected) {
         state.isProtected = isProtected;
+    },
+    setSession(state, { isSession, isEmptySession, sessionId }) {
+        state.isSession = isSession;
+        state.isEmptySession = isEmptySession;
+        state.sessionId = sessionId;
     }
 }
 
