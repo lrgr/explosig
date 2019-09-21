@@ -2,7 +2,6 @@
     <div>
         <span class="explorer-control-title">Session</span>
         <button @click="startSession">Start</button>
-        <button @click="connectSession">Connect</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
@@ -55,7 +54,6 @@ export default {
         closeSessionModal() {
             this.modalVisible = false;
             this.startSessionModalVisible = false;
-            this.connectSessionModalVisible = false;
         },
         startSession() {
             this.isLoading = true;
@@ -77,11 +75,6 @@ export default {
                 // Already have a session ID.
                 this.isLoading = false;
             }
-        },
-        connectSession() {
-            this.modalVisible = true;
-            this.connectSessionModalVisible = true;
-
         }
     }
 }

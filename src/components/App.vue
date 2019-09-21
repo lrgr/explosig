@@ -84,7 +84,9 @@ export default {
         });
       } else if(paramStr.length > 0 && paramStr.substring(0,7) === "session") {
           // Start "empty" session
-          let sessionId = paramStr.substring(8, 16);
+          const sessionId = paramStr.substring(8, 16);
+          this.getConfig().resetConfig();
+          API.connectSession(sessionId);
           this.setSession({ isSession: true, isEmptySession: true, sessionId: sessionId});
       }
     },

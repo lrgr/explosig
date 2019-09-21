@@ -1,6 +1,10 @@
 import { json as d3_json } from 'd3-fetch';
 import { getHashCode } from './helpers';
+import { dispatch as d3_dispatch } from "d3-dispatch";
 
+
+const DISPATCH_EVENT_WS_DATA = 'session-websocket-receive-data';
+const DISPATCH_EVENT_WS_REQ = 'session-websocket-receive-request';
 const globalPlotData = {};
 
 const withToken = (body, token) => {
@@ -17,6 +21,26 @@ const toWebSocketURL = (url) => {
 export default class API {
     static api_base = process.env.VUE_APP_API_BASE;
     static token = '';
+    static dispatch = d3_dispatch(DISPATCH_EVENT_WS_DATA, DISPATCH_EVENT_WS_REQ);;
+    static socket;
+
+    /**
+     * Subscribe to websocket receive data events.
+     * @param {string} componentId 
+     * @param {function} callback 
+     */
+    static onWebsocketData(componentId, callback) {
+        API.dispatch.on(DISPATCH_EVENT_WS_DATA + "." + componentId, callback);
+    }
+
+    /**
+     * Subscribe to websocket receive request events.
+     * @param {string} componentId 
+     * @param {function} callback 
+     */
+    static onWebsocketRequest(componentId, callback) {
+        API.dispatch.on(DISPATCH_EVENT_WS_REQ + "." + componentId, callback);
+    }
 
     // Cache helpers
     static checkStored(hashCode) {
@@ -97,9 +121,9 @@ export default class API {
     }
 
     static connectSession(sessionID) {
-        let url = toWebSocketURL(API.api_base + "session-connect");
+        const url = toWebSocketURL(API.api_base + "session-connect");
 
-        let socket = new WebSocket(url);
+        const socket = new WebSocket(url);
 
         socket.addEventListener('open', () => {
             const body = { 'session_id': sessionID };
@@ -107,12 +131,19 @@ export default class API {
         });
 
         socket.addEventListener('message', (event) => {
-            console.log('Message from server ', event.data);
-        })
+            const data = JSON.parse(event.data);
+            if(data.hasOwnProperty("data")) {
+                API.dispatch.call(DISPATCH_EVENT_WS_DATA, null, data["data"]);
+            } else if(data.hasOwnProperty("request")) {
+                API.dispatch.call(DISPATCH_EVENT_WS_REQ, null, data["request"]);
+            }
+        });
 
         socket.addEventListener('close', (event) => {
             console.log('Closed websocket connection', event);
-        })
+        });
+
+        API.socket = socket;
     }
 
     static fetchDataListing() {

@@ -1,13 +1,13 @@
 <template>
     <div>
         <div class="explorer-control" :style="{ 'height': 24 + 'px' }"> 
-            <HistoryButtons />
+            <HistoryButtons v-if="!isEmptySession" />
             <SortButtons />
             <StratificationButtons />
             <FilterButtons />
 
             <SharingButtons :style="{'float': 'right'}" />
-            <SessionButtons :style="{'float': 'right'}" />
+            <SessionButtons v-if="!isEmptySession" :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col" :style="{'width': colWidthMain + 'px'}">
@@ -35,6 +35,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import { max as d3_max, sum as d3_sum } from 'd3-array';
 import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vueplotlib';
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
+import { Expected } from 'vueplotlib';
 
 import Stratification, { EVENT_TYPE_STRATIFY, EVENT_SUBTYPE_STRATIFY, EVENT_SUBTYPE_RESET_STRATIFY } from './../vdp/Stratification.js';
 import Visibility, { EVENT_TYPE_VISIBILITY, EVENT_SUBTYPE_VISIBILITY, EVENT_SUBTYPE_RESET_VISIBILITY, PLOT_GROUPS } from './../vdp/Visibility.js';
@@ -121,11 +122,8 @@ export default {
         this.initVisibility();
         this.initSizes();
         this.initSamples();
-        if(this.getConfig() !== null && !this.getConfig().isEmpty()) {
-            this.initScalesAndData();
-        } else if(this.isSession && this.isEmptySession) {
-            this.awaitScalesAndData();
-        }
+        this.initScalesAndData();
+
     },
     methods: {
         initStack() {
@@ -166,62 +164,65 @@ export default {
             const samples = new Samples();
             this.setSamples(samples);
         },
-        awaitScalesAndData() {
-            const projectsScale = new ExpectedCategoricalScale(this.sessionId, "proj_id", "Study");
-            this.setScale({ key: "proj_id", scale: projectsScale });
-        },
         initScalesAndData() {
-            const projectsScale = new CategoricalScale("proj_id", "Study", this.getConfig().selectedSamples);
+            const expected = new Expected();
+
+            API.onWebsocketData('explorer', (data) => {
+                expected.emitData(data);
+                console.log(data);
+            });
+
+            const projectsScale = new CategoricalScale("proj_id", "Study", this.getConfig().selectedSamples, undefined, undefined, undefined, expected);
             this.setScale({key: "proj_id", scale: projectsScale});
 
             const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
             this.setScale({key: "mut_type", scale: mutTypeScale});
 
-            const sigsSbsScale = new CategoricalScale("sig_SBS", "SBS Signature", this.getConfig().selectedSignaturesSbs);
+            const sigsSbsScale = new CategoricalScale("sig_SBS", "SBS Signature", this.getConfig().selectedSignaturesSbs, undefined, undefined, undefined, expected);
             this.setScale({key: "sig_SBS", scale: sigsSbsScale});
 
-            const sigsDbsScale = new CategoricalScale("sig_DBS", "DBS Signature", this.getConfig().selectedSignaturesDbs);
+            const sigsDbsScale = new CategoricalScale("sig_DBS", "DBS Signature", this.getConfig().selectedSignaturesDbs, undefined, undefined, undefined, expected);
             this.setScale({key: "sig_DBS", scale: sigsDbsScale});
 
-            const sigsIndelScale = new CategoricalScale("sig_INDEL", "INDEL Signature", this.getConfig().selectedSignaturesIndel);
+            const sigsIndelScale = new CategoricalScale("sig_INDEL", "INDEL Signature", this.getConfig().selectedSignaturesIndel, undefined, undefined, undefined, expected);
             this.setScale({key: "sig_INDEL", scale: sigsIndelScale});
 
             /* SAMPLES METADATA  */
             const samplesMetaScale = new CategoricalScale("sample_meta", "", ["Study"]);
             this.setScale({key: "sample_meta", scale: samplesMetaScale});
 
-            const samplesMetaData = new DataContainer("sample_meta", "Sample Metadata", API.fetchPlotSamplesMeta({
+            const samplesMetaData = new DataContainer("sample_meta", "Sample Metadata", (this.isEmptySession ? undefined : API.fetchPlotSamplesMeta({
                 "projects": this.getConfig().selectedSamples
-            }));
+            })), expected);
             this.setData({key: "sample_meta", data: samplesMetaData});
 
-            const samplesScale = new CategoricalScale("sample_id", "Sample", API.fetchScaleSamples({"projects": this.getConfig().selectedSamples}));
+            const samplesScale = new CategoricalScale("sample_id", "Sample", (this.isEmptySession ? undefined : API.fetchScaleSamples({"projects": this.getConfig().selectedSamples})), undefined, undefined, undefined, expected);
             this.setScale({key: "sample_id", scale: samplesScale});
 
             /* MUTATION COUNTS */
-            const countScale = new ContinuousScale("mut_count", "Mutation Count", API.fetchPlotCounts({
+            const countScale = new ContinuousScale("mut_count", "Mutation Count", (this.isEmptySession ? undefined : API.fetchPlotCounts({
                 "projects": this.getConfig().selectedSamples
             }).then((data) => {
                 const mutTypes = mutTypeScale.domain;
                 return [0, d3_max(data.map(d => d3_max(mutTypes.map(mt => d[mt]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "mut_count", scale: countScale});
 
-            const countSumScale = new ContinuousScale("mut_count_sum", "Mutation Count", API.fetchPlotCounts({
+            const countSumScale = new ContinuousScale("mut_count_sum", "Mutation Count", (this.isEmptySession ? undefined : API.fetchPlotCounts({
                 "projects": this.getConfig().selectedSamples
             }).then((data) => {
                 const mutTypes = mutTypeScale.domain;
                 return [0, d3_max(data.map(d => d3_sum(mutTypes.map(mt => d[mt]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "mut_count_sum", scale: countSumScale});
 
-            const countData = new DataContainer("mut_count", "Mutation Count", API.fetchPlotCounts({
+            const countData = new DataContainer("mut_count", "Mutation Count", (this.isEmptySession ? undefined : API.fetchPlotCounts({
                 "projects": this.getConfig().selectedSamples
-            }));
+            })), expected);
             this.setData({key: "mut_count", data: countData});
 
             /* SIGNATURE EXPOSURES: SBS */
-            const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", API.fetchPlotExposures({
+            const exposureSbsScale = new ContinuousScale("exposure_sbs", "SBS Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
@@ -229,10 +230,10 @@ export default {
             }).then((data) => {
                 const sigNames = this.getConfig().selectedSignaturesSbs;
                 return [0, d3_max(data.map(d => d3_max(sigNames.map(sn => d[sn]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "exposure_sbs", scale: exposureSbsScale});
 
-            const exposureSumSbsScale = new ContinuousScale("exposure_sum_sbs", "SBS Exposure", API.fetchPlotExposures({
+            const exposureSumSbsScale = new ContinuousScale("exposure_sum_sbs", "SBS Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
@@ -240,49 +241,49 @@ export default {
             }).then((data) => {
                 const sigNames = this.getConfig().selectedSignaturesSbs;
                 return [0, d3_max(data.map(d => d3_sum(sigNames.map(sn => d[sn]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "exposure_sum_sbs", scale: exposureSumSbsScale});
 
-            const exposureSbsNormalizedScale = new ContinuousScale("exposure_sbs_normalized", "SBS Normalized Exposure", API.fetchScaleExposuresNormalized({
+            const exposureSbsNormalizedScale = new ContinuousScale("exposure_sbs_normalized", "SBS Normalized Exposure", (this.isEmptySession ? undefined : API.fetchScaleExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }), "Greys");
+            })), "Greys", expected);
             this.setScale({key: "exposure_sbs_normalized", scale: exposureSbsNormalizedScale});
 
             const exposureSbsSumNormalizedScale = new ContinuousScale("exposure_sum_sbs_normalized", "SBS Normalized Exposure", [0, 1]);
             this.setScale({key: "exposure_sum_sbs_normalized", scale: exposureSbsSumNormalizedScale});
 
-            const exposureSbsData = new DataContainer("exposure_sbs", "SBS Exposure", API.fetchPlotExposures({
+            const exposureSbsData = new DataContainer("exposure_sbs", "SBS Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposure_sbs", data: exposureSbsData});
 
-            const exposureSbsNormalizedData = new DataContainer("exposure_sbs_normalized", "SBS Normalized Exposure", API.fetchPlotExposuresNormalized({
+            const exposureSbsNormalizedData = new DataContainer("exposure_sbs_normalized", "SBS Normalized Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposure_sbs_normalized", data: exposureSbsNormalizedData});
 
             const exposureSbsCosineSimilarityScale = new ContinuousScale("cosine_similarity_SBS", "SBS Cos. Sim.", [0, 1]);
             this.setScale({key: "cosine_similarity_SBS", scale: exposureSbsCosineSimilarityScale});
 
-            const exposureSbsCosineSimilarityData = new DataContainer("cosine_similarity_SBS", "SBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+            const exposureSbsCosineSimilarityData = new DataContainer("cosine_similarity_SBS", "SBS Cos. Sim.", (this.isEmptySession ? undefined : API.fetchPlotReconstructionCosineSimilarity({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesSbs,
                 "mut_type": "SBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "cosine_similarity_SBS", data: exposureSbsCosineSimilarityData});
 
             /* SIGNATURE EXPOSURES: DBS */
-            const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", API.fetchPlotExposures({
+            const exposureDbsScale = new ContinuousScale("exposure_dbs", "DBS Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
@@ -290,10 +291,10 @@ export default {
             }).then((data) => {
                 const sigNames = this.getConfig().selectedSignaturesDbs;
                 return [0, d3_max(data.map(d => d3_max(sigNames.map(sn => d[sn]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "exposure_dbs", scale: exposureDbsScale});
 
-            const exposureSumDbsScale = new ContinuousScale("exposure_sum_dbs", "DBS Exposure", API.fetchPlotExposures({
+            const exposureSumDbsScale = new ContinuousScale("exposure_sum_dbs", "DBS Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
@@ -301,49 +302,49 @@ export default {
             }).then((data) => {
                 const sigNames = this.getConfig().selectedSignaturesDbs;
                 return [0, d3_max(data.map(d => d3_sum(sigNames.map(sn => d[sn]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "exposure_sum_dbs", scale: exposureSumDbsScale});
 
-            const exposureDbsNormalizedScale = new ContinuousScale("exposure_dbs_normalized", "DBS Normalized Exposure", API.fetchScaleExposuresNormalized({
+            const exposureDbsNormalizedScale = new ContinuousScale("exposure_dbs_normalized", "DBS Normalized Exposure", (this.isEmptySession ? undefined : API.fetchScaleExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }), "Greys");
+            })), "Greys", expected);
             this.setScale({key: "exposure_dbs_normalized", scale: exposureDbsNormalizedScale});
 
             const exposureDbsSumNormalizedScale = new ContinuousScale("exposure_sum_dbs_normalized", "DBS Normalized Exposure", [0, 1]);
             this.setScale({key: "exposure_sum_dbs_normalized", scale: exposureDbsSumNormalizedScale});
 
-            const exposureDbsData = new DataContainer("exposure_dbs", "DBS Exposure", API.fetchPlotExposures({
+            const exposureDbsData = new DataContainer("exposure_dbs", "DBS Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposure_dbs", data: exposureDbsData});
 
-            const exposureDbsNormalizedData = new DataContainer("exposure_dbs_normalized", "DBS Normalized Exposure", API.fetchPlotExposuresNormalized({
+            const exposureDbsNormalizedData = new DataContainer("exposure_dbs_normalized", "DBS Normalized Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposure_dbs_normalized", data: exposureDbsNormalizedData});
 
             const exposureDbsCosineSimilarityScale = new ContinuousScale("cosine_similarity_DBS", "DBS Cos. Sim.", [0, 1]);
             this.setScale({key: "cosine_similarity_DBS", scale: exposureDbsCosineSimilarityScale});
 
-            const exposureDbsCosineSimilarityData = new DataContainer("cosine_similarity_DBS", "DBS Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+            const exposureDbsCosineSimilarityData = new DataContainer("cosine_similarity_DBS", "DBS Cos. Sim.", (this.isEmptySession ? undefined : API.fetchPlotReconstructionCosineSimilarity({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesDbs,
                 "mut_type": "DBS",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "cosine_similarity_DBS", data: exposureDbsCosineSimilarityData});
 
             /* SIGNATURE EXPOSURES: INDEL */
-            const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", API.fetchPlotExposures({
+            const exposureIndelScale = new ContinuousScale("exposure_indel", "INDEL Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
@@ -351,10 +352,10 @@ export default {
             }).then((data) => {
                 const sigNames = this.getConfig().selectedSignaturesIndel;
                 return [0, d3_max(data.map(d => d3_max(sigNames.map(sn => d[sn]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "exposure_indel", scale: exposureIndelScale});
 
-            const exposureSumIndelScale = new ContinuousScale("exposure_sum_indel", "INDEL Exposure", API.fetchPlotExposures({
+            const exposureSumIndelScale = new ContinuousScale("exposure_sum_indel", "INDEL Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
@@ -362,45 +363,45 @@ export default {
             }).then((data) => {
                 const sigNames = this.getConfig().selectedSignaturesIndel;
                 return [0, d3_max(data.map(d => d3_sum(sigNames.map(sn => d[sn]))))];
-            }));
+            })), undefined, expected);
             this.setScale({key: "exposure_sum_indel", scale: exposureSumIndelScale});
 
-            const exposureIndelNormalizedScale = new ContinuousScale("exposure_indel_normalized", "INDEL Normalized Exposure", API.fetchScaleExposuresNormalized({
+            const exposureIndelNormalizedScale = new ContinuousScale("exposure_indel_normalized", "INDEL Normalized Exposure", (this.isEmptySession ? undefined : API.fetchScaleExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }), "Greys");
+            })), "Greys", expected);
             this.setScale({key: "exposure_indel_normalized", scale: exposureIndelNormalizedScale});
 
             const exposureIndelSumNormalizedScale = new ContinuousScale("exposure_sum_indel_normalized", "INDEL Normalized Exposure", [0, 1]);
             this.setScale({key: "exposure_sum_indel_normalized", scale: exposureIndelSumNormalizedScale});
 
-            const exposureIndelData = new DataContainer("exposure_indel", "INDEL Exposure", API.fetchPlotExposures({
+            const exposureIndelData = new DataContainer("exposure_indel", "INDEL Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposure_indel", data: exposureIndelData});
 
-            const exposureIndelNormalizedData = new DataContainer("exposure_indel_normalized", "INDEL Normalized Exposure", API.fetchPlotExposuresNormalized({
+            const exposureIndelNormalizedData = new DataContainer("exposure_indel_normalized", "INDEL Normalized Exposure", (this.isEmptySession ? undefined : API.fetchPlotExposuresNormalized({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposure_indel_normalized", data: exposureIndelNormalizedData});
 
             const exposureIndelCosineSimilarityScale = new ContinuousScale("cosine_similarity_INDEL", "INDEL Cos. Sim.", [0, 1]);
             this.setScale({key: "cosine_similarity_INDEL", scale: exposureIndelCosineSimilarityScale});
 
-            const exposureIndelCosineSimilarityData = new DataContainer("cosine_similarity_INDEL", "INDEL Cos. Sim.", API.fetchPlotReconstructionCosineSimilarity({
+            const exposureIndelCosineSimilarityData = new DataContainer("cosine_similarity_INDEL", "INDEL Cos. Sim.", (this.isEmptySession ? undefined : API.fetchPlotReconstructionCosineSimilarity({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": this.getConfig().selectedSignaturesIndel,
                 "mut_type": "INDEL",
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "cosine_similarity_INDEL", data: exposureIndelCosineSimilarityData});
 
             /* Contexts scales for reconstruction and signature plots */
@@ -414,7 +415,7 @@ export default {
             this.setScale({key: "cat_INDEL", scale: contextsScaleIndel});
 
             /* CLUSTERING  */
-            const exposuresClusteringData = new DataContainer("exposures_clustering", "Clustering by Exposure", API.fetchClustering({
+            const exposuresClusteringData = new DataContainer("exposures_clustering", "Clustering by Exposure", (this.isEmptySession ? undefined : API.fetchClustering({
                 "projects": this.getConfig().selectedSamples,
                 "signatures": {
                     "SBS": this.getConfig().selectedSignaturesSbs,
@@ -422,17 +423,17 @@ export default {
                     "INDEL": this.getConfig().selectedSignaturesIndel
                 },
                 "tricounts_method": this.getConfig().selectedTricountsMethod
-            }));
+            })), expected);
             this.setData({key: "exposures_clustering", data: exposuresClusteringData});
 
             /* GENE ALTERATION DATA */
-            const geneScaleMut = new CategoricalScale("gene_mut", (this.getConfig().selectedGenes.length > 3 ? "Gene Mut." : "Mut."), this.getConfig().selectedGenes);
+            const geneScaleMut = new CategoricalScale("gene_mut", (this.getConfig().selectedGenes.length > 3 ? "Gene Mut." : "Mut."), this.getConfig().selectedGenes, undefined, undefined, undefined, expected);
             this.setScale({key: "gene_mut", scale: geneScaleMut});
 
-            const geneScaleExp = new CategoricalScale("gene_exp", (this.getConfig().selectedGenes.length > 3 ? "Gene Expr." : "Expr."), this.getConfig().selectedGenes);
+            const geneScaleExp = new CategoricalScale("gene_exp", (this.getConfig().selectedGenes.length > 3 ? "Gene Expr." : "Expr."), this.getConfig().selectedGenes, undefined, undefined, undefined, expected);
             this.setScale({key: "gene_exp", scale: geneScaleExp});
 
-            const geneScaleCNA = new CategoricalScale("gene_cna", (this.getConfig().selectedGenes.length > 3 ? "Gene CNA" : "CNA"), this.getConfig().selectedGenes);
+            const geneScaleCNA = new CategoricalScale("gene_cna", (this.getConfig().selectedGenes.length > 3 ? "Gene CNA" : "CNA"), this.getConfig().selectedGenes, undefined, undefined, undefined, expected);
             this.setScale({key: "gene_cna", scale: geneScaleCNA});
 
             const geneMutScale = new CategoricalScale("mut_class", "Mutation Classification", API.fetchScaleGeneAlterations(), undefined, {"None": "#F5F5F5"});
@@ -445,33 +446,34 @@ export default {
             this.setScale({key: "copy_number", scale: geneCNAScale});
 
             for(const geneId of this.getConfig().selectedGenes) {
-                this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", API.fetchPlotGeneMutTrack({
+                this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", (this.isEmptySession ? undefined : API.fetchPlotGeneMutTrack({
                     "projects": this.getConfig().selectedSamples,
                     "gene_id": geneId
-                }))});
+                })), expected)});
 
-                this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", API.fetchPlotGeneExpTrack({
+                this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", (this.isEmptySession ? undefined : API.fetchPlotGeneExpTrack({
                     "projects": this.getConfig().selectedSamples,
                     "gene_id": geneId
-                }))});
+                })), expected)});
 
-                this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", API.fetchPlotGeneCNATrack({
+                this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", (this.isEmptySession ? undefined : API.fetchPlotGeneCNATrack({
                     "projects": this.getConfig().selectedSamples,
                     "gene_id": geneId
-                }))});
+                })), expected)});
             }
 
             /* CLINICAL DATA */
             const clinicalVariableScale = new CategoricalScale(
                 "clinical_variable", 
                 "Clinical Variable", 
-                this.getConfig().selectedClinicalVariables
+                (this.isEmptySession ? undefined : this.getConfig().selectedClinicalVariables),
+                undefined, undefined, undefined, expected
             );
             this.setScale({key: "clinical_variable", scale: clinicalVariableScale});
 
-            this.setData({key: "clinical_data", data: new DataContainer("clinical_data", "Clinical Data", API.fetchPlotClinical({
+            this.setData({key: "clinical_data", data: new DataContainer("clinical_data", "Clinical Data", (this.isEmptySession ? undefined : API.fetchPlotClinical({
                 "projects": this.getConfig().selectedSamples
-            }))});
+            })), expected)});
 
             for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
                 if(this.continuousClinicalVariables.includes(clinicalVar)) {
@@ -487,25 +489,35 @@ export default {
                         return data[clinicalVar];
                     }))});
                 }
-                
-                
+            }
+
+            if(this.isEmptySession) {
+                clinicalVariableScale.onUpdate("explorer", () => {
+                    for(const clinicalVar of clinicalVariableScale.domain) {
+                        if(clinicalVar.startsWith("continuous")) {
+                            this.setScale({key: clinicalVar, scale: new ContinuousScale(clinicalVar, clinicalVar, undefined, undefined, expected) });
+                        } else {
+                            this.setScale({key: clinicalVar, scale: new CategoricalScale(clinicalVar, clinicalVar, undefined, undefined, undefined, undefined, expected)});
+                        }
+                    }
+                })
             }
 
             /* SURVIVAL DATA */
             const survivalPctScale = new ContinuousScale("survival_pct", "Percent Survival", [0, 100]);
             this.setScale({key: "survival_pct", scale: survivalPctScale});
 
-            const survivalTimeScale = new ContinuousScale("survival_time", "Days", API.fetchPlotSurvival({
+            const survivalTimeScale = new ContinuousScale("survival_time", "Days", (this.isEmptySession ? undefined : API.fetchPlotSurvival({
                     "projects": this.getConfig().selectedSamples
                 }).then((data) => {
                     return [0, Math.max(d3_max(data, d => (d["days_to_death"] === "nan" ? NaN : d["days_to_death"])), d3_max(data, d => (d["days_to_last_followup"] === "nan" ? NaN : d["days_to_last_followup"])))]
-                })
+                })), undefined, expected
             );
             this.setScale({key: "survival_time", scale: survivalTimeScale});
 
-            const survivalData = new DataContainer("survival", "Survival", API.fetchPlotSurvival({
+            const survivalData = new DataContainer("survival", "Survival", (this.isEmptySession ? undefined : API.fetchPlotSurvival({
                     "projects": this.getConfig().selectedSamples
-                })
+                })), expected
             );
             this.setData({key: "survival", data: survivalData});
 
@@ -534,51 +546,51 @@ export default {
             const dominantSigSbsMetaScale = new CategoricalScale("dominant_sig_sbs_meta", "", ["Dominant SBS Signature"]);
             this.setScale({key: "dominant_sig_sbs_meta", scale: dominantSigSbsMetaScale});
 
-            const dominantSigSbsData = new DataContainer("dominant_sig_sbs", "SBS Dominant Signature", API.fetchPlotExposures({
+            const dominantSigSbsData = new DataContainer("dominant_sig_sbs", "SBS Dominant Signature", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesSbs,
                     "mut_type": "SBS",
                     "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then(
                     makeDominantSigFunction(this.getConfig().selectedSignaturesSbs, "sig_SBS")
-                )
+                )), expected
             );
             this.setData({key: "dominant_sig_sbs", data: dominantSigSbsData});
 
             const dominantSigDbsMetaScale = new CategoricalScale("dominant_sig_dbs_meta", "", ["Dominant DBS Signature"]);
             this.setScale({key: "dominant_sig_dbs_meta", scale: dominantSigDbsMetaScale});
 
-            const dominantSigDbsData = new DataContainer("dominant_sig_dbs", "DBS Dominant Signature", API.fetchPlotExposures({
+            const dominantSigDbsData = new DataContainer("dominant_sig_dbs", "DBS Dominant Signature", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesDbs,
                     "mut_type": "DBS",
                     "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then(
                     makeDominantSigFunction(this.getConfig().selectedSignaturesDbs, "sig_DBS")
-                )
+                )), expected
             );
             this.setData({key: "dominant_sig_dbs", data: dominantSigDbsData});
 
             const dominantSigIndelMetaScale = new CategoricalScale("dominant_sig_indel_meta", "", ["Dominant INDEL Signature"]);
             this.setScale({key: "dominant_sig_indel_meta", scale: dominantSigIndelMetaScale});
 
-            const dominantSigIndelData = new DataContainer("dominant_sig_indel", "INDEL Dominant Signature", API.fetchPlotExposures({
+            const dominantSigIndelData = new DataContainer("dominant_sig_indel", "INDEL Dominant Signature", (this.isEmptySession ? undefined : API.fetchPlotExposures({
                     "projects": this.getConfig().selectedSamples,
                     "signatures": this.getConfig().selectedSignaturesIndel,
                     "mut_type": "INDEL",
                     "tricounts_method": this.getConfig().selectedTricountsMethod
                 }).then(
                     makeDominantSigFunction(this.getConfig().selectedSignaturesIndel, "sig_INDEL")
-                )
+                )), expected
             );
             this.setData({key: "dominant_sig_indel", data: dominantSigIndelData});
 
             /* Samples with Signatures */
-            const numSamplesScale = new ContinuousScale("num_samples", "Number of Samples", API.fetchScaleSamples({
+            const numSamplesScale = new ContinuousScale("num_samples", "Number of Samples", (this.isEmptySession ? undefined : API.fetchScaleSamples({
                     "projects": this.getConfig().selectedSamples
                 }).then((data) => {
                     return [0, data.length];
-                })
+                })), undefined, expected
             );
             this.setScale({key: "num_samples", scale: numSamplesScale});
 
