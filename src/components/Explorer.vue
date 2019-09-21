@@ -1,13 +1,13 @@
 <template>
     <div>
         <div class="explorer-control" :style="{ 'height': 24 + 'px' }"> 
-            <HistoryButtons v-if="!isEmptySession" />
+            <HistoryButtons />
             <SortButtons />
             <StratificationButtons />
             <FilterButtons />
 
             <SharingButtons :style="{'float': 'right'}" />
-            <SessionButtons v-if="!isEmptySession" :style="{'float': 'right'}" />
+            <SessionButtons :style="{'float': 'right'}" />
         </div> 
         <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
             <div class="explorer-main explorer-col" :style="{'width': colWidthMain + 'px'}">
@@ -169,7 +169,12 @@ export default {
 
             API.onWebsocketData('explorer', (data) => {
                 expected.emitData(data);
-                console.log(data);
+                
+                if(this.isEmptySession) {
+                    // Do not allow to go back after sending new data.
+                    this.getStack()._stack = [];
+                    this.getStack()._pointer = undefined;
+                }
             });
 
             const projectsScale = new CategoricalScale("proj_id", "Study", this.getConfig().selectedSamples, undefined, undefined, undefined, expected);
