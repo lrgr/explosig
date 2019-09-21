@@ -2,7 +2,7 @@
     <div>
         <span class="explorer-control-title">Export</span>
         <button @click="exportData">Data</button>
-        <button @click="exportHistory" :disabled="isExporting">URL</button>
+        <button v-if="!isSession" @click="exportHistory" :disabled="isExporting">URL</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
@@ -64,7 +64,8 @@ export default {
             'getData',
             'getStack',
             'getStratification',
-            'getDataKeys'
+            'getDataKeys',
+            'isSession'
         ])
     },
     methods: {

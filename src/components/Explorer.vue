@@ -178,6 +178,8 @@ export default {
             const mutTypeScale = new CategoricalScale("mut_type", "Mutation Type", ["SBS", "DBS", "INDEL"]);
             this.setScale({key: "mut_type", scale: mutTypeScale});
 
+            /* SIGNATURE NAMES */
+
             const sigsSbsScale = new CategoricalScale("sig_SBS", "SBS Signature", this.getConfig().selectedSignaturesSbs, undefined, undefined, undefined, expected);
             this.setScale({key: "sig_SBS", scale: sigsSbsScale});
 
@@ -186,6 +188,60 @@ export default {
 
             const sigsIndelScale = new CategoricalScale("sig_INDEL", "INDEL Signature", this.getConfig().selectedSignaturesIndel, undefined, undefined, undefined, expected);
             this.setScale({key: "sig_INDEL", scale: sigsIndelScale});
+
+            /* SIGNATURE DATA */
+            sigsSbsScale.onUpdate("explorer", () => {
+                for(let i = 0; i < sigsSbsScale.domain.length; i++) {
+                    const sigName = sigsSbsScale.domain[i];
+                    this.setData({key: "sig_SBS_" + i, data: new DataContainer("sig_SBS_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
+                        "signature": sigName,
+                        "signature_index": i,
+                        "mut_type": "SBS",
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
+                    })), expected)});
+                }
+            });
+            sigsDbsScale.onUpdate("explorer", () => {
+                for(let i = 0; i < sigsDbsScale.domain.length; i++) {
+                    const sigName = sigsDbsScale.domain[i];
+                    this.setData({key: "sig_DBS_" + i, data: new DataContainer("sig_DBS_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
+                        "signature": sigName,
+                        "signature_index": i,
+                        "mut_type": "DBS",
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
+                    })), expected)});
+                }
+            });
+            sigsIndelScale.onUpdate("explorer", () => {
+                for(let i = 0; i < sigsIndelScale.domain.length; i++) {
+                    const sigName = sigsIndelScale.domain[i];
+                    this.setData({key: "sig_INDEL_" + i, data: new DataContainer("sig_INDEL_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
+                        "signature": sigName,
+                        "signature_index": i,
+                        "mut_type": "INDEL",
+                        "tricounts_method": this.getConfig().selectedTricountsMethod
+                    })), expected)});
+                }
+            });
+
+            /* CATEGORIES */
+            const catSbsScale = new CategoricalScale("cat_SBS", "SBS Mutation Category", SBS_CATS, undefined, getCategoryColors(SBS_CATS, SBS_SUPERCAT_MAP, SBS_SUPERCAT_COLORS), undefined, expected);
+            this.setScale({key: "cat_SBS", scale: catSbsScale});
+
+            const catDbsScale = new CategoricalScale("cat_DBS", "DBS Mutation Category", DBS_CATS, undefined, getCategoryColors(DBS_CATS, DBS_SUPERCAT_MAP, DBS_SUPERCAT_COLORS), undefined, expected);
+            this.setScale({key: "cat_DBS", scale: catDbsScale});
+
+            const catIndelScale = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", INDEL_CATS, undefined, getCategoryColors(INDEL_CATS, INDEL_SUPERCAT_MAP, INDEL_SUPERCAT_COLORS), undefined, expected);
+            this.setScale({key: "cat_INDEL", scale: catIndelScale});
+
+            const sigProbSbsScale = new ContinuousScale("sig_prob_SBS", "Probability", [0.0, 0.2], undefined, expected);
+            this.setScale({key: "sig_prob_SBS", scale: sigProbSbsScale});
+
+            const sigProbDbsScale = new ContinuousScale("sig_prob_DBS", "Probability", [0.0, 0.2], undefined, expected);
+            this.setScale({key: "sig_prob_DBS", scale: sigProbDbsScale});
+
+            const sigProbIndelScale = new ContinuousScale("sig_prob_INDEL", "Probability", [0.0, 0.2], undefined, expected);
+            this.setScale({key: "sig_prob_INDEL", scale: sigProbIndelScale});
 
             /* SAMPLES METADATA  */
             const samplesMetaScale = new CategoricalScale("sample_meta", "", ["Study"]);

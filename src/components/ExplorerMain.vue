@@ -16,8 +16,8 @@
             <div id="counts-plot-background">
                 <PlotContainer
                     :pWidth="(colWidth-150-5)"
-                    :pHeight="44"
-                    :pMarginTop="0"
+                    :pHeight="35"
+                    :pMarginTop="9"
                     :pMarginLeft="150"
                     :pMarginRight="5"
                     :pMarginBottom="0"
@@ -666,16 +666,16 @@ export default {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         showSbs() {
-            return (this.getConfig().selectedSignaturesSbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesSbs.length > 0);
         },
         showDbs() {
-            return (this.getConfig().selectedSignaturesDbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesDbs.length > 0);
         },
         showIndel() {
-            return (this.getConfig().selectedSignaturesIndel.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesIndel.length > 0);
         },
         showMeta() {
-            return (this.getConfig().selectedSamples.length > 1);
+            return (this.isEmptySession || this.getConfig().selectedSamples.length > 1);
         },
         showGenes() {
             return (this.getConfig().selectedGenes.length > 0);
@@ -713,7 +713,8 @@ export default {
             'getData',
             'getScale',
             'getSamples',
-            'getSizes'
+            'getSizes',
+            'isEmptySession'
         ])
     },
     methods: {

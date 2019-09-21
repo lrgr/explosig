@@ -119,6 +119,7 @@ export default {
                 // set up scales and data
                 this.plotData["signature"] = new DataContainer("signature", sigInfo.id, API.fetchPlotSignature({
                     "signature": sigInfo.id,
+                    "signature_index": 'None',
                     "mut_type": sigInfo.mut_type,
                     "tricounts_method": (this.tricountsMethod || "None")
                 }));
