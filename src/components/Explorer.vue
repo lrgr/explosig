@@ -200,7 +200,6 @@ export default {
                     const sigName = sigsSbsScale.domain[i];
                     this.setData({key: "sig_SBS_" + i, data: new DataContainer("sig_SBS_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
                         "signature": sigName,
-                        "signature_index": i,
                         "mut_type": "SBS",
                         "tricounts_method": this.getConfig().selectedTricountsMethod
                     })), expected)});
@@ -211,7 +210,6 @@ export default {
                     const sigName = sigsDbsScale.domain[i];
                     this.setData({key: "sig_DBS_" + i, data: new DataContainer("sig_DBS_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
                         "signature": sigName,
-                        "signature_index": i,
                         "mut_type": "DBS",
                         "tricounts_method": this.getConfig().selectedTricountsMethod
                     })), expected)});
@@ -222,7 +220,6 @@ export default {
                     const sigName = sigsIndelScale.domain[i];
                     this.setData({key: "sig_INDEL_" + i, data: new DataContainer("sig_INDEL_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
                         "signature": sigName,
-                        "signature_index": i,
                         "mut_type": "INDEL",
                         "tricounts_method": this.getConfig().selectedTricountsMethod
                     })), expected)});
