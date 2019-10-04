@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="explorer-control" :style="{ 'height': 24 + 'px' }"> 
+        <div class="explorer-control" :style="{ 'height': (24 + extraControlBarHeight) + 'px' }"> 
             <HistoryButtons />
             <SortButtons />
             <StratificationButtons />
@@ -9,22 +9,32 @@
             <SharingButtons :style="{'float': 'right'}" />
             <SessionButtons :style="{'float': 'right'}" />
         </div> 
-        <div class="explorer" :style="{ 'height': (windowHeight-73) + 'px' }">
-            <div class="explorer-main explorer-col" :style="{'width': colWidthMain + 'px'}">
-                <ExplorerMain/>
-            </div>
-            <Divider side="left" />
+        <div class="explorer" :style="{ 'height': (windowHeight - 73 - extraControlBarHeight) + 'px' }">
             <div class="explorer-overview explorer-col" :style="{'width': colWidthOverview + 'px'}">
                 <ExplorerOverviewTabs />
+                <div class="explorer-col-title" v-if="showOverview">
+                    <h3>Overview</h3>
+                </div>
                 <ExplorerOverview v-if="showOverview"/>
                 <ExplorerOverviewSampleContainer v-if="showOverviewSample"/>
             </div>
-            <Divider side="right" />
-            <div class="explorer-legend explorer-col" :style="{'width': colWidthLegend + 'px'}">
+            <Divider side="left" />
+            <div class="explorer-main explorer-col" :style="{'width': colWidthMain + 'px'}">
+                <div class="explorer-col-title">
+                    <h3>Multi-Sample View</h3>
+                </div>
+                <ExplorerMain/>
+            </div>
+            <Divider side="right" v-if="!isLegendClosed" />
+            <div class="explorer-legend explorer-col" :style="{'width': colWidthLegend + 'px'}" v-if="!isLegendClosed">
                 <div class="explorer-col-title">
                     <h3>Legend</h3>
                 </div>
                 <ExplorerLegend />
+            </div>
+            <div id="legend-close" :title="(isLegendClosed ? 'Show Legend' : 'Hide Legend')" @click="toggleLegend" :style="{ 'top': (80 + extraControlBarHeight) + 'px' }">
+                <span v-if="!isLegendClosed">&gt;&gt;</span>
+                <span v-if="isLegendClosed">&lt;&lt;</span>
             </div>
         </div>
     </div>
@@ -83,6 +93,11 @@ export default {
         ExplorerOverviewSampleContainer,
         Divider
     },
+    data() {
+        return {
+            isLegendClosed: false,
+        };
+    },
     computed: {
         showOverview() {
             return this.getSamples().activeSample === null;
@@ -98,6 +113,9 @@ export default {
         },
         colWidthLegend() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.LEGEND];
+        },
+        extraControlBarHeight() {
+            return (this.windowWidth <= 1245 ? 24 : 0);
         },
         ...mapGetters([
             'windowHeight', 
@@ -126,6 +144,24 @@ export default {
 
     },
     methods: {
+        toggleLegend() {
+            this.isLegendClosed = !this.isLegendClosed;
+
+            let columns = Object.assign({}, this.getSizes().columns);
+
+            if(this.isLegendClosed) {
+                // legend went from open to closed
+                // add to overview and samples columns
+                columns[EXPLORER_COLUMNS.OVERVIEW] = columns[EXPLORER_COLUMNS.OVERVIEW] + (columns[EXPLORER_COLUMNS.LEGEND] / 2);
+                columns[EXPLORER_COLUMNS.MAIN] = columns[EXPLORER_COLUMNS.MAIN] + (columns[EXPLORER_COLUMNS.LEGEND] / 2);
+            } else {
+                // legend went from closed to open
+                // subtract from overview and samples columns
+                columns[EXPLORER_COLUMNS.OVERVIEW] = columns[EXPLORER_COLUMNS.OVERVIEW] - (columns[EXPLORER_COLUMNS.LEGEND] / 2);
+                columns[EXPLORER_COLUMNS.MAIN] = columns[EXPLORER_COLUMNS.MAIN] - (columns[EXPLORER_COLUMNS.LEGEND] / 2);
+            }
+            this.getSizes().updateColumns(columns);
+        },
         initStack() {
             // Initialize the history stack
             const stack = new HistoryStack(
@@ -741,6 +777,27 @@ export default {
     }
     .explorer-control-right {
         float: right;
+    }
+}
+
+#legend-close {
+    width: 40px;
+    height: 30px;
+    position: absolute;
+    right: 15px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background-color:#e1e1e1;
+    cursor: pointer;
+    &:hover {
+        background-color: silver;
+    }
+    &>span {
+        line-height: 30px;
+        width: 40px;
+        text-align: center;
+        display: inline-block;
+        user-select: none;
     }
 }
 
