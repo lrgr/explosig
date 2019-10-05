@@ -1,6 +1,6 @@
 import { json as d3_json } from 'd3-fetch';
 import { getHashCode } from './helpers';
-import { dispatch as d3_dispatch } from "d3-dispatch";
+import { dispatch as d3_dispatch } from "d3-dispatch-nosplit";
 
 
 const DISPATCH_EVENT_WS_DATA = 'session-websocket-receive-data';

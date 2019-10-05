@@ -569,32 +569,38 @@ export default {
                 "projects": this.getConfig().selectedSamples
             })), expected)});
 
-            for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
-                if(this.continuousClinicalVariables.includes(clinicalVar)) {
-                    this.setScale({key: clinicalVar, scale: new ContinuousScale(clinicalVar, clinicalVar, API.fetchScaleClinical({
-                        "projects": this.getConfig().selectedSamples
-                    }).then((data) => {
-                        return data[clinicalVar];
-                    }))});
-                } else {
-                    this.setScale({key: clinicalVar, scale: new CategoricalScale(clinicalVar, clinicalVar, API.fetchScaleClinical({
-                        "projects": this.getConfig().selectedSamples
-                    }).then((data) => {
-                        return data[clinicalVar];
-                    }))});
-                }
-            }
-
             if(this.isEmptySession) {
-                clinicalVariableScale.onUpdate("explorer", () => {
-                    for(const clinicalVar of clinicalVariableScale.domain) {
-                        if(clinicalVar.startsWith("continuous")) {
-                            this.setScale({key: clinicalVar, scale: new ContinuousScale(clinicalVar, clinicalVar, undefined, undefined, expected) });
-                        } else {
-                            this.setScale({key: clinicalVar, scale: new CategoricalScale(clinicalVar, clinicalVar, undefined, undefined, undefined, undefined, expected)});
+                // Empty session, do not know clinical variables ahead of time
+                const clinicalVariableType = new DataContainer("clinical_variable_type", "Clinical Variable Type", undefined, expected);
+
+                clinicalVariableType.onUpdate("explorer", () => {
+                    for(const clinicalVar of clinicalVariableType.data) {
+                        const clinicalVarName = clinicalVar['variable'];
+                        const clinicalVarType = clinicalVar['type'];
+                        if(clinicalVarType === 'continuous') {
+                            this.setScale({key: clinicalVarName, scale: new ContinuousScale(clinicalVarName, clinicalVarName, undefined, undefined, expected) });
+                        } else if(clinicalVarType === 'categorical') {
+                            this.setScale({key: clinicalVarName, scale: new CategoricalScale(clinicalVarName, clinicalVarName, undefined, undefined, undefined, undefined, expected)});
                         }
                     }
-                })
+                });
+            } else {
+                // Not empty session, know clinical variables ahead of time
+                for(const clinicalVar of this.getConfig().selectedClinicalVariables) {
+                    if(this.continuousClinicalVariables.includes(clinicalVar)) {
+                        this.setScale({key: clinicalVar, scale: new ContinuousScale(clinicalVar, clinicalVar, API.fetchScaleClinical({
+                            "projects": this.getConfig().selectedSamples
+                        }).then((data) => {
+                            return data[clinicalVar];
+                        }))});
+                    } else {
+                        this.setScale({key: clinicalVar, scale: new CategoricalScale(clinicalVar, clinicalVar, API.fetchScaleClinical({
+                            "projects": this.getConfig().selectedSamples
+                        }).then((data) => {
+                            return data[clinicalVar];
+                        }))});
+                    }
+                }
             }
 
             /* SURVIVAL DATA */
