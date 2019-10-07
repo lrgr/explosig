@@ -132,6 +132,7 @@ export default class API {
 
         socket.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
+            console.log(data);
             if(data.hasOwnProperty("data")) {
                 API.dispatch.call(DISPATCH_EVENT_WS_DATA, null, data["data"]);
             } else if(data.hasOwnProperty("request")) {

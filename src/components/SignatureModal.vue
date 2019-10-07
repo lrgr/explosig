@@ -32,7 +32,7 @@
                             />
                             <BarPlot 
                                 slot="plot"
-                                :data="('sig_'+selectedMutType+'_'+selectedSignatureIndex)"
+                                :data="('sig_'+selectedMutType+'_'+selectedSignature)"
                                 :x="('cat_'+selectedMutType)"
                                 :y="('sig_prob_'+selectedMutType)"
                                 :getData="getData"
@@ -88,7 +88,6 @@ export default {
             stack: null,
             selectedMutType: null,
             selectedSignature: null,
-            selectedSignatureIndex: null,
             prevSignature: null,
             nextSignature: null
         };
@@ -123,8 +122,6 @@ export default {
                     this.nextSignature = null;
                 }
 
-                this.selectedSignatureIndex = sigIndex;
-
                 this.rerender();
                 this.modalVisible = true;
             }
@@ -132,9 +129,9 @@ export default {
     },
     computed: {
         sigInfo() {
-            if(!this.isEmptySession && this.selectedSignature !== null && this.selectedSignatureIndex !== null) {
+            if(!this.isEmptySession && this.selectedSignature !== null) {
                 return this.allSignatures.find(el => el.id === this.selectedSignature);
-            } else if(this.isEmptySession && this.selectedSignature !== null && this.selectedSignatureIndex !== null) {
+            } else if(this.isEmptySession && this.selectedSignature !== null) {
                 return {
                     'publication': 'Unknown',
                     'description': ''

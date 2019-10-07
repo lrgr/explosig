@@ -76,14 +76,7 @@
         <!-- Clinical Variables -->
         <div v-if="showClinical">
             <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                <CategoricalLegend v-if="!isContinuousClinicalVariable(clinicalVar)"
-                    :variable="clinicalVar"
-                    lStyle="bar"
-                    :lWidth="colWidth"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <ContinuousLegend v-if="isContinuousClinicalVariable(clinicalVar)"
+                <Legend
                     :variable="clinicalVar"
                     lStyle="bar"
                     :lWidth="colWidth"
@@ -134,9 +127,17 @@ export default {
     },
     data() {
         return {
+            selectedClinicalVariables: [],
             clickedSignature: null,
             clickedMutType: null,
         }
+    },
+    mounted() {
+        const cvScale = this.getScale("clinical_variable");
+        this.selectedClinicalVariables = cvScale.domain;
+        cvScale.onUpdate("explorer_legend", () => {
+            this.selectedClinicalVariables = cvScale.domain;
+        });
     },
     computed: {
         colWidth() {
@@ -155,10 +156,7 @@ export default {
             return (this.getConfig().selectedGenes.length > 0);
         },
         showClinical() {
-            return (this.getConfig().selectedClinicalVariables.length > 0);
-        },
-        selectedClinicalVariables() {
-            return (this.getConfig().selectedClinicalVariables);
+            return (this.selectedClinicalVariables.length > 0);
         },
         selectedTricountsMethod() {
             return (this.getConfig().selectedTricountsMethod);

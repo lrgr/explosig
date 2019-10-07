@@ -495,9 +495,7 @@
         </div>
 
         <!-- Clinical Variables -->
-        <div v-if="showClinical">
-            <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
-        </div>
+        <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
 
         <!-- Hierarchical Clustering -->
         <PlotInfo 
@@ -679,9 +677,6 @@ export default {
         },
         showGenes() {
             return (this.getConfig().selectedGenes.length > 0);
-        },
-        showClinical() {
-            return (this.getConfig().selectedClinicalVariables.length > 0);
         },
         numSbs() {
             return (this.getConfig().selectedSignaturesSbs.length);

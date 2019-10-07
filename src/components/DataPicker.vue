@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 import SignaturesPicker from './SignaturesPicker.vue';
 import SamplesPicker from './SamplesPicker.vue';
@@ -189,6 +189,7 @@ export default {
         );
         // Notify parent to close modal
         this.$emit('update');
+        this.setSession({ isSession: false, isEmptySession: false, sessionId: undefined });
     },
     getSelectedText() {
         if(this.samplesVisible) {
@@ -199,7 +200,10 @@ export default {
             return totalSignatures + ' signature' + (totalSignatures === 1 ? '' : 's') + ' ' + (this.chosenSignaturesAutoSelected ? 'auto-' : '') + 'selected (' + this.chosenSignaturesSbs.length + ' SBS, ' + this.chosenSignaturesDbs.length + ' DBS, ' + this.chosenSignaturesIndel.length  + ' INDEL)';
         }
         return '';
-    }
+    },
+    ...mapMutations([
+        'setSession'
+    ])
   }
 }
 </script>

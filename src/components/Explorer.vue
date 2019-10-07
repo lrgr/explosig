@@ -232,9 +232,8 @@ export default {
 
             /* SIGNATURE DATA */
             sigsSbsScale.onUpdate("explorer", () => {
-                for(let i = 0; i < sigsSbsScale.domain.length; i++) {
-                    const sigName = sigsSbsScale.domain[i];
-                    this.setData({key: "sig_SBS_" + i, data: new DataContainer("sig_SBS_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
+                for(const sigName of sigsSbsScale.domain) {
+                    this.setData({key: "sig_SBS_" + sigName, data: new DataContainer("sig_SBS_" + sigName, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
                         "signature": sigName,
                         "mut_type": "SBS",
                         "tricounts_method": this.getConfig().selectedTricountsMethod
@@ -242,9 +241,8 @@ export default {
                 }
             });
             sigsDbsScale.onUpdate("explorer", () => {
-                for(let i = 0; i < sigsDbsScale.domain.length; i++) {
-                    const sigName = sigsDbsScale.domain[i];
-                    this.setData({key: "sig_DBS_" + i, data: new DataContainer("sig_DBS_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
+                for(const sigName of sigsDbsScale.domain) {
+                    this.setData({key: "sig_DBS_" + sigName, data: new DataContainer("sig_DBS_" + sigName, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
                         "signature": sigName,
                         "mut_type": "DBS",
                         "tricounts_method": this.getConfig().selectedTricountsMethod
@@ -252,9 +250,8 @@ export default {
                 }
             });
             sigsIndelScale.onUpdate("explorer", () => {
-                for(let i = 0; i < sigsIndelScale.domain.length; i++) {
-                    const sigName = sigsIndelScale.domain[i];
-                    this.setData({key: "sig_INDEL_" + i, data: new DataContainer("sig_INDEL_" + i, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
+                for(const sigName of sigsIndelScale.domain) {
+                    this.setData({key: "sig_INDEL_" + sigName, data: new DataContainer("sig_INDEL_" + sigName, sigName, (this.isEmptySession ? undefined : API.fetchPlotSignature({
                         "signature": sigName,
                         "mut_type": "INDEL",
                         "tricounts_method": this.getConfig().selectedTricountsMethod
