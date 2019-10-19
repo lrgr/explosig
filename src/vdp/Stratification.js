@@ -2,8 +2,8 @@ import { dispatch as d3_dispatch } from "d3-dispatch-nosplit";
 
 const DISPATCH_EVENT_UPDATE = "update";
 
-export const EVENT_TYPE_STRATIFY = 100;
-export const EVENT_SUBTYPE_STRATIFY = 100;
+export const EVENT_TYPE_STRATIFY = "STRATIFY";
+export const EVENT_SUBTYPE_STRATIFY = "STRATIFY";
 export const EVENT_SUBTYPE_RESET_STRATIFY = "resetChoices";
 
 /**

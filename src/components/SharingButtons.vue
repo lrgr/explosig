@@ -1,19 +1,16 @@
 <template>
     <div>
         <span class="explorer-control-title">Export</span>
+        <button @click="exportWorkflow">Workflow</button>
         <button @click="exportData">Data</button>
         <button v-if="!isSession" @click="exportHistory" :disabled="isExporting">URL</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" @click="closeSharingModal">Close</span>
-                <div class="sharing-options-wrapper" v-if="historyModalVisible">
-                    <h3>Export URL</h3>
-                    <p>Share the current ExploSig state and history via the following URL:</p>
-                    <div class="sharing-url" v-if="currSlug.length > 0">
-                        <pre>{{ baseURL }}/#export-{{ currSlug }}</pre>
-                    </div>
-                    <VSpinner v-if="isExporting" class="spinner" />
+                <div class="sharing-options-wrapper" v-if="workflowModalVisible">
+                    <h3>Export Workflow</h3>
+                    <WorkflowEditor />
                 </div>
                 <div class="sharing-options-wrapper" v-if="dataModalVisible">
                     <h3>Export Data</h3>
@@ -27,6 +24,14 @@
                     </table>
                     <br/>
                 </div>
+                <div class="sharing-options-wrapper" v-if="historyModalVisible">
+                    <h3>Export URL</h3>
+                    <p>Share the current ExploSig state and history via the following URL:</p>
+                    <div class="sharing-url" v-if="currSlug.length > 0">
+                        <pre>{{ baseURL }}/#export-{{ currSlug }}</pre>
+                    </div>
+                    <VSpinner v-if="isExporting" class="spinner" />
+                </div>
             </div>
         </div>
         <div class="modal-background" v-show="modalVisible" @click="closeSharingModal"></div>
@@ -39,17 +44,20 @@ import { parse as json2csv } from 'json2csv';
 import API from './../api.js';
 
 import VSpinner from './VSpinner.vue';
+import WorkflowEditor from './WorkflowEditor.vue';
 
 export default {
     name: 'SharingButtons',
     components: {
         VSpinner,
+        WorkflowEditor,
     },
     data() {
         return {
             currSlug: "",
             isExporting: false,
             modalVisible: false,
+            workflowModalVisible: false,
             historyModalVisible: false,
             dataModalVisible: false
         };
@@ -71,10 +79,15 @@ export default {
     methods: {
         closeSharingModal() {
             this.modalVisible = false;
+            this.workflowModalVisible = false;
             this.historyModalVisible = false;
             this.dataModalVisible = false;
 
             this.currSlug = "";
+        },
+        exportWorkflow() {
+            this.modalVisible = true;
+            this.workflowModalVisible = true;
         },
         exportHistory() {
             this.isExporting = true

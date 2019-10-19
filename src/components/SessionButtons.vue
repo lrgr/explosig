@@ -58,9 +58,11 @@
                     </table>
 
                     <h4>Current Limitations</h4>
+                    <ul>
                     <li>Sending data to a session clears the history stack because previous history actions could potentially refer to incorrect data.</li>
                     <li>Once a session has been started, "export" URLs cannot be generated because exported history actions do not store data updates and therefore could potentially refer to incorrect data.</li>
                     <li>Do not send sensitive data over an ExploSig session. If you are concerned about security, please run ExploSig locally using <a href="https://github.com/lrgr/explosig-docker" target="_blank">explosig-docker</a>.</li>
+                    </ul>
                 </div>
             </div>
         </div>
