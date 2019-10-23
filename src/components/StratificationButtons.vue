@@ -1,7 +1,6 @@
 <template>
-    <div>
-        <span class="explorer-control-title">Stratify</span>
-        <button @click="showStratificationModal">Stratification Options</button>
+    <span>
+        <button @click="showStratificationModal">Stratify</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
@@ -211,7 +210,7 @@
             </div>
         </div>
         <div class="modal-background" v-show="modalVisible" @click="closeStratificationModal"></div>
-    </div>
+    </span>
 </template>
 
 <script>

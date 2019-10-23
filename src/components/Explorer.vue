@@ -2,9 +2,14 @@
     <div>
         <div class="explorer-control" :style="{ 'height': (24 + extraControlBarHeight) + 'px' }"> 
             <HistoryButtons />
-            <SortButtons />
-            <StratificationButtons />
-            <FilterButtons />
+            <div>
+                <span class="explorer-control-title">Actions</span>
+                <SortButtons />
+                <StratificationButtons />
+                <FilterButtons />
+            </div>
+            <WorkflowButtons />
+            
 
             <SharingButtons :style="{'float': 'right'}" />
             <SessionButtons :style="{'float': 'right'}" />
@@ -58,6 +63,7 @@ import StratificationButtons from './StratificationButtons.vue';
 import FilterButtons from './FilterButtons.vue';
 import SharingButtons from './SharingButtons.vue';
 import SessionButtons from './SessionButtons.vue';
+import WorkflowButtons from './WorkflowButtons.vue';
 
 import ExplorerOverviewTabs from './ExplorerOverviewTabs.vue';
 import ExplorerOverviewSampleContainer from './ExplorerOverviewSampleContainer.vue';
@@ -86,6 +92,7 @@ export default {
         FilterButtons,
         SharingButtons,
         SessionButtons,
+        WorkflowButtons,
         ExplorerLegend,
         ExplorerOverview,
         ExplorerMain,
@@ -115,7 +122,7 @@ export default {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.LEGEND];
         },
         extraControlBarHeight() {
-            return (this.windowWidth <= 1245 ? 24 : 0);
+            return (this.windowWidth <= 1100 ? 24 : 0);
         },
         ...mapGetters([
             'windowHeight', 

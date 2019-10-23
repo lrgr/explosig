@@ -58,6 +58,8 @@
 
 <script>
 import API from '../api.js';
+import { getScaleHashCode } from '../helpers.js';
+
 import { mapGetters } from 'vuex';
 
 export default {
@@ -80,6 +82,7 @@ export default {
                 idsToRemove.add("sig_DBS");
                 idsToRemove.add("sig_INDEL");
             }
+            // TODO: filter out stratifications if signature-agnostic
             return this.stackElements.slice().filter((e) => !idsToRemove.has(e.id));
       },
       stackElements() {
@@ -89,15 +92,27 @@ export default {
           return this.stackElementsFiltered.slice().reverse();
       },
       ...mapGetters([
-          'getStack'
+          'getStack',
+          'getScale'
       ])
   },
   methods: {
       downloadWorkflow() {
-        const dataArray = this.stackElementsFiltered;
+        const workflowObject = {
+            schema: "explosig-workflow",
+            version: 1.0,
+            type: this.workflowFilter,
+            hashes: {
+                "sample_id": getScaleHashCode(this.getScale("sample_id")),
+                "sig_SBS": getScaleHashCode(this.getScale("sig_SBS")),
+                "sig_DBS": getScaleHashCode(this.getScale("sig_DBS")),
+                "sig_INDEL": getScaleHashCode(this.getScale("sig_INDEL")),
+            },
+            events: this.stackElementsFiltered,
+        };
         const exportName = "explosig-workflow";
         const fileExtension = "json";
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataArray));
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workflowObject));
         
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);

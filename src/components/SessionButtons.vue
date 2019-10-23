@@ -2,7 +2,7 @@
     <div>
         <span class="explorer-control-title">Session</span>
         <button @click="startSession" v-if="!isEmptySession">Start</button>
-        <button @click="whatSession">What is this?</button>
+        <button @click="whatSession">?</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">

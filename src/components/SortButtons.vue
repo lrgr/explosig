@@ -1,13 +1,12 @@
 <template>
-    <div>
-        <span class="explorer-control-title">Sorting</span>
-        <button @click="showSortModal">Sort Options</button>
+    <span>
+        <button @click="showSortModal">Sort</button>
 
         <div class="modal" v-if="modalVisible">
             <div class="modal-inner">
                 <span class="modal-close" @click="closeSortModal">Close</span>
                 <div class="sort-options-wrapper">
-                    <h3>Sort options</h3>
+                    <h3>Sorting options</h3>
                     <h4>Mutation Data</h4>
                     <SortOptions 
                         variable="sample_id" 
@@ -170,7 +169,7 @@
             </div>
         </div>
         <div class="modal-background" v-show="modalVisible" @click="closeSortModal"></div>
-    </div>
+    </span>
 </template>
 
 <script>
