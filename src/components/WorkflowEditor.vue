@@ -5,32 +5,22 @@
         </div>
         <div v-if="stackElements.length > 0">
             <p>
-                Convert the current ExploSig state and history to a <a href="https://github.com/lrgr/explosig/wiki/Workflows" target="_blank">workflow</a>:
-                <select v-model="workflowFilter">
-                    <option
-                        value="samples" 
-                        :selected="workflowFilter === 'samples' ? 'selected' : ''"
-                    >
-                        sample&ndash;agnostic
-                    </option>
-                    <option
-                        value="signatures" 
-                        :selected="workflowFilter === 'signatures' ? 'selected' : ''"
-                    >
-                        signature&ndash;agnostic
-                    </option>
-                    <option
-                        value="samples-and-signatures" 
-                        :selected="workflowFilter === 'samples-and-signatures' ? 'selected' : ''"
-                    >
-                        sample&ndash; &amp; signature&ndash; agnostic
-                    </option>
-                </select>
-                &nbsp;
-                <button @click="downloadWorkflow">Download</button>
+                To convert the current history of interactions to a <a href="https://github.com/lrgr/explosig/wiki/Workflows" target="_blank">workflow</a>, define the variable dependencies.
             </p>
+            <div>
+                This workflow depends on:<br/>
+                <input type="checkbox" id="workflow-dependency-samples" value="samples" v-model="workflowDependencies"/>
+                    <label for="workflow-dependency-samples">Samples</label><br/>
+                <input type="checkbox" id="workflow-dependency-signatures" value="signatures" v-model="workflowDependencies"/> 
+                    <label for="workflow-dependency-signatures">Signatures</label><br/>
+                <input type="checkbox" id="workflow-dependency-genes" value="genes" v-model="workflowDependencies"/> 
+                    <label for="workflow-dependency-genes">Genes</label><br/>
+                <input type="checkbox" id="workflow-dependency-clinical" value="clinical_variables" v-model="workflowDependencies"/> 
+                    <label for="workflow-dependency-clinical">Clinical Variables</label>
+            </div>
             <p>
-                <button @click="workflowVisible = !workflowVisible">{{ workflowVisible ? 'Hide workflow' : 'Show workflow' }} </button>
+                <button @click="downloadWorkflow">Download Workflow</button>
+                <button @click="workflowVisible = !workflowVisible" :style="{'float': 'right'}">{{ workflowVisible ? 'Hide workflow' : 'Show workflow' }} </button>
             </p>
             <table class="workflow-event-table" v-if="workflowVisible">
                 <thead>
@@ -60,30 +50,62 @@
 import API from '../api.js';
 import { getScaleHashCode } from '../helpers.js';
 
+import { EVENT_TYPE_STRATIFY } from './../vdp/Stratification.js';
+import { EVENT_TYPE_SAMPLES } from './../vdp/Samples.js';
+
+
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'WorkflowEditor',
   data() {
       return {
-          workflowVisible: false,
-          workflowFilter: "samples"
+          workflowVisible: true,
+          workflowDependencies: []
       };
   },
   computed: {
       stackElementsFiltered() {
             const idsToRemove = new Set();
-            if(this.workflowFilter.includes("samples")) {
+            if(!this.workflowDependencies.includes("samples")) {
                 idsToRemove.add("sample_id");
                 idsToRemove.add("sample_meta");
             }
-            if(this.workflowFilter.includes("signatures")) {
+            if(!this.workflowDependencies.includes("signatures")) {
                 idsToRemove.add("sig_SBS");
                 idsToRemove.add("sig_DBS");
                 idsToRemove.add("sig_INDEL");
             }
-            // TODO: filter out stratifications if signature-agnostic
-            return this.stackElements.slice().filter((e) => !idsToRemove.has(e.id));
+            if(!this.workflowDependencies.includes("clinical_variables")) {
+                this.getScale("clinical_variable").domain.forEach((clinicalVariable) => {
+                    idsToRemove.add(clinicalVariable);
+                });
+            }
+            if(!this.workflowDependencies.includes("genes")) {
+                idsToRemove.add("gene_mut");
+                idsToRemove.add("gene_exp");
+                idsToRemove.add("gene_cna");
+                this.getScale("gene_mut").domain.forEach((geneName) => {
+                    idsToRemove.add("gene_mut_" + geneName);
+                    idsToRemove.add("gene_exp_" + geneName);
+                    idsToRemove.add("gene_cna_" + geneName);
+                });
+            }
+
+            return this.stackElements.slice().filter((e) => {
+                return (
+                    // keep if event variable ID not in the list of IDs to remove
+                    !idsToRemove.has(e.id)
+                    // keep if stratify event but signatures are also dependency 
+                     && !(e.type === EVENT_TYPE_STRATIFY && (
+                         !this.workflowDependencies.includes("signatures")
+                          || (e.params[0][0].s === "clinical_data" && !this.workflowDependencies.includes("clinical_variables"))
+                          || (e.params[0][0].s.startsWith("gene_") && !this.workflowDependencies.includes("genes"))
+                        ))
+                    // keep if sample filter event but samples are also dependency 
+                     && !(e.type === EVENT_TYPE_SAMPLES && !this.workflowDependencies.includes("samples"))
+                );
+            });
       },
       stackElements() {
           return this.getStack().export();
@@ -101,15 +123,27 @@ export default {
         const workflowObject = {
             schema: "explosig-workflow",
             version: 1.0,
-            type: this.workflowFilter,
-            hashes: {
-                "sample_id": getScaleHashCode(this.getScale("sample_id")),
-                "sig_SBS": getScaleHashCode(this.getScale("sig_SBS")),
-                "sig_DBS": getScaleHashCode(this.getScale("sig_DBS")),
-                "sig_INDEL": getScaleHashCode(this.getScale("sig_INDEL")),
-            },
+            dependencies: {},
             events: this.stackElementsFiltered,
         };
+
+        if(this.workflowDependencies.includes("samples")) {
+            workflowObject.dependencies["sample_id"] = getScaleHashCode(this.getScale("sample_id"));
+        }
+        if(this.workflowDependencies.includes("signatures")) {
+            workflowObject.dependencies["sig_SBS"] = getScaleHashCode(this.getScale("sig_SBS"));
+            workflowObject.dependencies["sig_DBS"] = getScaleHashCode(this.getScale("sig_DBS"));
+            workflowObject.dependencies["sig_INDEL"] = getScaleHashCode(this.getScale("sig_INDEL"));
+        }
+        if(this.workflowDependencies.includes("clinical_variables")) {
+            workflowObject.dependencies["clinical_variable"] = getScaleHashCode(this.getScale("clinical_variable"));
+        }
+        if(this.workflowDependencies.includes("genes")) {
+            workflowObject.dependencies["gene_mut"] = getScaleHashCode(this.getScale("gene_mut"));
+            workflowObject.dependencies["gene_exp"] = getScaleHashCode(this.getScale("gene_exp"));
+            workflowObject.dependencies["gene_cna"] = getScaleHashCode(this.getScale("gene_cna"));
+        }
+  
         const exportName = "explosig-workflow";
         const fileExtension = "json";
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workflowObject));

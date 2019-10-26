@@ -542,22 +542,35 @@ export default {
 
             const geneCNAScale = new CategoricalScale("copy_number", "Copy Number", ["-2", "-1", "0", "1", "2"]);
             this.setScale({key: "copy_number", scale: geneCNAScale});
+            
+            if(this.isEmptySession) {
+                // Empty session, do not know genes ahead of time
+                geneScaleMut.onUpdate("explorer", () => {
+                    for(const geneId of genesScale.domain) {
+                        this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", undefined, expected)});
 
-            for(const geneId of this.getConfig().selectedGenes) {
-                this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", (this.isEmptySession ? undefined : API.fetchPlotGeneMutTrack({
-                    "projects": this.getConfig().selectedSamples,
-                    "gene_id": geneId
-                })), expected)});
+                        this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", undefined, expected)});
 
-                this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", (this.isEmptySession ? undefined : API.fetchPlotGeneExpTrack({
-                    "projects": this.getConfig().selectedSamples,
-                    "gene_id": geneId
-                })), expected)});
+                        this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", undefined, expected)});
+                    }
+                });
+            } else {
+                for(const geneId of this.getConfig().selectedGenes) {
+                    this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", (this.isEmptySession ? undefined : API.fetchPlotGeneMutTrack({
+                        "projects": this.getConfig().selectedSamples,
+                        "gene_id": geneId
+                    })), expected)});
 
-                this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", (this.isEmptySession ? undefined : API.fetchPlotGeneCNATrack({
-                    "projects": this.getConfig().selectedSamples,
-                    "gene_id": geneId
-                })), expected)});
+                    this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", (this.isEmptySession ? undefined : API.fetchPlotGeneExpTrack({
+                        "projects": this.getConfig().selectedSamples,
+                        "gene_id": geneId
+                    })), expected)});
+
+                    this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", (this.isEmptySession ? undefined : API.fetchPlotGeneCNATrack({
+                        "projects": this.getConfig().selectedSamples,
+                        "gene_id": geneId
+                    })), expected)});
+                }
             }
 
             /* CLINICAL DATA */

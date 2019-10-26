@@ -53,22 +53,19 @@ export default {
         },
         isValidImport(data) {
             let result = (data.hasOwnProperty("schema") && data.hasOwnProperty("version") 
-                        && data.schema === "explosig-workflow" && data.version === 1);
-            if(data.type === "samples") {
-                // sample-agnostic, still check signatures
-                result = result && data.hashes["sig_SBS"] === getScaleHashCode(this.getScale("sig_SBS"));
-                result = result && data.hashes["sig_DBS"] === getScaleHashCode(this.getScale("sig_DBS"));
-                result = result && data.hashes["sig_INDEL"] === getScaleHashCode(this.getScale("sig_INDEL"));
-            }
-            if(data.type === "signatures") {
-                // signature-agnostic, still check samples
-                result = result && data.hashes["sample_id"] === getScaleHashCode(this.getScale("sample_id"));
+                          && data.hasOwnProperty("events") && data.hasOwnProperty("dependencies") 
+                          && data.schema === "explosig-workflow" && data.version === 1);
+            for(const dependencyVar of Object.keys(data.dependencies)) {
+                result = result && data.dependencies[dependencyVar] === getScaleHashCode(this.getScale(dependencyVar));
             }
             return result;
         },
         processImportData(data) {
             if(this.isValidImport(data)) {
-                // TODO: do import, workflow is valid
+                // do import, workflow is valid
+                const stack = this.getStack();
+                stack.prune();
+                stack.import(data.events);
             } else {
                 alert("This workflow is invalid or has dependencies that are not satisfied by the current data selections.");
             }

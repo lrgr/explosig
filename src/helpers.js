@@ -31,7 +31,7 @@ export const getHashCode = function(s, obj) {
 };
 
 export const getScaleHashCode = function(scale) {
-    return getHashCode(JSON.stringify(scale.domain));
+    return getHashCode(JSON.stringify(scale.domain.slice().sort()));
 };
 
 export const getRetinaRatio = function(c) {
