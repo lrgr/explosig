@@ -15,7 +15,8 @@ const withToken = (body, token) => {
 }
 
 const toWebSocketURL = (url) => {
-    return ('ws://' + url.substring(url.indexOf('://') + 3));
+    const protocol = (url.startsWith('https') ? 'wss' : 'ws');
+    return (protocol + '://' + url.substring(url.indexOf('://') + 3));
 }
 
 export default class API {
