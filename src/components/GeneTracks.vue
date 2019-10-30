@@ -173,7 +173,6 @@ export default {
         this.selectedGenes = gScale.domain;
         gScale.onUpdate("gene_tracks", () => {
             this.selectedGenes = gScale.domain;
-            console.log("hi");
         });
     },
     computed: {
