@@ -163,15 +163,25 @@ export default {
             type: Function
         }
     },
+    data() {
+        return {
+            selectedGenes: []
+        }
+    },
+    mounted() {
+        const gScale = this.getScale("gene_mut");
+        this.selectedGenes = gScale.domain;
+        gScale.onUpdate("gene_tracks", () => {
+            this.selectedGenes = gScale.domain;
+            console.log("hi");
+        });
+    },
     computed: {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         numGenes() {
-            return (this.getConfig().selectedGenes.length);
-        },
-        selectedGenes() {
-            return (this.getConfig().selectedGenes);
+            return (this.selectedGenes.length);
         },
         ...mapGetters([
             'windowHeight', 

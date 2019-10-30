@@ -128,6 +128,7 @@ export default {
     data() {
         return {
             selectedClinicalVariables: [],
+            selectedGenes: [],
             clickedSignature: null,
             clickedMutType: null,
         }
@@ -137,6 +138,12 @@ export default {
         this.selectedClinicalVariables = cvScale.domain;
         cvScale.onUpdate("explorer_legend", () => {
             this.selectedClinicalVariables = cvScale.domain;
+        });
+
+        const gScale = this.getScale("gene_mut");
+        this.selectedGenes = gScale.domain;
+        gScale.onUpdate("gene_tracks", () => {
+            this.selectedGenes = gScale.domain;
         });
     },
     computed: {
@@ -153,7 +160,7 @@ export default {
             return (this.isEmptySession || this.getConfig().selectedSignaturesIndel.length > 0);
         },
         showGenes() {
-            return (this.getConfig().selectedGenes.length > 0);
+            return (this.selectedGenes.length > 0);
         },
         showClinical() {
             return (this.selectedClinicalVariables.length > 0);

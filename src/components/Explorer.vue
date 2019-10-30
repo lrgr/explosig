@@ -548,9 +548,15 @@ export default {
                 geneScaleMut.onUpdate("explorer", () => {
                     for(const geneId of geneScaleMut.domain) {
                         this.setData({key: ("gene_mut_" + geneId), data: new DataContainer("gene_mut_" + geneId, geneId + " Mutation Classification", undefined, expected)});
-
+                    }
+                });
+                geneScaleExp.onUpdate("explorer", () => {
+                    for(const geneId of geneScaleExp.domain) {
                         this.setData({key: ("gene_exp_" + geneId), data: new DataContainer("gene_exp_" + geneId, geneId + " Gene Expression", undefined, expected)});
-
+                    }
+                });
+                geneScaleCNA.onUpdate("explorer", () => {
+                    for(const geneId of geneScaleCNA.domain) {
                         this.setData({key: ("gene_cna_" + geneId), data: new DataContainer("gene_cna_" + geneId, geneId + " Copy Number", undefined, expected)});
                     }
                 });

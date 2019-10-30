@@ -108,7 +108,8 @@ export default {
             });
       },
       stackElements() {
-          return this.getStack().export();
+          // No pruning, contains forward history events
+          return this.getStack()._stack.map(el => el.toJson());
       },
       stackElementsFilteredAndReversed() {
           return this.stackElementsFiltered.slice().reverse();

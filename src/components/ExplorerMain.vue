@@ -490,9 +490,7 @@
         
 
         <!-- Gene Alterations -->
-        <div v-if="showGenes">
-            <GeneTracks :sampleClickHandler="sampleClickHandler" />
-        </div>
+        <GeneTracks :sampleClickHandler="sampleClickHandler" />
 
         <!-- Clinical Variables -->
         <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
