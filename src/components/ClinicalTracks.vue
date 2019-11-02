@@ -83,7 +83,7 @@ export default {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         numClinicalVariables() {
-            return (this.selectedClinicalVariables.length);
+            return this.selectedClinicalVariables.length;
         },
         ...mapGetters([
             'windowHeight', 

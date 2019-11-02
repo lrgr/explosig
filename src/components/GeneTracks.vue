@@ -165,22 +165,19 @@ export default {
     },
     data() {
         return {
-            selectedGenes: []
+            selectedGenes: [],
         }
     },
     mounted() {
         const gScale = this.getScale("gene_mut");
-        this.selectedGenes = gScale.domain;
-        gScale.onUpdate("gene_tracks", () => {
-            this.selectedGenes = gScale.domain;
-        });
+        this.selectedGenes = gScale.domain.slice();
     },
     computed: {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         numGenes() {
-            return (this.selectedGenes.length);
+            return this.selectedGenes.length;
         },
         ...mapGetters([
             'windowHeight', 

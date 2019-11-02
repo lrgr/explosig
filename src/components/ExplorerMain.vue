@@ -487,10 +487,8 @@
         <!-- Toggle for normalized exposure plots -->
         <VisibilityButtons />
 
-        
-
         <!-- Gene Alterations -->
-        <GeneTracks :sampleClickHandler="sampleClickHandler" />
+        <GeneTracksContainer :sampleClickHandler="sampleClickHandler" />
 
         <!-- Clinical Variables -->
         <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
@@ -624,7 +622,7 @@ import { HistoryEvent } from 'vueplotlib';
 
 import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';
-import GeneTracks from './GeneTracks.vue';
+import GeneTracksContainer from './GeneTracksContainer.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
@@ -639,7 +637,7 @@ export default {
     components: {
         PlotInfo,
         ClinicalTracks,
-        GeneTracks,
+        GeneTracksContainer,
         VisibilityButtons,
         NumSamples,
         ResizablePlotContainer
@@ -672,9 +670,6 @@ export default {
         },
         showMeta() {
             return (this.isEmptySession || this.getConfig().selectedSamples.length > 1);
-        },
-        showGenes() {
-            return (this.getConfig().selectedGenes.length > 0);
         },
         numSbs() {
             return (this.getConfig().selectedSignaturesSbs.length);

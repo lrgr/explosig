@@ -64,7 +64,7 @@ export default {
     box-sizing: border-box;
     border-left: 1px solid silver;
     opacity: 0.5;
-    z-index: 6;
+    z-index: 4;
 
     /* TODO: uncomment when I have a chance to fix bugs */
     /* 

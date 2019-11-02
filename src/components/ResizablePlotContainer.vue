@@ -144,18 +144,24 @@ export default {
 
 .explorer-main {
     .plot-container-resizable {
-        z-index: 6;
-        .vdp-tooltip {
-            z-index: 106;
-        }
-    }
-}
-.explorer-overview {
-    .plot-container-resizable {
         z-index: 5;
         .vdp-tooltip {
             z-index: 105;
         }
+    }
+    .plot-info {
+        z-index: 6;
+    }
+}
+.explorer-overview {
+    .plot-container-resizable {
+        z-index: 7;
+        .vdp-tooltip {
+            z-index: 106;
+        }
+    }
+    .plot-info {
+        z-index: 8;
     }
 }
 </style>

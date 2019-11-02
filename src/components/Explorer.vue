@@ -525,7 +525,12 @@ export default {
             this.setData({key: "exposures_clustering", data: exposuresClusteringData});
 
             /* GENE ALTERATION DATA */
-            const geneScaleMut = new CategoricalScale("gene_mut", (this.getConfig().selectedGenes.length > 3 ? "Gene Mut." : "Mut."), this.getConfig().selectedGenes, undefined, undefined, undefined, expected);
+            const geneScaleMut = new CategoricalScale(
+                "gene_mut", 
+                (this.getConfig().selectedGenes.length > 3 ? "Gene Mut." : "Mut."), 
+                (this.isEmptySession ? undefined : this.getConfig().selectedGenes),
+                undefined, undefined, undefined, expected
+            );
             this.setScale({key: "gene_mut", scale: geneScaleMut});
 
             const geneScaleExp = new CategoricalScale("gene_exp", (this.getConfig().selectedGenes.length > 3 ? "Gene Expr." : "Expr."), this.getConfig().selectedGenes, undefined, undefined, undefined, expected);

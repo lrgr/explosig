@@ -57,7 +57,6 @@ export default {
     .plot-info {
         margin-bottom: 5px;
         text-align: center;
-        z-index: 10;
         button {
             float: left;
             margin-left: 15px;
