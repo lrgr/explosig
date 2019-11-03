@@ -180,36 +180,45 @@ export default {
     data() {
         return {
             modalVisible: false,
-
+            selectedGenes: [],
+            selectedClinicalVariables: [],
         };
+    },
+    mounted() {
+        const cvScale = this.getScale("clinical_variable");
+        this.selectedClinicalVariables = cvScale.domain;
+        cvScale.onUpdate("sort_buttons", () => {
+            this.selectedClinicalVariables = cvScale.domain;
+        });
+
+        const gScale = this.getScale("gene_mut");
+        this.selectedGenes = gScale.domain;
+        gScale.onUpdate("sort_buttons", () => {
+            this.selectedGenes = gScale.domain;
+        });
     },
     computed: {
         showSbs() {
-            return (this.getConfig().selectedSignaturesSbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesSbs.length > 0);
         },
         showDbs() {
-            return (this.getConfig().selectedSignaturesDbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesDbs.length > 0);
         },
         showIndel() {
-            return (this.getConfig().selectedSignaturesIndel.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesIndel.length > 0);
         },
         showGenes() {
-            return (this.getConfig().selectedGenes.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedGenes.length > 0);
         },
         showClinical() {
-            return (this.getConfig().selectedClinicalVariables.length > 0);
-        },
-        selectedGenes() {
-            return (this.getConfig().selectedGenes);
-        },
-        selectedClinicalVariables() {
-            return (this.getConfig().selectedClinicalVariables);
+            return (this.isEmptySession || this.getConfig().selectedClinicalVariables.length > 0);
         },
         ...mapGetters([
             'getConfig',
             'getScale',
             'getData',
-            'getStack'
+            'getStack',
+            'isEmptySession'
         ])
     },
     methods: {

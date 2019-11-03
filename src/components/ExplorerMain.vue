@@ -116,7 +116,7 @@
         </ResizablePlotContainer>
 
         <!-- Exposures -->
-        <PlotContainer v-if="showSbs" :key="('sbs_dominant' + explorerMainKey)"
+        <PlotContainer v-if="showSBS" :key="('sbs_dominant' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
             :pMarginTop="0"
@@ -150,7 +150,7 @@
                 Every other plot shows exposures after normalizing (to sum to 1).
             </p>
         </PlotInfo>
-        <ResizablePlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSBS" :key="('sbs' + explorerMainKey)"
             plotCode="main_sbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -182,7 +182,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSBS && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
             plotCode="main_sbs_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -214,7 +214,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showSbs && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSBS && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
             plotCode="main_sbs_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
@@ -245,7 +245,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <PlotContainer v-if="showDbs" :key="('dbs_dominant' + explorerMainKey)"
+        <PlotContainer v-if="showDBS" :key="('dbs_dominant' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
             :pMarginTop="0"
@@ -271,7 +271,7 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <ResizablePlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showDBS" :key="('dbs' + explorerMainKey)"
             plotCode="main_dbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -302,7 +302,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showDBS && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
             plotCode="main_dbs_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -333,7 +333,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showDbs && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showDBS && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
             plotCode="main_dbs_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
@@ -364,7 +364,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <PlotContainer v-if="showIndel" :key="('indel_dominant' + explorerMainKey)"
+        <PlotContainer v-if="showINDEL" :key="('indel_dominant' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
             :pMarginTop="0"
@@ -390,7 +390,7 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <ResizablePlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showINDEL" :key="('indel' + explorerMainKey)"
             plotCode="main_indel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -421,7 +421,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showINDEL && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
             plotCode="main_indel_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -452,7 +452,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showIndel && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showINDEL && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
             plotCode="main_indel_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
@@ -504,7 +504,7 @@
             </p>
         </PlotInfo>
 
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSBS"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numSbs * 30)"
             :pMarginTop="0"
@@ -534,7 +534,7 @@
             />
         </PlotContainer>
 
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showDBS"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numDbs * 30)"
             :pMarginTop="0"
@@ -564,7 +564,7 @@
             />
         </PlotContainer>
 
-        <PlotContainer v-if="showIndel"
+        <PlotContainer v-if="showINDEL"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numIndel * 30)"
             :pMarginTop="0"
@@ -644,8 +644,18 @@ export default {
     },
     data() {
         return {
-            explorerMainKey: 1
+            explorerMainKey: 1,
+            showSBS: false,
+            showDBS: false,
+            showINDEL: false
         };
+    },
+    created() {
+        const mutTypeScale = this.getScale("mut_type");
+        for(const mutType of mutTypeScale.domain) {
+            const sigScale = this.getScale(`sig_${mutType}`);
+            this[`show${mutType}`] = sigScale.domain.length > 0;
+        }
     },
     watch: {
         showNormalizedExposures() {
@@ -658,15 +668,6 @@ export default {
     computed: {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
-        },
-        showSbs() {
-            return (this.isEmptySession || this.getConfig().selectedSignaturesSbs.length > 0);
-        },
-        showDbs() {
-            return (this.isEmptySession || this.getConfig().selectedSignaturesDbs.length > 0);
-        },
-        showIndel() {
-            return (this.isEmptySession || this.getConfig().selectedSignaturesIndel.length > 0);
         },
         showMeta() {
             return (this.isEmptySession || this.getConfig().selectedSamples.length > 1);

@@ -56,7 +56,7 @@ export default {
                           && data.hasOwnProperty("events") && data.hasOwnProperty("dependencies") 
                           && data.schema === "explosig-workflow" && data.version === 1);
             for(const dependencyVar of Object.keys(data.dependencies)) {
-                result = result && data.dependencies[dependencyVar] === getScaleHashCode(this.getScale(dependencyVar));
+                // result = result && data.dependencies[dependencyVar] === getScaleHashCode(this.getScale(dependencyVar));
             }
             return result;
         },

@@ -27,6 +27,8 @@ export default {
     },
     created() {
         this.getScale("gene_mut").onUpdate(this.name, this.rerender);
+        this.getScale("gene_exp").onUpdate(this.name, this.rerender);
+        this.getScale("gene_cna").onUpdate(this.name, this.rerender);
     },
     methods: {
         rerender() {

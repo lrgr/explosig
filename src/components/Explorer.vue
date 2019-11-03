@@ -28,7 +28,7 @@
                 <div class="explorer-col-title">
                     <h3>Multi-Sample View</h3>
                 </div>
-                <ExplorerMain/>
+                <ExplorerMainContainerOuter />
             </div>
             <Divider side="right" v-if="!isLegendClosed" />
             <div class="explorer-legend explorer-col" :style="{'width': colWidthLegend + 'px'}" v-if="!isLegendClosed">
@@ -70,7 +70,7 @@ import ExplorerOverviewSampleContainer from './ExplorerOverviewSampleContainer.v
 
 import ExplorerLegend from './ExplorerLegend.vue';
 import ExplorerOverview from './ExplorerOverview.vue';
-import ExplorerMain from './ExplorerMain.vue';
+import ExplorerMainContainerOuter from './ExplorerMainContainerOuter.vue';
 
 import Divider from './Divider.vue';
 
@@ -95,7 +95,7 @@ export default {
         WorkflowButtons,
         ExplorerLegend,
         ExplorerOverview,
-        ExplorerMain,
+        ExplorerMainContainerOuter,
         ExplorerOverviewTabs,
         ExplorerOverviewSampleContainer,
         Divider
