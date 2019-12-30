@@ -10,8 +10,8 @@
                     <div class="sig-nav-placeholder" v-if="prevSignature === null"></div>
                     <div class="sig-modal-inner">
 
-                        <h3 class="sig-modal-title">{{ sigInfo.id }}</h3>
-                        Mutation Type: {{ sigInfo.mut_type}}<br>
+                        <h3 class="sig-modal-title">{{ selectedSignature }}</h3>
+                        Mutation Type: {{ selectedMutType }}<br>
                         Publication: <em>{{ sigInfo.publication }}</em><br>
 
                         <PlotContainer :key="('sig_modal_' + sigModalKey)"
@@ -24,7 +24,7 @@
                         >
                             <Axis 
                                 slot="axisLeft"
-                                variable="probability"
+                                :variable="('sig_prob_'+selectedMutType)"
                                 side="left"
                                 :disableBrushing="true"
                                 :getScale="getScale"
@@ -32,15 +32,15 @@
                             />
                             <BarPlot 
                                 slot="plot"
-                                data="signature"
-                                :x="('cat_'+sigInfo.mut_type)"
-                                y="probability"
+                                :data="('sig_'+selectedMutType+'_'+selectedSignature)"
+                                :x="('cat_'+selectedMutType)"
+                                :y="('sig_prob_'+selectedMutType)"
                                 :getData="getData"
                                 :getScale="getScale"
                             />
                             <Axis 
                                 slot="axisBottom"
-                                :variable="('cat_'+sigInfo.mut_type)"
+                                :variable="('cat_'+selectedMutType)"
                                 :tickRotation="-65"
                                 side="bottom"
                                 :disableBrushing="true"
@@ -70,16 +70,10 @@ import VSpinner from './VSpinner.vue';
 
 import { HistoryStack, EVENT_TYPES, EVENT_SUBTYPE_RESETS } from 'vueplotlib';
 import { CategoricalScale, ContinuousScale, GenomeScale, DataContainer } from 'vueplotlib';
-import { 
-    SBS_SUPERCAT_COLORS, DBS_SUPERCAT_COLORS, INDEL_SUPERCAT_COLORS,
-    SBS_SUPERCAT_MAP, DBS_SUPERCAT_MAP, INDEL_SUPERCAT_MAP,
-    SBS_CATS, DBS_CATS, INDEL_CATS,
-    getCategoryColors
-} from './../categories.js';
 
 export default {
     name: 'SignatureModal',
-    props: ['clickedSignature'],
+    props: ['clickedSignature', 'clickedMutType'],
     components: {
         VSpinner,
     },
@@ -92,78 +86,63 @@ export default {
             plotData: {},
             plotScales: {},
             stack: null,
+            selectedMutType: null,
             selectedSignature: null,
-            selectedSignatureIndex: null,
             prevSignature: null,
             nextSignature: null
         };
     },
     mounted() {
-        API.fetchDataListing().then((listing) => {
-            this.allSignatures = listing["signatures"];
-        });
-
-        /* Contexts scales for reconstruction and signature plots */
-        this.plotScales["cat_SBS"] = new CategoricalScale("cat_SBS", "SBS Mutation Category", SBS_CATS, undefined, getCategoryColors(SBS_CATS, SBS_SUPERCAT_MAP, SBS_SUPERCAT_COLORS));
-
-        this.plotScales["cat_DBS"] = new CategoricalScale("cat_DBS", "DBS Mutation Category", DBS_CATS, undefined, getCategoryColors(DBS_CATS, DBS_SUPERCAT_MAP, DBS_SUPERCAT_COLORS));
-
-        this.plotScales["cat_INDEL"] = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", INDEL_CATS, undefined, getCategoryColors(INDEL_CATS, INDEL_SUPERCAT_MAP, INDEL_SUPERCAT_COLORS));
-
-        this.plotScales["probability"] = new ContinuousScale("probability", "Probability", [0.0, 0.2]);
+        if(!this.isEmptySession) {
+            API.fetchDataListing().then((listing) => {
+                this.allSignatures = listing["signatures"];
+            });
+        }
 
         this.initStack();
-        
     },
     watch: {
         clickedSignature(val) {
             this.selectedSignature = val;
         },
+        clickedMutType(val) {
+            this.selectedMutType = val;
+        },
         selectedSignature(val) {
             if(this.selectedSignature !== null) {
-            let sigIndex = this.selectedSignatures.indexOf(val);
-            if(sigIndex > 0 && this.selectedSignatures.length > 1) {
-                this.prevSignature = this.selectedSignatures[sigIndex-1];
-            } else {
-                this.prevSignature = null;
-            }
-            if(sigIndex < (this.selectedSignatures.length - 1) && this.selectedSignatures.length > 1) {
-                this.nextSignature = this.selectedSignatures[sigIndex+1];
-            } else {
-                this.nextSignature = null;
-            }
+                const sigIndex = this.selectedSignatures.indexOf(val);
+                if(sigIndex > 0 && this.selectedSignatures.length > 1) {
+                    this.prevSignature = this.selectedSignatures[sigIndex-1];
+                } else {
+                    this.prevSignature = null;
+                }
+                if(sigIndex < (this.selectedSignatures.length - 1) && this.selectedSignatures.length > 1) {
+                    this.nextSignature = this.selectedSignatures[sigIndex+1];
+                } else {
+                    this.nextSignature = null;
+                }
 
-
-            this.rerender();
-            this.modalVisible = true;
+                this.rerender();
+                this.modalVisible = true;
             }
         }
     },
     computed: {
         sigInfo() {
-            if(this.selectedSignature !== null) {
+            if(!this.isEmptySession && this.selectedSignature !== null) {
                 return this.allSignatures.find(el => el.id === this.selectedSignature);
-            }
-            return undefined;
-        },
-        mutType() {
-            if(this.selectedSignature !== null) {
-                return this.allSignatures.find(el => el.id === this.selectedSignature).mut_type;
+            } else if(this.isEmptySession && this.selectedSignature !== null) {
+                return {
+                    'publication': 'Unknown',
+                    'description': ''
+                };
             }
             return undefined;
         },
         selectedSignatures() {
-            let config = this.getConfig();
-            let mutType = this.mutType;
-            if(mutType === "SBS") {
-                return config.selectedSignaturesSbs;
-            } else if(mutType === "DBS") {
-                return config.selectedSignaturesDbs;
-            } else if(mutType === "INDEL") {
-                return config.selectedSignaturesIndel;
-            } else {
-                return [];
-            }
+            const mutType = this.selectedMutType;
+            const sigNamesScale = this.getScale("sig_" + mutType);
+            return sigNamesScale.domain;
         },
         selectedTricountsMethod() {
             let config = this.getConfig();
@@ -174,7 +153,10 @@ export default {
         },
         ...mapGetters([
             'windowWidth',
-            'getConfig'
+            'getData',
+            'getScale',
+            'getConfig',
+            'isEmptySession'
         ])
     },
     methods: {
@@ -190,21 +172,9 @@ export default {
         },
         rerender() {
             let sigInfo = this.sigInfo;
-            if(sigInfo !== undefined) {
-                // set up scales and data
-                this.plotData["signature"] = new DataContainer("signature", sigInfo.id, API.fetchPlotSignature({
-                    "signature": sigInfo.id,
-                    "mut_type": sigInfo.mut_type,
-                    "tricounts_method": this.selectedTricountsMethod
-                }));
+            if(sigInfo !== undefined) {                
                 this.sigModalKey++;
             }
-        },
-        getData(key) {
-            return this.plotData[key];
-        },
-        getScale(key) {
-            return this.plotScales[key];
         },
         getStack() {
             return this.stack;

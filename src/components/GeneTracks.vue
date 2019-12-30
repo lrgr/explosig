@@ -10,7 +10,7 @@
             <div class="gene-axis-wrapper">
                 <PlotContainer
                     :pWidth="0"
-                    :pHeight="(numGenes * 25)"
+                    :pHeight="(selectedGenesMut.length * 25)"
                     :pMarginTop="0"
                     :pMarginLeft="150"
                     :pMarginRight="0"
@@ -27,7 +27,7 @@
                     />
                 </PlotContainer>
             </div>
-            <div v-for="geneId in selectedGenes" :key="geneId">
+            <div v-for="geneId in selectedGenesMut" :key="geneId">
                 <PlotContainer
                     :pWidth="(colWidth-150-5)"
                     :pHeight="20"
@@ -59,7 +59,7 @@
             <div class="gene-axis-wrapper">
                 <PlotContainer
                     :pWidth="0"
-                    :pHeight="(numGenes * 25)"
+                    :pHeight="(selectedGenesExp.length * 25)"
                     :pMarginTop="0"
                     :pMarginLeft="150"
                     :pMarginRight="0"
@@ -76,7 +76,7 @@
                     />
                 </PlotContainer>
             </div>
-            <div v-for="geneId in selectedGenes" :key="geneId">
+            <div v-for="geneId in selectedGenesExp" :key="geneId">
                 <PlotContainer
                     :pWidth="(colWidth-150-5)"
                     :pHeight="20"
@@ -107,7 +107,7 @@
             <div class="gene-axis-wrapper">
                 <PlotContainer
                     :pWidth="0"
-                    :pHeight="(numGenes * 25)"
+                    :pHeight="(selectedGenesCNA.length * 25)"
                     :pMarginTop="0"
                     :pMarginLeft="150"
                     :pMarginRight="0"
@@ -124,7 +124,7 @@
                     />
                 </PlotContainer>
             </div>
-            <div v-for="geneId in selectedGenes" :key="geneId">
+            <div v-for="geneId in selectedGenesCNA" :key="geneId">
                 <PlotContainer
                     :pWidth="(colWidth-150-5)"
                     :pHeight="20"
@@ -163,15 +163,26 @@ export default {
             type: Function
         }
     },
+    data() {
+        return {
+            selectedGenesMut: [],
+            selectedGenesExp: [],
+            selectedGenesCNA: [],
+        }
+    },
+    mounted() {
+        const mutScale = this.getScale("gene_mut");
+        this.selectedGenesMut = mutScale.domain.slice();
+
+        const expScale = this.getScale("gene_exp");
+        this.selectedGenesExp = expScale.domain.slice();
+
+        const cnaScale = this.getScale("gene_cna");
+        this.selectedGenesCNA = expScale.domain.slice();
+    },
     computed: {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
-        },
-        numGenes() {
-            return (this.getConfig().selectedGenes.length);
-        },
-        selectedGenes() {
-            return (this.getConfig().selectedGenes);
         },
         ...mapGetters([
             'windowHeight', 

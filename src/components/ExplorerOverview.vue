@@ -20,6 +20,12 @@
         >
             <PlotContainer 
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -67,6 +73,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -107,6 +119,12 @@
         >
             <PlotContainer
                 slot="inner"    
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisTop"
@@ -148,6 +166,12 @@
         >
             <PlotContainer 
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -188,6 +212,12 @@
         >
             <PlotContainer 
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisTop"
@@ -229,6 +259,12 @@
         >
             <PlotContainer 
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -269,6 +305,12 @@
         >
             <PlotContainer 
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisTop"
@@ -317,6 +359,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -357,6 +405,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -397,6 +451,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -445,6 +505,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -487,6 +553,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -529,6 +601,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis
                     slot="axisLeft"
@@ -607,13 +685,13 @@ export default {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.OVERVIEW] - 25;
         },
         showSbs() {
-            return (this.getConfig().selectedSignaturesSbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesSbs.length > 0);
         },
         showDbs() {
-            return (this.getConfig().selectedSignaturesDbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesDbs.length > 0);
         },
         showIndel() {
-            return (this.getConfig().selectedSignaturesIndel.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesIndel.length > 0);
         },
         showStratified() {
             return (this.getStratification().choices.length > 0);
@@ -630,7 +708,8 @@ export default {
             'getScale',
             'getVisibility',
             'getStratification',
-            'getSizes'
+            'getSizes',
+            'isEmptySession'
         ])
     }
 }

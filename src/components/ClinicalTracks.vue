@@ -66,15 +66,24 @@ export default {
             type: Function
         }
     },
+    data() {
+        return {
+            selectedClinicalVariables: []
+        }
+    },
+    mounted() {
+        const cvScale = this.getScale("clinical_variable");
+        this.selectedClinicalVariables = cvScale.domain;
+        cvScale.onUpdate("clinical_tracks", () => {
+            this.selectedClinicalVariables = cvScale.domain;
+        });
+    },
     computed: {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
         numClinicalVariables() {
-            return (this.getConfig().selectedClinicalVariables.length);
-        },
-        selectedClinicalVariables() {
-            return (this.getConfig().selectedClinicalVariables);
+            return this.selectedClinicalVariables.length;
         },
         ...mapGetters([
             'windowHeight', 

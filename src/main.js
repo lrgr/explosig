@@ -28,7 +28,8 @@ import {
   GenomeMultiTrackPlot,
   GenomeStackedBarPlot,
   CategoricalLegend,
-  ContinuousLegend
+  ContinuousLegend,
+  Legend,
 } from 'vueplotlib';
 
 Vue.config.productionTip = false
@@ -59,6 +60,7 @@ Vue.component(GenomeMultiTrackPlot.name, GenomeMultiTrackPlot);
 Vue.component(GenomeStackedBarPlot.name, GenomeStackedBarPlot);
 Vue.component(CategoricalLegend.name, CategoricalLegend);
 Vue.component(ContinuousLegend.name, ContinuousLegend);
+Vue.component(Legend.name, Legend);
 
 new Vue({
   store,

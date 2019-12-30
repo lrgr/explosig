@@ -1,9 +1,9 @@
-import { dispatch as d3_dispatch } from "d3-dispatch";
+import { dispatch as d3_dispatch } from "d3-dispatch-nosplit";
 
 const DISPATCH_EVENT_UPDATE = "update";
 
-export const EVENT_TYPE_SAMPLES = 102;
-export const EVENT_SUBTYPE_SAMPLES = 102;
+export const EVENT_TYPE_SAMPLES = "SAMPLES";
+export const EVENT_SUBTYPE_SAMPLES = "SAMPLES";
 export const EVENT_SUBTYPE_RESET_SAMPLES = "resetSamples";
 
 

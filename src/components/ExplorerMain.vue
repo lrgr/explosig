@@ -16,8 +16,8 @@
             <div id="counts-plot-background">
                 <PlotContainer
                     :pWidth="(colWidth-150-5)"
-                    :pHeight="44"
-                    :pMarginTop="0"
+                    :pHeight="35"
+                    :pMarginTop="9"
                     :pMarginLeft="150"
                     :pMarginRight="5"
                     :pMarginBottom="0"
@@ -92,6 +92,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -116,7 +122,7 @@
         </ResizablePlotContainer>
 
         <!-- Exposures -->
-        <PlotContainer v-if="showSbs" :key="('sbs_dominant' + explorerMainKey)"
+        <PlotContainer v-if="showSBS" :key="('sbs_dominant' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
             :pMarginTop="0"
@@ -150,7 +156,7 @@
                 Every other plot shows exposures after normalizing (to sum to 1).
             </p>
         </PlotInfo>
-        <ResizablePlotContainer v-if="showSbs" :key="('sbs' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSBS" :key="('sbs' + explorerMainKey)"
             plotCode="main_sbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -161,6 +167,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -182,7 +194,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showSbs && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSBS && showNormalizedExposures" :key="('sbs_norm' + explorerMainKey)"
             plotCode="main_sbs_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -193,6 +205,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -214,7 +232,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showSbs && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showSBS && showCosineSimilarity" :key="('sbs_cosine' + explorerMainKey)"
             plotCode="main_sbs_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
@@ -225,6 +243,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -245,7 +269,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <PlotContainer v-if="showDbs" :key="('dbs_dominant' + explorerMainKey)"
+        <PlotContainer v-if="showDBS" :key="('dbs_dominant' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
             :pMarginTop="0"
@@ -271,7 +295,7 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <ResizablePlotContainer v-if="showDbs" :key="('dbs' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showDBS" :key="('dbs' + explorerMainKey)"
             plotCode="main_dbs"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -282,6 +306,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -302,7 +332,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showDbs && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showDBS && showNormalizedExposures" :key="('dbs_norm' + explorerMainKey)"
             plotCode="main_dbs_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -313,6 +343,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -333,7 +369,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showDbs && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showDBS && showCosineSimilarity" :key="('dbs_cosine' + explorerMainKey)"
             plotCode="main_dbs_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
@@ -344,6 +380,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -364,7 +406,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <PlotContainer v-if="showIndel" :key="('indel_dominant' + explorerMainKey)"
+        <PlotContainer v-if="showINDEL" :key="('indel_dominant' + explorerMainKey)"
             :pWidth="(colWidth-150-5)"
             :pHeight="20"
             :pMarginTop="0"
@@ -390,7 +432,7 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
-        <ResizablePlotContainer v-if="showIndel" :key="('indel' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showINDEL" :key="('indel' + explorerMainKey)"
             plotCode="main_indel"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -401,6 +443,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -421,7 +469,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showIndel && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showINDEL && showNormalizedExposures" :key="('indel_norm' + explorerMainKey)"
             plotCode="main_indel_norm"
             :pWidth="(colWidth-150-5)"
             :pHeight="200"
@@ -432,6 +480,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -452,7 +506,7 @@
                 />
             </PlotContainer>
         </ResizablePlotContainer>
-        <ResizablePlotContainer v-if="showIndel && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
+        <ResizablePlotContainer v-if="showINDEL && showCosineSimilarity" :key="('indel_cosine' + explorerMainKey)"
             plotCode="main_indel_cosine"
             :pWidth="(colWidth-150-5)"
             :pHeight="100"
@@ -463,6 +517,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -487,17 +547,11 @@
         <!-- Toggle for normalized exposure plots -->
         <VisibilityButtons />
 
-        
-
         <!-- Gene Alterations -->
-        <div v-if="showGenes">
-            <GeneTracks :sampleClickHandler="sampleClickHandler" />
-        </div>
+        <GeneTracksContainer :sampleClickHandler="sampleClickHandler" />
 
         <!-- Clinical Variables -->
-        <div v-if="showClinical">
-            <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
-        </div>
+        <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
 
         <!-- Hierarchical Clustering -->
         <PlotInfo 
@@ -510,13 +564,18 @@
             </p>
         </PlotInfo>
 
-        <PlotContainer v-if="showSbs"
+        <PlotContainer v-if="showSBS"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numSbs * 30)"
             :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <Axis
                 slot="axisLeft"
@@ -540,13 +599,18 @@
             />
         </PlotContainer>
 
-        <PlotContainer v-if="showDbs"
+        <PlotContainer v-if="showDBS"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numDbs * 30)"
             :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <Axis
                 slot="axisLeft"
@@ -570,13 +634,18 @@
             />
         </PlotContainer>
 
-        <PlotContainer v-if="showIndel"
+        <PlotContainer v-if="showINDEL"
             :pWidth="(colWidth-150-5)"
             :pHeight="(numIndel * 30)"
             :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <Axis
                 slot="axisLeft"
@@ -607,6 +676,11 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="200"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <DendrogramAxis
                 slot="axisBottom"
@@ -628,7 +702,7 @@ import { HistoryEvent } from 'vueplotlib';
 
 import PlotInfo from './PlotInfo.vue';
 import ClinicalTracks from './ClinicalTracks.vue';
-import GeneTracks from './GeneTracks.vue';
+import GeneTracksContainer from './GeneTracksContainer.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
@@ -643,15 +717,25 @@ export default {
     components: {
         PlotInfo,
         ClinicalTracks,
-        GeneTracks,
+        GeneTracksContainer,
         VisibilityButtons,
         NumSamples,
         ResizablePlotContainer
     },
     data() {
         return {
-            explorerMainKey: 1
+            explorerMainKey: 1,
+            showSBS: false,
+            showDBS: false,
+            showINDEL: false
         };
+    },
+    created() {
+        const mutTypeScale = this.getScale("mut_type");
+        for(const mutType of mutTypeScale.domain) {
+            const sigScale = this.getScale(`sig_${mutType}`);
+            this[`show${mutType}`] = sigScale.domain.length > 0;
+        }
     },
     watch: {
         showNormalizedExposures() {
@@ -665,23 +749,8 @@ export default {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.MAIN] - 25;
         },
-        showSbs() {
-            return (this.getConfig().selectedSignaturesSbs.length > 0);
-        },
-        showDbs() {
-            return (this.getConfig().selectedSignaturesDbs.length > 0);
-        },
-        showIndel() {
-            return (this.getConfig().selectedSignaturesIndel.length > 0);
-        },
         showMeta() {
-            return (this.getConfig().selectedSamples.length > 1);
-        },
-        showGenes() {
-            return (this.getConfig().selectedGenes.length > 0);
-        },
-        showClinical() {
-            return (this.getConfig().selectedClinicalVariables.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSamples.length > 1);
         },
         numSbs() {
             return (this.getConfig().selectedSignaturesSbs.length);
@@ -713,7 +782,8 @@ export default {
             'getData',
             'getScale',
             'getSamples',
-            'getSizes'
+            'getSizes',
+            'isEmptySession'
         ])
     },
     methods: {

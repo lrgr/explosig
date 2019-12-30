@@ -1,9 +1,9 @@
-import { dispatch as d3_dispatch } from "d3-dispatch";
+import { dispatch as d3_dispatch } from "d3-dispatch-nosplit";
 
 const DISPATCH_EVENT_UPDATE = "update";
 
-export const EVENT_TYPE_VISIBILITY = 101;
-export const EVENT_SUBTYPE_VISIBILITY = 101;
+export const EVENT_TYPE_VISIBILITY = "VISIBILITY";
+export const EVENT_SUBTYPE_VISIBILITY = "VISIBILITY";
 export const EVENT_SUBTYPE_RESET_VISIBILITY = "resetVisibility";
 
 export const PLOT_GROUPS = Object.freeze({

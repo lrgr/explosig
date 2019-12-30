@@ -34,7 +34,7 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
-            :clickHandler="clickSignature"
+            :clickHandler="(sigName) => clickSignature(sigName, 'SBS')"
         />
         <CategoricalLegend v-if="showDbs"
             variable="sig_DBS"
@@ -42,7 +42,7 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
-            :clickHandler="clickSignature"
+            :clickHandler="(sigName) => clickSignature(sigName, 'DBS')"
         />
         <CategoricalLegend v-if="showIndel"
             variable="sig_INDEL"
@@ -50,7 +50,7 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
-            :clickHandler="clickSignature"
+            :clickHandler="(sigName) => clickSignature(sigName, 'INDEL')"
         />
         <CategoricalLegend v-if="showGenes"
             variable="mut_class"
@@ -76,14 +76,7 @@
         <!-- Clinical Variables -->
         <div v-if="showClinical">
             <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                <CategoricalLegend v-if="!isContinuousClinicalVariable(clinicalVar)"
-                    :variable="clinicalVar"
-                    lStyle="bar"
-                    :lWidth="colWidth"
-                    :getScale="getScale"
-                    :getStack="getStack"
-                />
-                <ContinuousLegend v-if="isContinuousClinicalVariable(clinicalVar)"
+                <Legend
                     :variable="clinicalVar"
                     lStyle="bar"
                     :lWidth="colWidth"
@@ -115,7 +108,7 @@
             :getStack="getStack"
         />
 
-        <SignatureModal :clickedSignature="clickedSignature" @close-modal="unclickSignature" />
+        <SignatureModal :clickedSignature="clickedSignature" :clickedMutType="clickedMutType" @close-modal="unclickSignature" />
     </div>
 </template>
 
@@ -134,30 +127,43 @@ export default {
     },
     data() {
         return {
-            clickedSignature: null
+            selectedClinicalVariables: [],
+            selectedGenes: [],
+            clickedSignature: null,
+            clickedMutType: null,
         }
+    },
+    mounted() {
+        const cvScale = this.getScale("clinical_variable");
+        this.selectedClinicalVariables = cvScale.domain;
+        cvScale.onUpdate("explorer_legend", () => {
+            this.selectedClinicalVariables = cvScale.domain;
+        });
+
+        const gScale = this.getScale("gene_mut");
+        this.selectedGenes = gScale.domain;
+        gScale.onUpdate("gene_tracks", () => {
+            this.selectedGenes = gScale.domain;
+        });
     },
     computed: {
         colWidth() {
             return this.windowWidth * this.getSizes().columns[EXPLORER_COLUMNS.LEGEND] - 25;
         },
         showSbs() {
-            return (this.getConfig().selectedSignaturesSbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesSbs.length > 0);
         },
         showDbs() {
-            return (this.getConfig().selectedSignaturesDbs.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesDbs.length > 0);
         },
         showIndel() {
-            return (this.getConfig().selectedSignaturesIndel.length > 0);
+            return (this.isEmptySession || this.getConfig().selectedSignaturesIndel.length > 0);
         },
         showGenes() {
-            return (this.getConfig().selectedGenes.length > 0);
+            return (this.selectedGenes.length > 0);
         },
         showClinical() {
-            return (this.getConfig().selectedClinicalVariables.length > 0);
-        },
-        selectedClinicalVariables() {
-            return (this.getConfig().selectedClinicalVariables);
+            return (this.selectedClinicalVariables.length > 0);
         },
         selectedTricountsMethod() {
             return (this.getConfig().selectedTricountsMethod);
@@ -170,18 +176,21 @@ export default {
             'getStack',
             'getData',
             'getScale',
-            'getSizes'
+            'getSizes',
+            'isEmptySession'
         ])
     },
     methods: {
         isContinuousClinicalVariable(clinicalVar) {
             return this.continuousClinicalVariables.includes(clinicalVar);
         },
-        clickSignature(sig) {
+        clickSignature(sig, mutType) {
             this.clickedSignature = sig;
+            this.clickedMutType = mutType;
         },
         unclickSignature() {
             this.clickedSignature = null;
+            this.clickedMutType = null;
         }
     }
 }

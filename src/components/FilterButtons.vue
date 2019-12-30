@@ -1,10 +1,9 @@
 <template>
-    <div>
-        <span class="explorer-control-title">Filtering</span>
+    <span>
         <button @click="showFilterModal">Filter Samples</button>
 
         <SampleFilter v-if="modalVisible" @closeSampleFilterModal="closeFilterModal" />
-    </div>
+    </span>
 </template>
 
 <script>

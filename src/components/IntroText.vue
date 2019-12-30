@@ -52,7 +52,6 @@
                         <a href="https://www.npmjs.com/package/json2csv" target="_blank">json2csv</a> &copy; Mirco Zeiss<br>
                         <a href="https://www.npmjs.com/package/lodash" target="_blank">lodash</a> &copy; JS Foundation<br>
                         <a href="https://www.npmjs.com/package/vue" target="_blank">vue</a> &copy; Yuxi (Evan) You<br>
-                        <a href="https://www.npmjs.com/package/vue-resize" target="_blank">vue-resize</a> &copy; Guillaume Chau<br>
                         <a href="https://www.npmjs.com/package/vuex" target="_blank">vuex</a> &copy; Evan You<br>
 
                         <h4>BSD-3-Clause</h4>

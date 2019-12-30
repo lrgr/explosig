@@ -1,7 +1,5 @@
 <script>
 import { mapGetters } from 'vuex';
-import { ResizeObserver } from 'vue-resize';
-import debounce from 'lodash/debounce';
 
 /**
  * Function that takes in array of VNodes and adds props from a provided props object.
@@ -70,21 +68,8 @@ export default {
     },
     data() {
         return {
-            currPlotHeight: 0,
-            initialKey: 1
+
         }
-    },
-    created() {
-        // Check for existing pHeight
-        let props = Object.assign({}, this.$props);
-        let pHeight = this.pHeight;
-        let currPlotHeights = this.getSizes().plotHeights;
-        if(currPlotHeights.hasOwnProperty(this.plotCode)) {
-            pHeight = currPlotHeights[this.plotCode];
-        } else {
-            this.getSizes().updatePlotHeights({ [this.plotCode]: pHeight, ...currPlotHeights });
-        }
-        this.currPlotHeight = pHeight;
     },
     computed: {
         ...mapGetters([
@@ -92,43 +77,18 @@ export default {
         ])
     },
     methods: {
-        resizeHandler() {
-            let totalHeight = this.$el.offsetHeight;
-            let pHeight = Math.max(0, totalHeight - this.pMarginTop - this.pMarginBottom - 6);
-            this.currPlotHeight = pHeight;
 
-            let currPlotHeights = Object.assign({}, this.getSizes().plotHeights);
-            currPlotHeights[this.plotCode] = pHeight;
-            this.getSizes().updatePlotHeights(currPlotHeights);
-
-            this.rerender();
-        },
-        rerender() {
-            this.initialKey++;
-        }
     },
     render(h) {
-        // Check for existing pHeight
-        let pHeight = this.currPlotHeight;
         let props = Object.assign({}, this.$props);
-        props["pHeight"] = pHeight;
         this.$slots.inner = addProp(this.$slots.inner, props);
         
         let children = ([]).concat(
-            h('div', { key: this.initialKey }, this.$slots.inner), 
-            h(ResizeObserver, {
-                on: {
-                    notify: this.resizeHandler
-                }
-            })
+            h('div', {}, this.$slots.inner)
         );
         
         let classes = ['plot-container-resizable'];
-        let styles = {
-            width: (this.pMarginLeft + this.pWidth + this.pMarginRight) + 'px',
-            height: (this.pMarginTop + pHeight + this.pMarginBottom + 6) + 'px'
-        };
-        return h('div', { class: classes, style: styles }, children);
+        return h('div', { class: classes }, children);
     }
 }
 </script>
@@ -136,26 +96,31 @@ export default {
 <style lang="scss">
 .plot-container-resizable {
     box-sizing: border-box;
-    resize: vertical;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     position: relative;
 }
 
 .explorer-main {
     .plot-container-resizable {
-        z-index: 6;
-        .vdp-tooltip {
-            z-index: 106;
-        }
-    }
-}
-.explorer-overview {
-    .plot-container-resizable {
         z-index: 5;
         .vdp-tooltip {
             z-index: 105;
         }
+    }
+    .plot-info {
+        z-index: 6;
+    }
+}
+.explorer-overview {
+    .plot-container-resizable {
+        z-index: 7;
+        .vdp-tooltip {
+            z-index: 106;
+        }
+    }
+    .plot-info {
+        z-index: 8;
     }
 }
 </style>

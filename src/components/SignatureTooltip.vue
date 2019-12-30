@@ -14,7 +14,7 @@
             >
                 <Axis 
                     slot="axisLeft"
-                    variable="probability"
+                    :variable="('sig_prob_'+sigInfo.mut_type)"
                     side="left"
                     :disableBrushing="true"
                     :getScale="getScale"
@@ -24,7 +24,7 @@
                     slot="plot"
                     data="signature"
                     :x="('cat_'+sigInfo.mut_type)"
-                    y="probability"
+                    :y="('sig_prob_'+sigInfo.mut_type)"
                     :getData="getData"
                     :getScale="getScale"
                 />
@@ -78,7 +78,9 @@ export default {
 
         this.plotScales["cat_INDEL"] = new CategoricalScale("cat_INDEL", "INDEL Mutation Category", INDEL_CATS, undefined, getCategoryColors(INDEL_CATS, INDEL_SUPERCAT_MAP, INDEL_SUPERCAT_COLORS));
 
-        this.plotScales["probability"] = new ContinuousScale("probability", "Probability", [0.0, 0.2]);
+        this.plotScales["sig_prob_SBS"] = new ContinuousScale("sig_prob_SBS", "Probability", [0.0, 0.2]);
+        this.plotScales["sig_prob_DBS"] = new ContinuousScale("sig_prob_DBS", "Probability", [0.0, 0.2]);
+        this.plotScales["sig_prob_INDEL"] = new ContinuousScale("sig_prob_INDEL", "Probability", [0.0, 0.2]);
 
         this.initStack();
     },

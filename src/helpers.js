@@ -30,6 +30,10 @@ export const getHashCode = function(s, obj) {
     return h.toString();
 };
 
+export const getScaleHashCode = function(scale) {
+    return getHashCode(JSON.stringify(scale.domain.slice().sort()));
+};
+
 export const getRetinaRatio = function(c) {
     let devicePixelRatio = window.devicePixelRatio || 1;
     let backingStoreRatio = [
