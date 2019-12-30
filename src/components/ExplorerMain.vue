@@ -92,6 +92,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -161,6 +167,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -193,6 +205,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -225,6 +243,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -282,6 +306,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -313,6 +343,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -344,6 +380,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -401,6 +443,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -432,6 +480,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -463,6 +517,12 @@
         >
             <PlotContainer
                 slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -511,6 +571,11 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <Axis
                 slot="axisLeft"
@@ -541,6 +606,11 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <Axis
                 slot="axisLeft"
@@ -571,6 +641,11 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="5"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <Axis
                 slot="axisLeft"
@@ -601,6 +676,11 @@
             :pMarginLeft="150"
             :pMarginRight="20"
             :pMarginBottom="200"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
         >
             <DendrogramAxis
                 slot="axisBottom"

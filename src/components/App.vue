@@ -149,7 +149,6 @@ export default {
 <style lang="scss">
 @import './../style/variables.scss';
 @import '~vueplotlib/dist/vueplotlib.css';
-@import '~vue-resize/dist/vue-resize.css';
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

@@ -56,7 +56,7 @@ export default {
     position: relative;
     .plot-info {
         margin-bottom: 5px;
-        text-align: center;
+        /*text-align: center;*/
         button {
             float: left;
             margin-left: 15px;
@@ -70,9 +70,11 @@ export default {
             border-radius: 3px;
             cursor: pointer;
             user-select: none;
+            position: absolute;
         }
         h4 {
             margin-bottom: 0;
+            text-align: center;
         }
     }
 }
