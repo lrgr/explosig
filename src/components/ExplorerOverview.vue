@@ -343,7 +343,7 @@
         </ResizablePlotContainer>
 
         <!-- Samples with Signatures -->
-        <PlotInfo title="Samples with Signatures" :showTitle="true">
+        <PlotInfo title="Samples with Signature" :showTitle="true">
             <p slot="info">
                 This plot displays the number of samples with greater than 1 mutation attributed to each signature.
             </p>
@@ -472,6 +472,151 @@
                     y="num_samples"
                     o="sample_id"
                     :filterFunction="(val) => (val > 1)"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="sig_INDEL"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+
+        <!-- Samples with Dominant Signature -->
+        <PlotInfo title="Samples with Dominant Signature" :showTitle="true">
+            <p slot="info">
+                This plot displays the number of samples with greater than 50 percent of mutations attributed to each signature.
+            </p>
+        </PlotInfo>
+        <ResizablePlotContainer v-if="showSbs" :key="('sbs_swds_' + explorerOverviewKey)"
+            plotCode="overview_sbs_sdws"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="num_samples"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CountBarPlot
+                    slot="plot"
+                    data="exposure_sbs_normalized"
+                    x="sig_SBS"
+                    y="num_samples"
+                    o="sample_id"
+                    :filterFunction="dominantSignatureFilterFunction"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="sig_SBS"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showDbs" :key="('dbs_swds_' + explorerOverviewKey)"
+            plotCode="overview_dbs_swds"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="num_samples"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CountBarPlot
+                    slot="plot"
+                    data="exposure_dbs_normalized"
+                    x="sig_DBS"
+                    y="num_samples"
+                    o="sample_id"
+                    :filterFunction="dominantSignatureFilterFunction"
+                    :getData="getData"
+                    :getScale="getScale"
+                />
+                <Axis
+                    slot="axisBottom"
+                    variable="sig_DBS"
+                    side="bottom" 
+                    :tickRotation="-65"
+                    :getScale="getScale"
+                    :getStack="getStack"
+                    :disableBrushing="true"
+                />
+            </PlotContainer>
+        </ResizablePlotContainer>
+        <ResizablePlotContainer v-if="showIndel" :key="('indel_swds_' + explorerOverviewKey)"
+            plotCode="overview_indel_swds"
+            :pWidth="(colWidth-130-10)"
+            :pHeight="300"
+            :pMarginTop="5"
+            :pMarginLeft="130"
+            :pMarginRight="10"
+            :pMarginBottom="110"
+        >
+            <PlotContainer
+                slot="inner"
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
+            >
+                <Axis
+                    slot="axisLeft"
+                    variable="num_samples"
+                    side="left" 
+                    :getScale="getScale"
+                    :getStack="getStack"
+                />
+                <CountBarPlot
+                    slot="plot"
+                    data="exposure_indel_normalized"
+                    x="sig_INDEL"
+                    y="num_samples"
+                    o="sample_id"
+                    :filterFunction="dominantSignatureFilterFunction"
                     :getData="getData"
                     :getScale="getScale"
                 />
@@ -664,7 +809,7 @@ export default {
     },
     data() {
         return {
-            explorerOverviewKey: 1
+            explorerOverviewKey: 1,
         };
     },
     mounted() {
@@ -673,6 +818,9 @@ export default {
     methods: {
         rerender() {
             this.explorerOverviewKey++;
+        },
+        dominantSignatureFilterFunction(val, sampleObj, sigName) {
+            return Math.max(...Array.from(Object.values(sampleObj)).filter(Number)) === val;
         }
     },
     watch: {

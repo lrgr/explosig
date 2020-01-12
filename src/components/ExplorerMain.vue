@@ -72,6 +72,61 @@
                 :clickHandler="sampleClickHandler"
             />
         </PlotContainer>
+        <!-- hidden sample name plot - just for downloading purposes (to fit the sample IDs) -->
+        <div @click="downloadHiddenSampleAxis" style="position: absolute; margin-top: -154px; cursor: pointer;">
+            <svg 
+                width="12" height="12" viewBox="0 0 24 24" 
+                class="vdp-plot-container-dl-btn" 
+                style="position: relative; top: 22px; left: 20px;">
+                <path d="M12 21l-8-9h6v-12h4v12h6l-8 9zm9-1v2h-18v-2h-2v4h22v-4h-2z" fill="#C0C0C0"></path>
+            </svg>
+        </div>
+        <PlotContainer
+            id="hidden-sample-axis"
+            :style="{'display': 'none'}"
+            :pWidth="(colWidth-150-5)"
+            :pHeight="20"
+            :pMarginTop="420"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            downloadName="explosig_multisample_sample_id_axis"
+        >
+            <Axis 
+                slot="axisTop"
+                variable="sample_id"
+                side="top"
+                :tickRotation="-90"
+                :getScale="getScale"
+                :getStack="getStack"
+                :autoRemoveTicks="false"
+                :disableBrushing="true"
+            />
+            <Axis 
+                slot="axisLeft"
+                variable="sample_meta"
+                side="left"
+                :disableBrushing="true"
+                :getScale="getScale"
+                :getStack="getStack"
+            />
+            <TrackPlot 
+                slot="plot"
+                data="sample_meta"
+                x="sample_id"
+                c="proj_id"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
 
         <!-- Counts -->
         <PlotInfo title="Number of Mutations per Sample">
@@ -98,6 +153,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_mutation_counts"
             >
                 <Axis 
                     slot="axisLeft"
@@ -173,6 +229,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_SBS"
             >
                 <Axis 
                     slot="axisLeft"
@@ -211,6 +268,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_SBS_normalized"
             >
                 <Axis 
                     slot="axisLeft"
@@ -249,6 +307,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_SBS_cosine_similarity"
             >
                 <Axis 
                     slot="axisLeft"
@@ -312,6 +371,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_DBS"
             >
                 <Axis 
                     slot="axisLeft"
@@ -349,6 +409,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_DBS_normalized"
             >
                 <Axis 
                     slot="axisLeft"
@@ -386,6 +447,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_DBS_cosine_similarity"
             >
                 <Axis 
                     slot="axisLeft"
@@ -449,6 +511,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_INDEL"
             >
                 <Axis 
                     slot="axisLeft"
@@ -486,6 +549,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_INDEL_normalized"
             >
                 <Axis 
                     slot="axisLeft"
@@ -523,6 +587,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_multisample_exposures_INDEL_cosine_similarity"
             >
                 <Axis 
                     slot="axisLeft"
@@ -576,6 +641,7 @@
             :downloadButtonSize="12"
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
+            downloadName="explosig_multisample_hierarchical_clustering_SBS"
         >
             <Axis
                 slot="axisLeft"
@@ -611,6 +677,7 @@
             :downloadButtonSize="12"
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
+            downloadName="explosig_multisample_hierarchical_clustering_DBS"
         >
             <Axis
                 slot="axisLeft"
@@ -646,6 +713,7 @@
             :downloadButtonSize="12"
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
+            downloadName="explosig_multisample_hierarchical_clustering_INDEL"
         >
             <Axis
                 slot="axisLeft"
@@ -681,6 +749,7 @@
             :downloadButtonSize="12"
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
+            downloadName="explosig_multisample_hierarchical_clustering_dendrogram_axis"
         >
             <DendrogramAxis
                 slot="axisBottom"
@@ -811,6 +880,10 @@ export default {
                     ));
                 }
             }
+        },
+        downloadHiddenSampleAxis() {
+            const btn = document.getElementById('hidden-sample-axis').getElementsByClassName('vdp-plot-container-dl-btn')[0];
+            btn.dispatchEvent(new Event('click'));
         }
     }
 }

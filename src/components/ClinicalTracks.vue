@@ -5,48 +5,40 @@
                 This plot shows clinical variables for each sample.
             </p>
         </PlotInfo>
-        <div class="clinical-tracks-wrapper">
-            <div class="clinical-axis-wrapper">
-                <PlotContainer
-                    :pWidth="0"
-                    :pHeight="(numClinicalVariables * 25)"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="0"
-                    :pMarginBottom="20"
-                >
-                    <Axis
-                        slot="axisLeft"
-                        side="left"
-                        :tickRotation="0"
-                        variable="clinical_variable"
-                        :getScale="getScale"
-                        :getStack="getStack"
-                        :disableBrushing="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                <PlotContainer
-                    :pWidth="(colWidth-150-5)"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <TrackPlot 
-                        slot="plot"
-                        data="clinical_data"
-                        x="sample_id"
-                        :c="clinicalVar"
-                        :getData="getData"
-                        :getScale="getScale"
-                        :clickHandler="sampleClickHandler"
-                    />
-                </PlotContainer>
-            </div>
-        </div>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(numClinicalVariables * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="0"
+            :pMarginBottom="20"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="clinical_variable"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataTrackPlot 
+                slot="plot"
+                x="sample_id"
+                :dataArray="selectedClinicalData"
+                :cArray="selectedClinicalVariables"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
     </div>
 </template>
 
@@ -85,6 +77,9 @@ export default {
         numClinicalVariables() {
             return this.selectedClinicalVariables.length;
         },
+        selectedClinicalData() {
+            return Array.from(new Array(this.selectedClinicalVariables.length), () => "clinical_data");
+        },
         ...mapGetters([
             'windowHeight', 
             'windowWidth',
@@ -101,12 +96,4 @@ export default {
 <style scoped lang="scss">
 @import './../style/variables.scss';
 
-.clinical-tracks-wrapper {
-    position: relative;
-}
-
-.clinical-axis-wrapper {
-    position: absolute;
-    margin-top: -2.5px;
-}
 </style>

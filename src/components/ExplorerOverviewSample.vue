@@ -10,12 +10,19 @@
         </PlotInfo>
         <div v-if="showSbs">
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-120-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="120"
                 :pMarginRight="5"
                 :pMarginBottom="110"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -45,12 +52,19 @@
         </div>
         <div v-if="showDbs">
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-120-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="120"
                 :pMarginRight="5"
                 :pMarginBottom="110"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -80,12 +94,19 @@
         </div>
         <div v-if="showIndel">
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-120-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="120"
                 :pMarginRight="5"
                 :pMarginBottom="110"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -279,62 +300,46 @@
         <!-- Clinical -->
         <PlotInfo title="Clinical Variables" :showTitle="true" v-if="selectedClinicalVariables.length > 0">
             <p slot="info">
-                These plots display values of the selected clinical variables for sample {{ sampleId }}.
+                This plot displays values of the selected clinical variables for sample {{ sampleId }}.
             </p>
         </PlotInfo>
-        <div class="clinical-rects-wrapper">
-            <div class="clinical-axis-wrapper">
-                <PlotContainer
-                    :pWidth="0"
-                    :pHeight="(numClinicalVariables * 25)"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="0"
-                    :pMarginBottom="20"
-                >
-                    <Axis
-                        slot="axisLeft"
-                        side="left"
-                        :tickRotation="0"
-                        variable="clinical_variable"
-                        :getScale="getScale"
-                        :getStack="getStack"
-                        :disableBrushing="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
-                <PlotContainer
-                    :pWidth="25"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <RectPlot 
-                        slot="plot"
-                        data="clinical_data"
-                        z="sample_id"
-                        :c="clinicalVar"
-                        :o="sampleId"
-                        :getData="getData"
-                        :getScale="getScale"
-                        :disableTooltip="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div class="clinical-axis-wrapper" :style="{'height': (25*numClinicalVariables) + 'px', 'left': 0, 'top': 0}">
-                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
-                    <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar" class="clinical-value">
-                        {{ clinical[clinicalVar] }}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <PlotContainer
+            :pWidth="(colWidth-180-5)"
+            :pHeight="(numClinicalVariables * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="180"
+            :pMarginRight="0"
+            :pMarginBottom="20"
 
-
-
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="clinical_variable"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataRectPlot 
+                slot="plot"
+                :dataArray="selectedClinicalData"
+                :cArray="selectedClinicalVariables"
+                :rectSize="25"
+                :disableText="false"
+                z="sample_id"
+                :o="sampleId"
+                :getData="getData"
+                :getScale="getScale"
+                :disableTooltip="true"
+            />
+        </PlotContainer>
 
         <!-- Reconstruction -->
         <PlotInfo title="Reconstruction of Mutation Profile" :showTitle="true">
@@ -351,6 +356,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -377,6 +389,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -403,6 +422,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -429,6 +455,11 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="200"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
             >
                 <Axis 
                     slot="axisBottom"
@@ -438,6 +469,7 @@
                     :disableBrushing="true"
                     :getScale="getScale"
                     :getStack="getStack"
+                    :autoRemoveTicks="false"
                 />
             </PlotContainer>
         </div>
@@ -451,6 +483,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -477,6 +516,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -503,6 +549,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -529,6 +582,11 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="200"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
             >
                 <Axis 
                     slot="axisBottom"
@@ -538,6 +596,7 @@
                     :disableBrushing="true"
                     :getScale="getScale"
                     :getStack="getStack"
+                    :autoRemoveTicks="false"
                 />
             </PlotContainer>
         </div>
@@ -551,6 +610,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -577,6 +643,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -603,6 +676,13 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="5"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
+                :showResizeButton="true"
+                :resizeButtonSize="12"
             >
                 <Axis 
                     slot="axisLeft"
@@ -629,6 +709,11 @@
                 :pMarginLeft="100"
                 :pMarginRight="5"
                 :pMarginBottom="200"
+
+                :showDownloadButton="true"
+                :downloadButtonSize="12"
+                :downloadButtonOffsetY="22"
+                :downloadButtonOffsetX="20"
             >
                 <Axis 
                     slot="axisBottom"
@@ -638,6 +723,7 @@
                     :disableBrushing="true"
                     :getScale="getScale"
                     :getStack="getStack"
+                    :autoRemoveTicks="false"
                 />
             </PlotContainer>
         </div>
@@ -1075,6 +1161,9 @@ export default {
         },
         selectedClinicalVariables() {
             return (this.getConfig().selectedClinicalVariables);
+        },
+        selectedClinicalData() {
+            return Array.from(new Array(this.getConfig().selectedClinicalVariables.length), () => "clinical_data");
         },
         numGenes() {
             return (this.getConfig().selectedGenes.length);
