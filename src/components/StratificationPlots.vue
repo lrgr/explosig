@@ -26,6 +26,7 @@
                     :downloadButtonOffsetX="20"
                     :showResizeButton="true"
                     :resizeButtonSize="12"
+                    downloadName="explosig_overview_stratification"
                 >
                     <Axis
                         slot="axisLeft"
@@ -74,6 +75,7 @@
                     :downloadButtonOffsetX="20"
                     :showResizeButton="true"
                     :resizeButtonSize="12"
+                    downloadName="explosig_overview_stratification"
                 >
                     <Axis
                         slot="axisLeft"

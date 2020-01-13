@@ -26,6 +26,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_mutation_counts"
             >
                 <Axis
                     slot="axisLeft"
@@ -79,6 +80,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_exposures_SBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -125,6 +127,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_exposures_SBS_normalized"
             >
                 <Axis
                     slot="axisTop"
@@ -172,6 +175,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_exposures_DBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -218,6 +222,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_exposures_DBS_normalized"
             >
                 <Axis
                     slot="axisTop"
@@ -265,6 +270,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_exposures_INDEL"
             >
                 <Axis
                     slot="axisLeft"
@@ -311,6 +317,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_exposures_INDEL_normalized"
             >
                 <Axis
                     slot="axisTop"
@@ -365,6 +372,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_samples_with_signature_SBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -411,6 +419,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_samples_with_signature_DBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -457,6 +466,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_samples_with_signature_INDEL"
             >
                 <Axis
                     slot="axisLeft"
@@ -510,6 +520,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_samples_with_dominant_signature_SBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -556,6 +567,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_samples_with_dominant_signature_DBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -602,6 +614,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_samples_with_dominant_signature_INDEL"
             >
                 <Axis
                     slot="axisLeft"
@@ -656,6 +669,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_survival_by_dominant_signature_SBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -704,6 +718,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_survival_by_dominant_signature_DBS"
             >
                 <Axis
                     slot="axisLeft"
@@ -752,6 +767,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                downloadName="explosig_overview_survival_by_dominant_signature_INDEL"
             >
                 <Axis
                     slot="axisLeft"

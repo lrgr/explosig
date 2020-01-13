@@ -73,11 +73,11 @@
             />
         </PlotContainer>
         <!-- hidden sample name plot - just for downloading purposes (to fit the sample IDs) -->
-        <div @click="downloadHiddenSampleAxis" style="position: absolute; margin-top: -154px; cursor: pointer;">
+        <div @click="downloadHiddenSampleAxis">
             <svg 
                 width="12" height="12" viewBox="0 0 24 24" 
                 class="vdp-plot-container-dl-btn" 
-                style="position: relative; top: 22px; left: 20px;">
+                style="position: relative; top: -130px; left: 20px; cursor: pointer;">
                 <path d="M12 21l-8-9h6v-12h4v12h6l-8 9zm9-1v2h-18v-2h-2v4h22v-4h-2z" fill="#C0C0C0"></path>
             </svg>
         </div>

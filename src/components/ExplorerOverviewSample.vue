@@ -23,6 +23,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_exposures_SBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -65,6 +66,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_exposures_DBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -107,6 +109,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_exposures_INDEL_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -142,160 +145,126 @@
             </p>
         </PlotInfo>
         <!-- Gene Mutation -->
-        <div class="gene-rects-wrapper">
-            <div class="gene-axis-wrapper">
-                <PlotContainer
-                    :pWidth="0"
-                    :pHeight="(numGenes * 25)"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="0"
-                    :pMarginBottom="0"
-                >
-                    <Axis
-                        slot="axisLeft"
-                        side="left"
-                        :tickRotation="0"
-                        variable="gene_mut"
-                        :getScale="getScale"
-                        :getStack="getStack"
-                        :disableBrushing="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div v-for="geneId in selectedGenes" :key="geneId">
-                <PlotContainer
-                    :pWidth="25"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <RectPlot 
-                        slot="plot"
-                        :data="('gene_mut_' + geneId)"
-                        z="sample_id"
-                        c="mut_class"
-                        :o="sampleId"
-                        :getData="getData"
-                        :getScale="getScale"
-                        :disableTooltip="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
-                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
-                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
-                        {{ genes[('gene_mut_' + geneId)] }}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <PlotContainer v-if="selectedGenes.length > 0"
+            :pWidth="(colWidth-180-5)"
+            :pHeight="(numGenes * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="180"
+            :pMarginRight="0"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            :downloadName="('explosig_sample_gene_mutation_' + sampleId)"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="gene_mut"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataRectPlot 
+                slot="plot"
+                :dataArray="selectedGenesMutData"
+                :cArray="selectedGenesMutScales"
+                :rectSize="25"
+                :disableText="false"
+                z="sample_id"
+                :o="sampleId"
+                :getData="getData"
+                :getScale="getScale"
+                :disableTooltip="true"
+            />
+        </PlotContainer>
         <div class="gene-data-type-divider"></div>
+
         <!-- Gene Expression -->
-        <div class="gene-rects-wrapper">
-            <div class="gene-axis-wrapper">
-                <PlotContainer
-                    :pWidth="0"
-                    :pHeight="(numGenes * 25)"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="0"
-                    :pMarginBottom="0"
-                >
-                    <Axis
-                        slot="axisLeft"
-                        side="left"
-                        :tickRotation="0"
-                        variable="gene_exp"
-                        :getScale="getScale"
-                        :getStack="getStack"
-                        :disableBrushing="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div v-for="geneId in selectedGenes" :key="geneId">
-                <PlotContainer
-                    :pWidth="25"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <RectPlot 
-                        slot="plot"
-                        :data="('gene_exp_' + geneId)"
-                        z="sample_id"
-                        c="gene_expression"
-                        :o="sampleId"
-                        :getData="getData"
-                        :getScale="getScale"
-                        :disableTooltip="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
-                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
-                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
-                        {{ genes[('gene_exp_' + geneId)] }}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <PlotContainer v-if="selectedGenes.length > 0"
+            :pWidth="(colWidth-180-5)"
+            :pHeight="(numGenes * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="180"
+            :pMarginRight="0"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            :downloadName="('explosig_sample_gene_expression_' + sampleId)"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="gene_exp"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataRectPlot 
+                slot="plot"
+                :dataArray="selectedGenesExpData"
+                :cArray="selectedGenesExpScales"
+                :rectSize="25"
+                :disableText="false"
+                z="sample_id"
+                :o="sampleId"
+                :getData="getData"
+                :getScale="getScale"
+                :disableTooltip="true"
+            />
+        </PlotContainer>
         <div class="gene-data-type-divider"></div>
+
         <!-- Gene CNA -->
-        <div class="gene-rects-wrapper">
-            <div class="gene-axis-wrapper">
-                <PlotContainer
-                    :pWidth="0"
-                    :pHeight="(numGenes * 25)"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="0"
-                    :pMarginBottom="0"
-                >
-                    <Axis
-                        slot="axisLeft"
-                        side="left"
-                        :tickRotation="0"
-                        variable="gene_cna"
-                        :getScale="getScale"
-                        :getStack="getStack"
-                        :disableBrushing="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div v-for="geneId in selectedGenes" :key="geneId">
-                <PlotContainer
-                    :pWidth="25"
-                    :pHeight="20"
-                    :pMarginTop="0"
-                    :pMarginLeft="150"
-                    :pMarginRight="5"
-                    :pMarginBottom="5"
-                >
-                    <RectPlot 
-                        slot="plot"
-                        :data="('gene_cna_' + geneId)"
-                        z="sample_id"
-                        c="copy_number"
-                        :o="sampleId"
-                        :getData="getData"
-                        :getScale="getScale"
-                        :disableTooltip="true"
-                    />
-                </PlotContainer>
-            </div>
-            <div class="gene-axis-wrapper" :style="{'height': (25*numGenes) + 'px', 'left': 0, 'top': 0}">
-                <div :style="{'position': 'relative', 'left': (150+25)+'px'}">
-                    <div v-for="geneId in selectedGenes" :key="geneId" class="gene-value">
-                        {{ genes[('gene_cna_' + geneId)] }}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <PlotContainer v-if="selectedGenes.length > 0"
+            :pWidth="(colWidth-180-5)"
+            :pHeight="(numGenes * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="180"
+            :pMarginRight="0"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            :downloadName="('explosig_sample_gene_CNA_' + sampleId)"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="gene_cna"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataRectPlot 
+                slot="plot"
+                :dataArray="selectedGenesCNAData"
+                :cArray="selectedGenesCNAScales"
+                :rectSize="25"
+                :disableText="false"
+                z="sample_id"
+                :o="sampleId"
+                :getData="getData"
+                :getScale="getScale"
+                :disableTooltip="true"
+            />
+        </PlotContainer>
 
         <!-- Clinical -->
         <PlotInfo title="Clinical Variables" :showTitle="true" v-if="selectedClinicalVariables.length > 0">
@@ -303,7 +272,7 @@
                 This plot displays values of the selected clinical variables for sample {{ sampleId }}.
             </p>
         </PlotInfo>
-        <PlotContainer
+        <PlotContainer v-if="selectedClinicalVariables.length > 0"
             :pWidth="(colWidth-180-5)"
             :pHeight="(numClinicalVariables * 25)"
             :pMarginTop="0"
@@ -317,6 +286,7 @@
             :downloadButtonOffsetX="20"
             :showResizeButton="true"
             :resizeButtonSize="12"
+            :downloadName="('explosig_sample_clinical_data_' + sampleId)"
         >
             <Axis
                 slot="axisLeft"
@@ -350,10 +320,10 @@
         <div v-if="showSbs">
             <p class="sample-cosine-similarity">SBS Reconstruction Cosine Similarity: {{ cosineSimilaritySbs }}</p>
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -363,6 +333,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_true_SBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -383,10 +354,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -396,6 +367,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_reconstruction_SBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -416,10 +388,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -429,6 +401,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_reconstruction_error_SBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -449,10 +422,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="0"
                 :pMarginTop="0"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="200"
 
@@ -460,6 +433,7 @@
                 :downloadButtonSize="12"
                 :downloadButtonOffsetY="22"
                 :downloadButtonOffsetX="20"
+                downloadName="explosig_sample_mutation_profile_categories_SBS"
             >
                 <Axis 
                     slot="axisBottom"
@@ -477,10 +451,10 @@
         <div v-if="showDbs">
             <p class="sample-cosine-similarity">DBS Reconstruction Cosine Similarity: {{ cosineSimilarityDbs }}</p>
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -490,6 +464,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_true_DBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -510,10 +485,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -523,6 +498,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_reconstruction_DBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -543,10 +519,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -556,6 +532,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_reconstruction_error_DBS_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -576,10 +553,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="0"
                 :pMarginTop="0"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="200"
 
@@ -587,6 +564,7 @@
                 :downloadButtonSize="12"
                 :downloadButtonOffsetY="22"
                 :downloadButtonOffsetX="20"
+                downloadName="explosig_sample_mutation_profile_categories_DBS"
             >
                 <Axis 
                     slot="axisBottom"
@@ -604,10 +582,10 @@
         <div v-if="showIndel">
             <p class="sample-cosine-similarity">INDEL Reconstruction Cosine Similarity: {{ cosineSimilarityIndel }}</p>
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -617,6 +595,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_true_INDEL_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -637,10 +616,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -650,6 +629,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_reconstruction_INDEL_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -670,10 +650,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="200"
                 :pMarginTop="10"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="5"
 
@@ -683,6 +663,7 @@
                 :downloadButtonOffsetX="20"
                 :showResizeButton="true"
                 :resizeButtonSize="12"
+                :downloadName="('explosig_sample_mutation_profile_reconstruction_error_INDEL_' + sampleId)"
             >
                 <Axis 
                     slot="axisLeft"
@@ -703,10 +684,10 @@
             </PlotContainer>
 
             <PlotContainer
-                :pWidth="(colWidth-100-5)"
+                :pWidth="(colWidth-130-5)"
                 :pHeight="0"
                 :pMarginTop="0"
-                :pMarginLeft="100"
+                :pMarginLeft="130"
                 :pMarginRight="5"
                 :pMarginBottom="200"
 
@@ -714,6 +695,7 @@
                 :downloadButtonSize="12"
                 :downloadButtonOffsetY="22"
                 :downloadButtonOffsetX="20"
+                downloadName="explosig_sample_mutation_profile_categories_INDEL"
             >
                 <Axis 
                     slot="axisBottom"
@@ -1164,6 +1146,24 @@ export default {
         },
         selectedClinicalData() {
             return Array.from(new Array(this.getConfig().selectedClinicalVariables.length), () => "clinical_data");
+        },
+        selectedGenesMutData() {
+            return this.getConfig().selectedGenes.map(g => `gene_mut_${g}`);
+        },
+        selectedGenesMutScales() {
+            return Array.from(new Array(this.getConfig().selectedGenes.length), () => "mut_class");
+        },
+        selectedGenesExpData() {
+            return this.getConfig().selectedGenes.map(g => `gene_exp_${g}`);
+        },
+        selectedGenesExpScales() {
+            return Array.from(new Array(this.getConfig().selectedGenes.length), () => "gene_expression");
+        },
+        selectedGenesCNAData() {
+            return this.getConfig().selectedGenes.map(g => `gene_cna_${g}`);
+        },
+        selectedGenesCNAScales() {
+            return Array.from(new Array(this.getConfig().selectedGenes.length), () => "copy_number");
         },
         numGenes() {
             return (this.getConfig().selectedGenes.length);

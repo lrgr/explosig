@@ -11,7 +11,7 @@
             :pMarginTop="0"
             :pMarginLeft="150"
             :pMarginRight="0"
-            :pMarginBottom="20"
+            :pMarginBottom="0"
 
             :showDownloadButton="true"
             :downloadButtonSize="12"
@@ -19,6 +19,7 @@
             :downloadButtonOffsetX="20"
             :showResizeButton="true"
             :resizeButtonSize="12"
+            downloadName="explosig_multisample_clinical_data"
         >
             <Axis
                 slot="axisLeft"
