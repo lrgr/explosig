@@ -21,6 +21,8 @@
                             :pMarginLeft="70"
                             :pMarginRight="20"
                             :pMarginBottom="100"
+                            :showDownloadButton="true"
+                            :downloadName="('explosig_signature_' + selectedSignature)"
                         >
                             <Axis 
                                 slot="axisLeft"
@@ -46,6 +48,7 @@
                                 :disableBrushing="true"
                                 :getScale="getScale"
                                 :getStack="getStack"
+                                :autoRemoveTicks="false"
                             />
                         </PlotContainer>
 

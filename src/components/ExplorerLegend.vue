@@ -1,11 +1,15 @@
 <template>
-    <div>
+    <div class="explosig-col-container-immediate">
+        <button class="download-all" @click="downloadAll">Download All Legends</button>
         <CategoricalLegend
             variable="proj_id"
             lStyle="bar"
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_proj_id"
+            ref="legend_0000"
         />
         
         <!-- make a fake legend for whether or not to do trinucleotide normalization -->
@@ -27,6 +31,9 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_mut_type"
+            ref="legend_0010"
         />
         <CategoricalLegend v-if="showSbs"
             variable="sig_SBS"
@@ -35,6 +42,9 @@
             :getScale="getScale"
             :getStack="getStack"
             :clickHandler="(sigName) => clickSignature(sigName, 'SBS')"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_sig_SBS"
+            ref="legend_0020"
         />
         <CategoricalLegend v-if="showDbs"
             variable="sig_DBS"
@@ -43,6 +53,9 @@
             :getScale="getScale"
             :getStack="getStack"
             :clickHandler="(sigName) => clickSignature(sigName, 'DBS')"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_sig_DBS"
+            ref="legend_0030"
         />
         <CategoricalLegend v-if="showIndel"
             variable="sig_INDEL"
@@ -51,6 +64,9 @@
             :getScale="getScale"
             :getStack="getStack"
             :clickHandler="(sigName) => clickSignature(sigName, 'INDEL')"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_sig_INDEL"
+            ref="legend_0040"
         />
         <CategoricalLegend v-if="showGenes"
             variable="mut_class"
@@ -58,6 +74,9 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_mut_class"
+            ref="legend_0050"
         />
         <CategoricalLegend v-if="showGenes"
             variable="gene_expression"
@@ -65,6 +84,9 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_gene_expression"
+            ref="legend_0060"
         />
         <CategoricalLegend v-if="showGenes"
             variable="copy_number"
@@ -72,16 +94,22 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_copy_number"
+            ref="legend_0070"
         />
         <!-- Clinical Variables -->
         <div v-if="showClinical">
-            <div v-for="clinicalVar in selectedClinicalVariables" :key="clinicalVar">
+            <div v-for="(clinicalVar, index) in selectedClinicalVariables" :key="clinicalVar">
                 <Legend
                     :variable="clinicalVar"
                     lStyle="bar"
                     :lWidth="colWidth"
                     :getScale="getScale"
                     :getStack="getStack"
+                    :showDownloadButton="true"
+                    :downloadName="('explosig_legend_clinical_' + clinicalVar)"
+                    :ref="('legend_0080_' + index)"
                 />
             </div>
         </div>
@@ -92,6 +120,9 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_exposure_normalized_SBS"
+            ref="legend_0090"
         />
         <ContinuousLegend v-if="showDbs"
             variable="exposure_dbs_normalized"
@@ -99,6 +130,9 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_exposure_normalized_DBS"
+            ref="legend_0100"
         />
         <ContinuousLegend v-if="showIndel"
             variable="exposure_indel_normalized"
@@ -106,6 +140,9 @@
             :lWidth="colWidth"
             :getScale="getScale"
             :getStack="getStack"
+            :showDownloadButton="true"
+            downloadName="explosig_legend_exposure_normalized_INDEL"
+            ref="legend_0110"
         />
 
         <SignatureModal :clickedSignature="clickedSignature" :clickedMutType="clickedMutType" @close-modal="unclickSignature" />
@@ -119,6 +156,8 @@ import { EXPLORER_COLUMNS } from './../vdp/Sizes.js';
 
 import SignatureModal from './SignatureModal.vue';
 
+import { create as d3_create } from 'd3';
+import { downloadSvg } from 'vueplotlib';
 
 export default {
     name: 'ExplorerLegend',
@@ -191,6 +230,35 @@ export default {
         unclickSignature() {
             this.clickedSignature = null;
             this.clickedMutType = null;
+        },
+        downloadAll() {
+            const legends = Object.entries(this.$refs).sort((a, b) => a[0].localeCompare(b[0])).map(o => o[1]);
+
+            const svg = d3_create("svg");
+
+            let x = 0;
+            for(let legend of legends) {
+                let legendSvg;
+                try {
+                    legendSvg = legend.download();
+                } catch(e) {
+                    legendSvg = legend[0].$children[0].download();
+                }
+                const width = this.colWidth;
+                
+                const legendG = svg.append("g")
+                    .attr("width", width)
+                    .attr("transform", `translate(${x},${0})`);
+                
+                legendG.html(legendSvg.node().innerHTML);
+
+                x += width;
+            }
+            
+            svg
+                .attr("width", x);
+            
+            downloadSvg(svg, "explosig_view_legends");
         }
     }
 }
@@ -214,5 +282,14 @@ export default {
         font-size: 13px;
         color: black;
     }
+}
+
+.download-all {
+    position: absolute;
+    right: 45px;
+    top: -31px;
+}
+.explosig-col-container-immediate {
+    position: relative;
 }
 </style>

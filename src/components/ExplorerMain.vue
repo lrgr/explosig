@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div class="explosig-col-container-immediate">
+        <button class="download-all" @click="downloadAll">Download All Multi-Sample Plots</button>
         <!-- Meta -->
         <PlotInfo title="Samples">
             <p slot="info">
@@ -98,6 +99,7 @@
             :showResizeButton="true"
             :resizeButtonSize="12"
             downloadName="explosig_multisample_sample_id_axis"
+            ref="plot_0000"
         >
             <Axis 
                 slot="axisTop"
@@ -154,6 +156,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_mutation_counts"
+                ref="plot_0010"
             >
                 <Axis 
                     slot="axisLeft"
@@ -185,6 +188,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            ref="plot_0020"
         >
             <Axis 
                 slot="axisLeft"
@@ -230,6 +234,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_SBS"
+                ref="plot_0030"
             >
                 <Axis 
                     slot="axisLeft"
@@ -269,6 +274,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_SBS_normalized"
+                ref="plot_0040"
             >
                 <Axis 
                     slot="axisLeft"
@@ -308,6 +314,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_SBS_cosine_similarity"
+                ref="plot_0050"
             >
                 <Axis 
                     slot="axisLeft"
@@ -335,6 +342,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            ref="plot_0060"
         >
             <Axis 
                 slot="axisLeft"
@@ -372,6 +380,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_DBS"
+                ref="plot_0070"
             >
                 <Axis 
                     slot="axisLeft"
@@ -410,6 +419,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_DBS_normalized"
+                ref="plot_0080"
             >
                 <Axis 
                     slot="axisLeft"
@@ -448,6 +458,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_DBS_cosine_similarity"
+                ref="plot_0090"
             >
                 <Axis 
                     slot="axisLeft"
@@ -475,6 +486,7 @@
             :pMarginLeft="150"
             :pMarginRight="5"
             :pMarginBottom="0"
+            ref="plot_0100"
         >
             <Axis 
                 slot="axisLeft"
@@ -512,6 +524,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_INDEL"
+                ref="plot_0110"
             >
                 <Axis 
                     slot="axisLeft"
@@ -550,6 +563,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_INDEL_normalized"
+                ref="plot_0120"
             >
                 <Axis 
                     slot="axisLeft"
@@ -588,6 +602,7 @@
                 :showResizeButton="true"
                 :resizeButtonSize="12"
                 downloadName="explosig_multisample_exposures_INDEL_cosine_similarity"
+                ref="plot_0130"
             >
                 <Axis 
                     slot="axisLeft"
@@ -612,11 +627,178 @@
         <!-- Toggle for normalized exposure plots -->
         <VisibilityButtons />
 
-        <!-- Gene Alterations -->
-        <GeneTracksContainer :sampleClickHandler="sampleClickHandler" />
+        <!-- Gene Tracks - Mutation -->
+        <PlotInfo title="Gene Mutation" :style="{'margin-top': '15px'}">
+            <p slot="info">
+                This plot shows a mutation classification for each selected gene and sample.
+            </p>
+        </PlotInfo>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(selectedGenesMut.length * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
 
-        <!-- Clinical Variables -->
-        <ClinicalTracks :sampleClickHandler="sampleClickHandler" />
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            downloadName="explosig_multisample_gene_mutation"
+            ref="plot_0140"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="gene_mut"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataTrackPlot 
+                slot="plot"
+                x="sample_id"
+                :dataArray="selectedGenesMutData"
+                :cArray="selectedGenesMutScales"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+        
+        <!-- Gene Tracks - Expression -->
+        <PlotInfo title="Gene Expression" :style="{'margin-top': '15px'}">
+            <p slot="info">
+                This plot shows gene expression values for each selected gene and sample.
+                RNA Seq v2 mRNA median Z-score values have been processed such that over-expression corresponds to &ge; 2 and under-expression corresponds to &le; -2.
+            </p>
+        </PlotInfo>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(selectedGenesExp.length * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            downloadName="explosig_multisample_gene_expression"
+            ref="plot_0150"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="gene_exp"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataTrackPlot 
+                slot="plot"
+                x="sample_id"
+                :dataArray="selectedGenesExpData"
+                :cArray="selectedGenesExpScales"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+       
+        <!-- Gene Tracks - CNA -->
+        <PlotInfo title="Gene Copy Number Alteration" :style="{'margin-top': '15px'}">
+            <p slot="info">
+                This plot shows CNA values for each selected gene and sample.
+            </p>
+        </PlotInfo>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(selectedGenesCNA.length * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            downloadName="explosig_multisample_gene_CNA"
+            ref="plot_0160"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="gene_cna"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataTrackPlot 
+                slot="plot"
+                x="sample_id"
+                :dataArray="selectedGenesCNAData"
+                :cArray="selectedGenesCNAScales"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
+
+        <!-- Clinical Variable Tracks -->
+        <PlotInfo title="Clinical Variables" :style="{'margin-top': '15px'}">
+            <p slot="info">
+                This plot shows clinical variables for each sample.
+            </p>
+        </PlotInfo>
+        <PlotContainer
+            :pWidth="(colWidth-150-5)"
+            :pHeight="(selectedClinicalVariables.length * 25)"
+            :pMarginTop="0"
+            :pMarginLeft="150"
+            :pMarginRight="5"
+            :pMarginBottom="0"
+
+            :showDownloadButton="true"
+            :downloadButtonSize="12"
+            :downloadButtonOffsetY="22"
+            :downloadButtonOffsetX="20"
+            :showResizeButton="true"
+            :resizeButtonSize="12"
+            downloadName="explosig_multisample_clinical_data"
+            ref="plot_0170"
+        >
+            <Axis
+                slot="axisLeft"
+                side="left"
+                :tickRotation="0"
+                variable="clinical_variable"
+                :getScale="getScale"
+                :getStack="getStack"
+                :disableBrushing="true"
+            />
+            <MultiDataTrackPlot 
+                slot="plot"
+                x="sample_id"
+                :dataArray="selectedClinicalData"
+                :cArray="selectedClinicalVariables"
+                :getData="getData"
+                :getScale="getScale"
+                :clickHandler="sampleClickHandler"
+            />
+        </PlotContainer>
 
         <!-- Hierarchical Clustering -->
         <PlotInfo 
@@ -642,6 +824,7 @@
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
             downloadName="explosig_multisample_hierarchical_clustering_SBS"
+            ref="plot_2000"
         >
             <Axis
                 slot="axisLeft"
@@ -678,6 +861,7 @@
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
             downloadName="explosig_multisample_hierarchical_clustering_DBS"
+            ref="plot_2010"
         >
             <Axis
                 slot="axisLeft"
@@ -714,6 +898,7 @@
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
             downloadName="explosig_multisample_hierarchical_clustering_INDEL"
+            ref="plot_2020"
         >
             <Axis
                 slot="axisLeft"
@@ -750,6 +935,7 @@
             :downloadButtonOffsetY="22"
             :downloadButtonOffsetX="20"
             downloadName="explosig_multisample_hierarchical_clustering_dendrogram_axis"
+            ref="plot_2030"
         >
             <DendrogramAxis
                 slot="axisBottom"
@@ -770,8 +956,6 @@ import { mapGetters } from 'vuex';
 import { HistoryEvent } from 'vueplotlib';
 
 import PlotInfo from './PlotInfo.vue';
-import ClinicalTracks from './ClinicalTracks.vue';
-import GeneTracksContainer from './GeneTracksContainer.vue';
 import VisibilityButtons from './VisibilityButtons.vue';
 import NumSamples from './NumSamples.vue';
 import ResizablePlotContainer from './ResizablePlotContainer.vue';
@@ -780,13 +964,13 @@ import { PLOT_GROUPS } from './../vdp/Visibility.js';
 import { EVENT_TYPE_SAMPLES, EVENT_SUBTYPE_SAMPLES } from './../vdp/Samples.js';
 import { EXPLORER_COLUMNS } from './../vdp/Sizes.js';
 
+import { create as d3_create } from 'd3';
+import { downloadSvg } from 'vueplotlib';
 
 export default {
     name: 'ExplorerMain',
     components: {
         PlotInfo,
-        ClinicalTracks,
-        GeneTracksContainer,
         VisibilityButtons,
         NumSamples,
         ResizablePlotContainer
@@ -796,7 +980,11 @@ export default {
             explorerMainKey: 1,
             showSBS: false,
             showDBS: false,
-            showINDEL: false
+            showINDEL: false,
+            selectedClinicalVariables: [],
+            selectedGenesMut: [],
+            selectedGenesExp: [],
+            selectedGenesCNA: [],
         };
     },
     created() {
@@ -805,6 +993,31 @@ export default {
             const sigScale = this.getScale(`sig_${mutType}`);
             this[`show${mutType}`] = sigScale.domain.length > 0;
         }
+    },
+    mounted() {
+        const cvScale = this.getScale("clinical_variable");
+        this.selectedClinicalVariables = cvScale.domain;
+        cvScale.onUpdate("clinical_tracks", () => {
+            this.selectedClinicalVariables = cvScale.domain;
+        });
+
+        const gmScale = this.getScale("gene_mut");
+        this.selectedGenesMut = gmScale.domain;
+        gmScale.onUpdate("gene_mut", () => {
+            this.selectedGenesMut = gmScale.domain;
+        });
+
+        const geScale = this.getScale("gene_exp");
+        this.selectedGenesExp = geScale.domain;
+        geScale.onUpdate("gene_exp", () => {
+            this.selectedGenesExp = geScale.domain;
+        });
+
+        const gcScale = this.getScale("gene_cna");
+        this.selectedGenesCNA = gcScale.domain;
+        gcScale.onUpdate("gene_cna", () => {
+            this.selectedGenesCNA = gcScale.domain;
+        });
     },
     watch: {
         showNormalizedExposures() {
@@ -833,8 +1046,26 @@ export default {
         selectedGenes() {
             return (this.getConfig().selectedGenes);
         },
-        selectedClinicalVariables() {
-            return (this.getConfig().selectedClinicalVariables);
+        selectedClinicalData() {
+            return this.selectedClinicalVariables.map(() => "clinical_data");
+        },
+        selectedGenesMutData() {
+            return this.selectedGenesMut.map(g => `gene_mut_${g}`)
+        },
+        selectedGenesMutScales() {
+            return this.selectedGenesMut.map(() => "mut_class");
+        },
+        selectedGenesExpData() {
+            return this.selectedGenesExp.map(g => `gene_exp_${g}`)
+        },
+        selectedGenesExpScales() {
+            return this.selectedGenesExp.map(() => "gene_expression");
+        },
+        selectedGenesCNAData() {
+            return this.selectedGenesCNA.map(g => `gene_cna_${g}`)
+        },
+        selectedGenesCNAScales() {
+            return this.selectedGenesCNA.map(() => "copy_number");
         },
         showNormalizedExposures() {
             return (!this.getVisibility().hiddenPlots.includes(PLOT_GROUPS.NORMALIZED_EXPOSURES));
@@ -884,6 +1115,37 @@ export default {
         downloadHiddenSampleAxis() {
             const btn = document.getElementById('hidden-sample-axis').getElementsByClassName('vdp-plot-container-dl-btn')[0];
             btn.dispatchEvent(new Event('click'));
+        },
+        downloadAll() {
+            const plots = Object.entries(this.$refs).sort((a, b) => a[0].localeCompare(b[0])).map(o => o[1]);
+
+            const svg = d3_create("svg");
+
+            let y = 0;
+            for(let plot of plots) {
+                try {
+                    const plotSvg = plot.download();
+                    const height = plot.fullHeight;
+                    const width = plot.fullWidth;
+                    
+                    const plotG = svg.append("g")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .attr("transform", `translate(${0},${y})`);
+                    
+                    plotG.html(plotSvg.node().innerHTML);
+
+                    y += height + 6;
+                } catch(e) {
+                    console.log(e);
+                }
+            }
+            
+            svg
+                .attr("width", this.colWidth)
+                .attr("height", y);
+            
+            downloadSvg(svg, "explosig_view_multisample");
         }
     }
 }
@@ -898,5 +1160,14 @@ export default {
         position: absolute;
         margin-top: 29px;
     }
+}
+
+.download-all {
+    position: absolute;
+    right: 10px;
+    top: -31px;
+}
+.explosig-col-container-immediate {
+    position: relative;
 }
 </style>
