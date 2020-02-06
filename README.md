@@ -21,3 +21,11 @@ docker build -f dev.Dockerfile -t lrgr/explosig-dev .
 
 #### Develop
 After building the containers, run them with [explosig-docker](https://github.com/lrgr/explosig-docker), then open [http://localhost:8000](http://localhost:8000).
+
+## Related tools
+
+- [ExploSig](https://github.com/lrgr/explosig)
+- [ExploSig Server](https://github.com/lrgr/explosig-server)
+- [ExploSig Docker](https://github.com/lrgr/explosig-docker)
+- [ExploSig Connect](https://github.com/lrgr/explosig-connect)
+- [ExploSig Data](https://github.com/lrgr/explosig-data)
